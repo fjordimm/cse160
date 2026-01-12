@@ -115,9 +115,9 @@ function handleDrawOperationEvent() {
         v4.set(v2);
         v4.normalize();
         drawVector(v4, "green");
-    } else if (operation == "ang") {
+    } else if (operation === "ang") {
         console.log(`Angle: ${angleBetween(v1, v2)}`);
-    } else if (operation == "are") {
+    } else if (operation === "are") {
         console.log(`Area: ${areaTriangle(v1, v2)}`);
     } else {
         throw Error("Not a valid operation.");
