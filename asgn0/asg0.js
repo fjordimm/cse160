@@ -2,16 +2,13 @@
 var canvas = null;
 var ctx = null;
 
-// DrawTriangle.js (c) 2012 matsuda
 function main() {
-    // Retrieve <canvas> element
     canvas = document.getElementById('example');
     if (!canvas) {
         console.log('Failed to retrieve the <canvas> element');
         return false;
     }
 
-    // Get the rendering context for 2DCG
     ctx = canvas.getContext('2d');
 
     ctx.fillStyle = "black";
