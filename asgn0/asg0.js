@@ -29,6 +29,14 @@ function drawVector(v, color) {
     ctx.stroke();
 }
 
+function angleBetween(v1, v2) {
+    let dotProduct = Vector3.dot(v1, v2);
+    let magnitudes = v1.magnitude() * v2.magnitude();
+    let cosAngle = dotProduct / magnitudes;
+    let angle = Math.acos(cosAngle);
+    return angle * (180 / Math.PI);
+}
+
 function handleDrawEvent() {
     ctx.fillStyle = "black";
     ctx.fillRect(0, 0, 400, 400);
@@ -105,6 +113,8 @@ function handleDrawOperationEvent() {
         v4.set(v2);
         v4.normalize();
         drawVector(v4, "green");
+    } else if (operation == "ang") {
+        console.log(`Angle: ${angleBetween(v1, v2)}`);
     } else {
         throw Error("Not a valid operation.");
     }
