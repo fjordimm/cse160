@@ -37,6 +37,11 @@ function angleBetween(v1, v2) {
     return angle * (180 / Math.PI);
 }
 
+function areaTriangle(v1, v2) {
+    let cross = Vector3.cross(v1, v2);
+    return cross.magnitude() / 2;
+}
+
 function handleDrawEvent() {
     ctx.fillStyle = "black";
     ctx.fillRect(0, 0, 400, 400);
@@ -115,6 +120,8 @@ function handleDrawOperationEvent() {
         drawVector(v4, "green");
     } else if (operation == "ang") {
         console.log(`Angle: ${angleBetween(v1, v2)}`);
+    } else if (operation == "are") {
+        console.log(`Area: ${areaTriangle(v1, v2)}`);
     } else {
         throw Error("Not a valid operation.");
     }
