@@ -92,6 +92,19 @@ function handleDrawOperationEvent() {
         v4.set(v2);
         v4.div(scalar);
         drawVector(v4, "green");
+    } else if (operation === "mag") {
+        console.log(`Magnitude v1: ${v1.magnitude()}`);
+        console.log(`Magnitude v2: ${v2.magnitude()}`);
+    } else if (operation === "nrm") {
+        let v3 = new Vector3();
+        v3.set(v1);
+        v3.normalize();
+        drawVector(v3, "green");
+
+        let v4 = new Vector3();
+        v4.set(v2);
+        v4.normalize();
+        drawVector(v4, "green");
     } else {
         throw Error("Not a valid operation.");
     }
