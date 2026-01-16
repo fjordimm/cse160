@@ -16,9 +16,10 @@ void main() {
 }
 `;
 
-// Globals
+// WebGL Globals
 let canvas;
 let gl;
+let vertexBuffer;
 let a_Position;
 let u_FragColor;
 let u_Size;
@@ -29,6 +30,12 @@ function setupWebGL() {
     gl = getWebGLContext(canvas);
     if (!gl) {
         console.log('Failed to get the rendering context for WebGL');
+        return;
+    }
+
+    vertexBuffer = gl.createBuffer();
+    if (!vertexBuffer) {
+        console.log('Failed to create buffer object');
         return;
     }
 }
@@ -61,34 +68,78 @@ function setupGLSLVariables() {
     }
 }
 
+// Other Globals
+let listOfShapes = [];
+let shapeType = "point";
+
 function main() {
     setupWebGL();
     setupGLSLVariables();
 
-    // Register function (event handler) to be called on a mouse press
+    gl.clearColor(0.0, 0.0, 0.0, 1.0);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+
+    listOfShapes = [];
+
     canvas.onmousedown = function (ev) { handleMouseClick(ev) };
     canvas.onmousemove = function (ev) { handleMouseMove(ev) };
-
-    // Specify the color for clearing <canvas>
-    gl.clearColor(0.0, 0.0, 0.0, 1.0);
-
-    // Clear <canvas>
-    gl.clear(gl.COLOR_BUFFER_BIT);
 }
 
-class Shape {
+class Point {
     constructor(position, color, size) {
         this.position = position;
         this.color = color;
         this.size = size;
     }
+
+    render() {
+        let xy = this.position;
+        let rgba = this.color;
+        let size = this.size;
+
+        gl.vertexAttrib3f(a_Position, xy[0], xy[1], 0.0);
+        gl.uniform4f(u_FragColor, rgba[0], rgba[1], rgba[2], rgba[3]);
+        gl.uniform1f(u_Size, size);
+
+        gl.drawArrays(gl.POINTS, 0, 1);
+    }
 }
 
-let listOfShapes = [];
+class Triangle {
+    constructor(position, color, size) {
+        this.position = position;
+        this.color = color;
+        this.size = size;
+    }
+
+    render() {
+        let triangleWidth = this.size / 200;
+
+        let vertices = [
+            this.position[0],                 this.position[1],
+            this.position[0] + triangleWidth, this.position[1],
+            this.position[0],                 this.position[1] + triangleWidth
+        ];
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.DYNAMIC_DRAW);
+        gl.vertexAttribPointer(a_Position, 2, gl.FLOAT, false, 0, 0);
+        gl.enableVertexAttribArray(a_Position);
+
+        gl.uniform4f(u_FragColor, this.color[0], this.color[1], this.color[2], this.color[3]);
+        gl.uniform1f(u_Size, this.size);
+
+        gl.drawArrays(gl.TRIANGLES, 0, 3);
+    }
+}
 
 function handleClearButton() {
     listOfShapes = [];
     renderAllShapes();
+}
+
+function handleSetShapeType(type) {
+    shapeType = type;
 }
 
 function handleMouseClick(ev) {
@@ -104,30 +155,30 @@ function handleMouseMove(ev) {
 }
 
 function drawShape(x, y) {
+    let xy = [x, y];
     let [colRed, colGreen, colBlue] = getSliderColors();
     colRed /= 255;
     colGreen /= 255;
     colBlue /= 255;
+    let rgba = [colRed, colGreen, colBlue, 1.0];
     let size = getSliderSize();
 
-    listOfShapes.push(new Shape([x, y], [colRed, colGreen, colBlue, 1.0], size));
+    if (shapeType === "point") {
+        listOfShapes.push(new Point(xy, rgba, size));
+    } else if (shapeType === "triangle") {
+        listOfShapes.push(new Triangle(xy, rgba, size));
+    } else {
+        throw new Error("Invalid shape type");
+    }
 
     renderAllShapes();
 }
 
 function renderAllShapes() {
-    // Clear <canvas>
     gl.clear(gl.COLOR_BUFFER_BIT);
 
     for (let shape of listOfShapes) {
-        let xy = shape.position;
-        let rgba = shape.color;
-        let size = shape.size;
-
-        gl.vertexAttrib3f(a_Position, xy[0], xy[1], 0.0);
-        gl.uniform4f(u_FragColor, rgba[0], rgba[1], rgba[2], rgba[3]);
-        gl.uniform1f(u_Size, size);
-        gl.drawArrays(gl.POINTS, 0, 1);
+        shape.render();
     }
 }
 

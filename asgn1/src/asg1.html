@@ -15,6 +15,12 @@
         <input type="button" value="Clear" onclick="handleClearButton();">
 
         <div style="display: flex; flex-direction: row; gap: 10px;">
+            <span>Shape:</span>
+            <input type="button" value="Point" onclick="handleSetShapeType('point');">
+            <input type="button" value="Triangle" onclick="handleSetShapeType('triangle');">
+        </div>
+
+        <div style="display: flex; flex-direction: row; gap: 10px;">
             <span>Color:</span>
             <span>Red</span>
             <input type="range" id="slider-red" min="0" max="255" value="255">
