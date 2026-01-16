@@ -70,7 +70,7 @@ function setupGLSLVariables() {
 
 // Other Globals
 let listOfShapes = [];
-let shapeType = "point";
+let shapeType = "circle";
 
 function main() {
     setupWebGL();
@@ -130,9 +130,51 @@ class Triangle {
         gl.enableVertexAttribArray(a_Position);
 
         gl.uniform4f(u_FragColor, this.color[0], this.color[1], this.color[2], this.color[3]);
-        gl.uniform1f(u_Size, this.size);
 
         gl.drawArrays(gl.TRIANGLES, 0, 3);
+    }
+}
+
+class Circle {
+    constructor(position, color, size, segments) {
+        this.position = position;
+        this.color = color;
+        this.size = size;
+        this.segments = segments;
+    }
+
+    render() {
+        let radius = this.size / 2;
+        let x = this.position[0];
+        let y = this.position[1];
+        let segAngle = 2 * Math.PI / this.segments;
+
+        let vertices = [];
+        for (let seg = 0; seg < this.segments; seg++) {
+            let angle1 = seg * segAngle;
+            let angle2 = (seg + 1) * segAngle;
+
+            let dx1 = (Math.cos(angle1) * radius) / 200;
+            let dy1 = (Math.sin(angle1) * radius) / 200;
+
+            let dx2 = (Math.cos(angle2) * radius) / 200;
+            let dy2 = (Math.sin(angle2) * radius) / 200;
+
+            vertices.push(
+                x,       y,
+                x + dx1, y + dy1,
+                x + dx2, y + dy2
+            );
+        }
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.DYNAMIC_DRAW);
+        gl.vertexAttribPointer(a_Position, 2, gl.FLOAT, false, 0, 0);
+        gl.enableVertexAttribArray(a_Position);
+
+        gl.uniform4f(u_FragColor, this.color[0], this.color[1], this.color[2], this.color[3]);
+
+        gl.drawArrays(gl.TRIANGLES, 0, this.segments * 3);
     }
 }
 
@@ -165,11 +207,14 @@ function drawShape(x, y) {
     colBlue /= 255;
     let rgba = [colRed, colGreen, colBlue, 1.0];
     let size = getSliderSize();
+    let circleSegments = getSliderCircleSegments();
 
     if (shapeType === "point") {
         listOfShapes.push(new Point(xy, rgba, size));
     } else if (shapeType === "triangle") {
         listOfShapes.push(new Triangle(xy, rgba, size));
+    } else if (shapeType === "circle") {
+        listOfShapes.push(new Circle(xy, rgba, size, circleSegments));
     } else {
         throw new Error("Invalid shape type");
     }
@@ -209,4 +254,10 @@ function getSliderSize() {
     let size = document.getElementById("slider-size").value;
 
     return size;
+}
+
+function getSliderCircleSegments() {
+    let circleSegments = document.getElementById("slider-circle-segments").value;
+
+    return circleSegments;
 }
