@@ -83,7 +83,7 @@ class Shape {
     }
 }
 
-let g_shapes = [];
+let listOfShapes = [];
 
 function handleClick(ev) {
     let [x, y] = convertCoordsEventToGL(ev);
@@ -93,8 +93,13 @@ function handleClick(ev) {
     colBlue /= 255;
     let size = getSliderSize();
 
-    g_shapes.push(new Shape([x, y], [colRed, colGreen, colBlue, 1.0], size));
+    listOfShapes.push(new Shape([x, y], [colRed, colGreen, colBlue, 1.0], size));
 
+    renderAllShapes();
+}
+
+function handleClearButton() {
+    listOfShapes = [];
     renderAllShapes();
 }
 
@@ -102,7 +107,7 @@ function renderAllShapes() {
     // Clear <canvas>
     gl.clear(gl.COLOR_BUFFER_BIT);
 
-    for (let shape of g_shapes) {
+    for (let shape of listOfShapes) {
         let xy = shape.position;
         let rgba = shape.color;
         let size = shape.size;
