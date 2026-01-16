@@ -7,9 +7,26 @@
 </head>
 
 <body onload="main()">
-    <canvas id="webgl" width="400" height="400">
-        Please use a browser that supports "canvas"
-    </canvas>
+    <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 10px;">
+        <canvas id="webgl" width="400" height="400">
+            Please use a browser that supports "canvas"
+        </canvas>
+
+        <div style="display: flex; flex-direction: row; gap: 10px;">
+            <span>Color:</span>
+            <span>Red</span>
+            <input type="range" id="slider-red" min="0" max="255" value="255">
+            <span>Green</span>
+            <input type="range" id="slider-green" min="0" max="255" value="255">
+            <span>Blue</span>
+            <input type="range" id="slider-blue" min="0" max="255" value="255">
+        </div>
+
+        <div style="display: flex; flex-direction: row; gap: 10px;">
+            <span>Size</span>
+            <input type="range" id="slider-size" min="0" max="50" value="25">
+        </div>
+    </div>
 
     <script src="../lib/webgl-utils.js"></script>
     <script src="../lib/webgl-debug.js"></script>

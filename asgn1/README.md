@@ -1,0 +1,1 @@
+- Made Copilot generate the color sliders, but I changed them a bit.
