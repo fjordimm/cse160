@@ -97,6 +97,8 @@ class Point {
         let rgba = this.color;
         let size = this.size;
 
+        gl.disableVertexAttribArray(a_Position);
+
         gl.vertexAttrib3f(a_Position, xy[0], xy[1], 0.0);
         gl.uniform4f(u_FragColor, rgba[0], rgba[1], rgba[2], rgba[3]);
         gl.uniform1f(u_Size, size);
@@ -114,11 +116,12 @@ class Triangle {
 
     render() {
         let triangleWidth = this.size / 200;
+        let d = triangleWidth/2;
 
         let vertices = [
-            this.position[0],                 this.position[1],
-            this.position[0] + triangleWidth, this.position[1],
-            this.position[0],                 this.position[1] + triangleWidth
+            this.position[0] - d, this.position[1] - d,
+            this.position[0] + d, this.position[1] - d,
+            this.position[0],     this.position[1] + d
         ];
 
         gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
