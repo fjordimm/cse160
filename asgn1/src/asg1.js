@@ -75,22 +75,25 @@ function main() {
     gl.clear(gl.COLOR_BUFFER_BIT);
 }
 
-let g_points = [];  // The array for the position of a mouse press
-let g_colors = [];  // The array to store the color of a point
-let g_sizes = [];
+class Shape {
+    constructor(position, color, size) {
+        this.position = position;
+        this.color = color;
+        this.size = size;
+    }
+}
+
+let g_shapes = [];
+
 function handleClick(ev) {
     let [x, y] = convertCoordsEventToGL(ev);
-
-    // Store the coordinates to g_points array
-    g_points.push([x, y]);
-
     let [colRed, colGreen, colBlue] = getSliderColors();
     colRed /= 255;
     colGreen /= 255;
     colBlue /= 255;
-    g_colors.push([colRed, colGreen, colBlue, 1.0]);
+    let size = getSliderSize();
 
-    g_sizes.push(getSliderSize());
+    g_shapes.push(new Shape([x, y], [colRed, colGreen, colBlue, 1.0], size));
 
     renderAllShapes();
 }
@@ -99,11 +102,10 @@ function renderAllShapes() {
     // Clear <canvas>
     gl.clear(gl.COLOR_BUFFER_BIT);
 
-    let len = g_points.length;
-    for (let i = 0; i < len; i++) {
-        let xy = g_points[i];
-        let rgba = g_colors[i];
-        let size = g_sizes[i];
+    for (let shape of g_shapes) {
+        let xy = shape.position;
+        let rgba = shape.color;
+        let size = shape.size;
 
         gl.vertexAttrib3f(a_Position, xy[0], xy[1], 0.0);
         gl.uniform4f(u_FragColor, rgba[0], rgba[1], rgba[2], rgba[3]);

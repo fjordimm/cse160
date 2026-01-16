@@ -1,1 +1,2 @@
 - Made Copilot generate the color sliders, but I changed them a bit.
+- Used Copilot for a couple of mindless things, like adding parameters to a constructor for all the fields.
