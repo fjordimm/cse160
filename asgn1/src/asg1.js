@@ -66,7 +66,8 @@ function main() {
     setupGLSLVariables();
 
     // Register function (event handler) to be called on a mouse press
-    canvas.onmousedown = function (ev) { handleClick(ev) };
+    canvas.onmousedown = function (ev) { handleMouseClick(ev) };
+    canvas.onmousemove = function (ev) { handleMouseMove(ev) };
 
     // Specify the color for clearing <canvas>
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
@@ -85,8 +86,24 @@ class Shape {
 
 let listOfShapes = [];
 
-function handleClick(ev) {
+function handleClearButton() {
+    listOfShapes = [];
+    renderAllShapes();
+}
+
+function handleMouseClick(ev) {
     let [x, y] = convertCoordsEventToGL(ev);
+    drawShape(x, y);
+}
+
+function handleMouseMove(ev) {
+    let [x, y] = convertCoordsEventToGL(ev);
+    if (ev.buttons === 1) {
+        drawShape(x, y);
+    }
+}
+
+function drawShape(x, y) {
     let [colRed, colGreen, colBlue] = getSliderColors();
     colRed /= 255;
     colGreen /= 255;
@@ -95,11 +112,6 @@ function handleClick(ev) {
 
     listOfShapes.push(new Shape([x, y], [colRed, colGreen, colBlue, 1.0], size));
 
-    renderAllShapes();
-}
-
-function handleClearButton() {
-    listOfShapes = [];
     renderAllShapes();
 }
 
