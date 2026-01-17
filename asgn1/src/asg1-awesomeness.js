@@ -71,8 +71,10 @@ function setupGLSLVariables() {
 // Other Globals
 let gridSize = 10;
 let grid;
+const SUN_VEC = [0.21, 0.23, 1];
+const MAIN_COLOR = [0.34, 0.51, 0.63];
 
-function main() {
+async function main() {
     setupWebGL();
     setupGLSLVariables();
 
@@ -83,15 +85,23 @@ function main() {
     for (let i = 0; i < gridSize + 1; i++) {
         grid.push([]);
         for (let j = 0; j < gridSize + 1; j++) {
-            grid[i].push(0);
+            grid[i].push(Math.random() * 0.01);
         }
     }
 
-    grid[5][5] = -1;
-
     // canvas.onmousedown = function (ev) { handleMouseClick(ev) };
 
-    drawGrid();
+    while (true) {
+        drawGrid();
+
+        for (let i = 0; i < gridSize + 1; i++) {
+            for (let j = 0; j < gridSize + 1; j++) {
+                grid[i][j] = Math.random() * 0.01;
+            }
+        }
+
+        await new Promise(res => setTimeout(res, 100));
+    }
 }
 
 function handleMouseClick(ev) {
@@ -121,12 +131,20 @@ function drawGrid() {
             let x = (i / gridSize) * 2 - 1;
             let y = (j / gridSize) * 2 - 1;
             d = 2 / gridSize;
-            
+
             let triangle1 = [[x, y, zBL], [x+d, y, zBR], [x, y+d, zTL]];
-            let normalAngle = calculateNormalAngle(triangle1[0], triangle1[1], triangle1[2]);
-            let color = [normalAngle, normalAngle, normalAngle, 1];
-            console.log(color);
-            drawTriangle([triangle1[0][0], triangle1[0][1], triangle1[1][0], triangle1[1][1], triangle1[2][0], triangle1[2][1]], color);
+            {
+                let normalAngle = calculateNormalAngle(triangle1[0], triangle1[1], triangle1[2]);
+                let color = [MAIN_COLOR[0] * normalAngle, MAIN_COLOR[1] * normalAngle, MAIN_COLOR[2] * normalAngle, 1];
+                drawTriangle([triangle1[0][0], triangle1[0][1], triangle1[1][0], triangle1[1][1], triangle1[2][0], triangle1[2][1]], color);
+            }
+
+            let triangle2 = [[x+d, y+d, zTR], [x, y+d, zTL], [x+d, y, zBR]];
+            {
+                let normalAngle = calculateNormalAngle(triangle2[0], triangle2[1], triangle2[2]);
+                let color = [MAIN_COLOR[0] * normalAngle, MAIN_COLOR[1] * normalAngle, MAIN_COLOR[2] * normalAngle, 1];
+                drawTriangle([triangle2[0][0], triangle2[0][1], triangle2[1][0], triangle2[1][1], triangle2[2][0], triangle2[2][1]], color);
+            }
         }
     }
 }
@@ -141,8 +159,7 @@ function calculateNormalAngle(p1, p2, p3) {
     crossProd[1] = v1[2] * v2[0] - v1[0] * v2[2];
     crossProd[2] = v1[0] * v2[1] - v1[1] * v2[0];
 
-    let upVec = [0, 0, 1];
-    let dotProd = crossProd[0] * upVec[0] + crossProd[1] * upVec[1] + crossProd[2] * upVec[2];
+    let dotProd = crossProd[0] * SUN_VEC[0] + crossProd[1] * SUN_VEC[1] + crossProd[2] * SUN_VEC[2];
 
     return dotProd / (calculateMagnitude(v1) * calculateMagnitude(v2));
 }
