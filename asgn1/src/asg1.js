@@ -70,7 +70,7 @@ function setupGLSLVariables() {
 
 // Other Globals
 let listOfShapes = [];
-let shapeType = "circle";
+let shapeType = "point";
 
 function main() {
     setupWebGL();
@@ -178,6 +178,28 @@ class Circle {
     }
 }
 
+class ManualTriangle {
+    constructor(vertices, color) {
+        this.vertices = vertices;
+        this.color = color;
+
+        for (let i = 0; i < this.vertices.length; i++) {
+            this.vertices[i] /= 200;
+        }
+    }
+
+    render() {
+        gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.vertices), gl.DYNAMIC_DRAW);
+        gl.vertexAttribPointer(a_Position, 2, gl.FLOAT, false, 0, 0);
+        gl.enableVertexAttribArray(a_Position);
+
+        gl.uniform4f(u_FragColor, this.color[0], this.color[1], this.color[2], this.color[3]);
+
+        gl.drawArrays(gl.TRIANGLES, 0, 3);
+    }
+}
+
 function handleClearButton() {
     listOfShapes = [];
     renderAllShapes();
@@ -260,4 +282,165 @@ function getSliderCircleSegments() {
     let circleSegments = document.getElementById("slider-circle-segments").value;
 
     return circleSegments;
+}
+
+const COL_BACKGROUND = [0.11, 0.06, 0.17, 1];
+const COL_TRUNK = [0.11, 0.24, 0.25, 1];
+const COL_INITIALS = [0.08, 0.19, 0.21, 1];
+const COL_LEAVES = [0.78, 0.49, 0.37, 1];
+function handleMakePictureButton() {
+    // Background
+    listOfShapes.push(new ManualTriangle([
+        -200, -200,
+        200, -200,
+        -200, 200
+    ], COL_BACKGROUND));
+    listOfShapes.push(new ManualTriangle([
+        200, 200,
+        -200, 200,
+        200, -200
+    ], COL_BACKGROUND));
+
+    // Trunk
+    listOfShapes.push(new ManualTriangle([
+        -100, -180,
+        -60, -180,
+        -60, -120
+    ], COL_TRUNK));
+    listOfShapes.push(new ManualTriangle([
+        80, -180,
+        40, -180,
+        40, -120
+    ], COL_TRUNK));
+    listOfShapes.push(new ManualTriangle([
+        -60, -180,
+        40, -180,
+        -60, -60
+    ], COL_TRUNK));
+    listOfShapes.push(new ManualTriangle([
+        40, -60,
+        -60, -60,
+        40, -180
+    ], COL_TRUNK));
+    listOfShapes.push(new ManualTriangle([
+        -20, -60,
+        40, -60,
+        -20, -40
+    ], COL_TRUNK));
+    listOfShapes.push(new ManualTriangle([
+        40, -40,
+        -20, -40,
+        40, -60
+    ], COL_TRUNK));
+    listOfShapes.push(new ManualTriangle([
+        -60, -60,
+        -20, -60,
+        -60, 60
+    ], COL_TRUNK));
+    listOfShapes.push(new ManualTriangle([
+        -20, 60,
+        -60, 60,
+        -20, -60
+    ], COL_TRUNK));
+    listOfShapes.push(new ManualTriangle([
+        -60, -60,
+        -60, 0,
+        -100, 0
+    ], COL_TRUNK));
+    listOfShapes.push(new ManualTriangle([
+        -100, 0,
+        -60, 0,
+        -100, 40
+    ], COL_TRUNK));
+    listOfShapes.push(new ManualTriangle([
+        -100, 0,
+        -100, 40,
+        -140, 40
+    ], COL_TRUNK));
+    listOfShapes.push(new ManualTriangle([
+        -20, -40,
+        0, -40,
+        -20, 0
+    ], COL_TRUNK));
+    listOfShapes.push(new ManualTriangle([
+        0, -40,
+        40, -40,
+        40, 0
+    ], COL_TRUNK));
+    listOfShapes.push(new ManualTriangle([
+        40, -60,
+        80, 0,
+        40, 0
+    ], COL_TRUNK));
+    listOfShapes.push(new ManualTriangle([
+        40, 0,
+        80, 0,
+        40, 80
+    ], COL_TRUNK));
+    listOfShapes.push(new ManualTriangle([
+        80, 80,
+        40, 80,
+        80, 0
+    ], COL_TRUNK));
+    listOfShapes.push(new ManualTriangle([
+        80, 0,
+        120, 40,
+        80, 40
+    ], COL_TRUNK));
+    listOfShapes.push(new ManualTriangle([
+        80, 40,
+        120, 40,
+        100, 60
+    ], COL_TRUNK));
+
+    // Leaves
+    listOfShapes.push(new ManualTriangle([
+        -180, 0,
+        0, 60,
+        -120, 140
+    ], COL_LEAVES));
+    listOfShapes.push(new ManualTriangle([
+        0, 80,
+        140, 20,
+        120, 160
+    ], COL_LEAVES));
+    listOfShapes.push(new ManualTriangle([
+        -20, 100,
+        60, 200,
+        -80, 180
+    ], COL_LEAVES));
+
+    // Initials
+    listOfShapes.push(new ManualTriangle([
+        -40, -180,
+        -20, -170,
+        -40, -160
+    ], COL_INITIALS));
+    listOfShapes.push(new ManualTriangle([
+        -40, -160,
+        -20, -150,
+        -40, -140
+    ], COL_INITIALS));
+    listOfShapes.push(new ManualTriangle([
+        0, -180,
+        40, -180,
+        0, -160
+    ], COL_INITIALS));
+    listOfShapes.push(new ManualTriangle([
+        40, -160,
+        0, -160,
+        40, -180
+    ], COL_INITIALS));
+    listOfShapes.push(new ManualTriangle([
+        0, -160,
+        20, -160,
+        0, -140
+    ], COL_INITIALS));
+    listOfShapes.push(new ManualTriangle([
+        20, -160,
+        40, -160,
+        40, -140
+    ], COL_INITIALS));
+
+    renderAllShapes();
 }
