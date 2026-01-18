@@ -71,8 +71,12 @@ function setupGLSLVariables() {
 // Other Globals
 let gridSize = 10;
 let grid;
+let gridVelocities;
 const SUN_VEC = [0.21, 0.23, 1];
 const MAIN_COLOR = [0.34, 0.51, 0.63];
+const ANIMATION_DELAY = 5; // in milliseconds
+const WAVE_FACTOR = 0.3; // How much velocity is (inversely) affected by the height
+const PROPAGATION_FACTOR = 0.05; // How much velocity is affected by adjecent velocity
 
 async function main() {
     setupWebGL();
@@ -82,31 +86,61 @@ async function main() {
     gl.clear(gl.COLOR_BUFFER_BIT);
 
     grid = [];
+    gridVelocities = [];
     for (let i = 0; i < gridSize + 1; i++) {
         grid.push([]);
+        gridVelocities.push([])
         for (let j = 0; j < gridSize + 1; j++) {
-            grid[i].push(Math.random() * 0.01);
+            grid[i].push(0);
+            gridVelocities[i].push(Math.random() * 0.01);
         }
     }
 
-    // canvas.onmousedown = function (ev) { handleMouseClick(ev) };
+    canvas.onmousedown = function (ev) { handleMouseClick(ev) };
 
     while (true) {
         drawGrid();
 
         for (let i = 0; i < gridSize + 1; i++) {
             for (let j = 0; j < gridSize + 1; j++) {
-                grid[i][j] = Math.random() * 0.01;
+                // Update velocity based on height
+                gridVelocities[i][j] -= grid[i][j] * WAVE_FACTOR;
+
+                // Update height with velocity
+                grid[i][j] += gridVelocities[i][j];
             }
         }
 
-        await new Promise(res => setTimeout(res, 100));
+        let newGridVelocities = [];
+        for (let i = 0; i < gridSize + 1; i++) {
+            newGridVelocities.push([]);
+            for (let j = 0; j < gridSize + 1; j++) {
+                let newVelocity = gridVelocities[i][j];
+
+                // Update velocity based on adjecent velocity
+                if (i > 0)        { newVelocity += (gridVelocities[i - 1][j] - gridVelocities[i][j]) * PROPAGATION_FACTOR; }
+                if (i < gridSize) { newVelocity += (gridVelocities[i + 1][j] - gridVelocities[i][j]) * PROPAGATION_FACTOR; }
+                if (j > 0)        { newVelocity += (gridVelocities[i][j - 1] - gridVelocities[i][j]) * PROPAGATION_FACTOR; }
+                if (j < gridSize) { newVelocity += (gridVelocities[i][j + 1] - gridVelocities[i][j]) * PROPAGATION_FACTOR; }
+                
+                newGridVelocities[i].push(newVelocity);
+            }
+        }
+        gridVelocities = newGridVelocities;
+
+        await new Promise(res => setTimeout(res, ANIMATION_DELAY));
     }
 }
 
 function handleMouseClick(ev) {
     let [x, y] = convertCoordsEventToGL(ev);
-    drawShape(x, y);
+
+    let xIndex = Math.floor(gridSize * (x + 1) / 2)
+    let yIndex = Math.floor(gridSize * (y + 1) / 2)
+    gridVelocities[xIndex][yIndex] += 0.1;
+    gridVelocities[xIndex+1][yIndex] += 0.1;
+    gridVelocities[xIndex][yIndex+1] += 0.1;
+    gridVelocities[xIndex+1][yIndex+1] += 0.1;
 }
 
 function drawTriangle(vertices, color) {
