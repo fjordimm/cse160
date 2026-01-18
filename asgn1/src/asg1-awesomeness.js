@@ -69,14 +69,15 @@ function setupGLSLVariables() {
 }
 
 // Other Globals
-let gridSize = 10;
+const gridSize = 10;
 let grid;
 let gridVelocities;
-const SUN_VEC = [0.21, 0.23, 1];
+const SUN_VEC = [0.12, 0.38, 0.5];
 const MAIN_COLOR = [0.34, 0.51, 0.63];
 const ANIMATION_DELAY = 5; // in milliseconds
 const WAVE_FACTOR = 0.3; // How much velocity is (inversely) affected by the height
-const PROPAGATION_FACTOR = 0.05; // How much velocity is affected by adjecent velocity
+const PROPAGATION_FACTOR = 0.09; // How much velocity is affected by adjecent velocity
+const CLICK_STRENGTH = 0.08;
 
 async function main() {
     setupWebGL();
@@ -92,7 +93,7 @@ async function main() {
         gridVelocities.push([])
         for (let j = 0; j < gridSize + 1; j++) {
             grid[i].push(0);
-            gridVelocities[i].push(Math.random() * 0.01);
+            gridVelocities[i].push(0);
         }
     }
 
@@ -137,10 +138,10 @@ function handleMouseClick(ev) {
 
     let xIndex = Math.floor(gridSize * (x + 1) / 2)
     let yIndex = Math.floor(gridSize * (y + 1) / 2)
-    gridVelocities[xIndex][yIndex] += 0.1;
-    gridVelocities[xIndex+1][yIndex] += 0.1;
-    gridVelocities[xIndex][yIndex+1] += 0.1;
-    gridVelocities[xIndex+1][yIndex+1] += 0.1;
+    gridVelocities[xIndex][yIndex] += CLICK_STRENGTH;
+    gridVelocities[xIndex+1][yIndex] += CLICK_STRENGTH;
+    gridVelocities[xIndex][yIndex+1] += CLICK_STRENGTH;
+    gridVelocities[xIndex+1][yIndex+1] += CLICK_STRENGTH;
 }
 
 function drawTriangle(vertices, color) {
