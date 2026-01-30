@@ -103,6 +103,7 @@ async function main() {
     canvas.onmousemove = function (ev) { handleMouseMove(ev); }
 
     let previousTime = Date.now();
+    let fpsUpdateCounter = 0;
     while (true) {
         let deltaTime = Date.now() - previousTime;
         await tick();
@@ -113,7 +114,12 @@ async function main() {
             await new Promise(r => setTimeout(r, remainingTime));
         }
 
-        updateFpsDisplay(Date.now() - previousTime);
+        // Update FPS display, but only do it every 100ms.
+        fpsUpdateCounter += Date.now() - previousTime;
+        if (fpsUpdateCounter > 100) {
+            updateFpsDisplay(Date.now() - previousTime);
+            fpsUpdateCounter = 0;
+        }
 
         previousTime = Date.now();
     }
@@ -163,19 +169,11 @@ function handleMouseMove(ev) {
     lastMouseY = y;
 }
 
-let _fpsMemo = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 function updateFpsDisplay(frameLengthMs) {
-    let newFps = 1000 / frameLengthMs;
-
-    for (let i = 0; i < _fpsMemo.length - 1; i++) {
-        _fpsMemo[i] = _fpsMemo[i + 1];
-    }
-    _fpsMemo[_fpsMemo.length - 1] = newFps;
-
-    let avgFps = _fpsMemo.reduceRight((acc, cur) => acc + cur, 0) / _fpsMemo.length;
+    let fps = 1000 / frameLengthMs;
 
     let fpsdisplay = document.getElementById("fpsdisplay");
-    fpsdisplay.innerHTML = `${avgFps.toFixed(1)}`;
+    fpsdisplay.innerHTML = `${fps.toFixed(1)}`;
 }
 
 function renderAllShapes() {
