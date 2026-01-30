@@ -33,7 +33,7 @@ let a_Position;
 function setupWebGL() {
     canvas = document.getElementById('webgl');
 
-    gl = getWebGLContext(canvas);
+    gl = canvas.getContext("webgl", { preserveDrawingBuffer: true});
     if (!gl) {
         console.log('Failed to get the rendering context for WebGL');
         return;
@@ -92,6 +92,8 @@ let globalRotationMatrixJustY;
 let globalRotationMatrixJustX;
 let globalRotationMatrix;
 const GLOBAL_ROTATION_SPEED = 90.0;
+const _renderingHelperMatrix = new Matrix4(); // So a new object doesn't need to be created each time.
+const _IDENTITY_MATRIX = new Matrix4();
 
 async function main() {
     setupWebGL();
@@ -144,6 +146,9 @@ const COLOR_DEBUG1 = [0, 1, 1, 1];
 
 function setupComponents() {
     const body = new Component();
+    const head = new Component();
+
+    // body
     {
         {
             const s = new Cube(COLOR_DEBUG1);
@@ -156,14 +161,20 @@ function setupComponents() {
             body.addShape(s);
         }
         {
-            const head = new Component();
+            // head
+            head.matrix.translate(0, 0.5, 0);
             {
                 {
                     const s = new Cube(COLOR_DEBUG1);
-                    s.matrix.translate(0, 0.5, 0);
                     s.matrix.scale(0.15, 0.15, 0.15);
                     head.addShape(s);
                 }
+                // {
+                //     const s = new Cube(COLOR_DEBUG1);
+                //     s.matrix.translate(0, 0, -0.5);
+                //     s.matrix.scale(0.05, 0.05, 0.05);
+                //     head.addShape(s);
+                // }
             }
             body.addChild(head);
         }
@@ -208,9 +219,9 @@ function handleMouseMove(ev) {
 
         globalRotationMatrixJustX.rotate(GLOBAL_ROTATION_SPEED * dy, 1, 0, 0);
         globalRotationMatrixJustY.rotate(-GLOBAL_ROTATION_SPEED * dx, 0, 1, 0);
-        globalRotationMatrix = new Matrix4();
-        globalRotationMatrix = globalRotationMatrix.multiply(globalRotationMatrixJustX);
-        globalRotationMatrix = globalRotationMatrix.multiply(globalRotationMatrixJustY);
+        globalRotationMatrix.setIdentity();
+        globalRotationMatrix.multiply(globalRotationMatrixJustX);
+        globalRotationMatrix.multiply(globalRotationMatrixJustY);
     }
 
     lastMouseX = x;
@@ -219,9 +230,9 @@ function handleMouseMove(ev) {
 
 function handleRotationSlider(angle) {
     globalRotationMatrixJustY.setRotate(-angle, 0, 1, 0);
-    globalRotationMatrix = new Matrix4();
-    globalRotationMatrix = globalRotationMatrix.multiply(globalRotationMatrixJustX);
-    globalRotationMatrix = globalRotationMatrix.multiply(globalRotationMatrixJustY);
+    globalRotationMatrix.setIdentity();
+    globalRotationMatrix.multiply(globalRotationMatrixJustX);
+    globalRotationMatrix.multiply(globalRotationMatrixJustY);
 }
 
 function updateFpsDisplay(frameLengthMs) {
@@ -233,7 +244,6 @@ function updateFpsDisplay(frameLengthMs) {
 
 ///// Rendering /////
 
-const _IDENTITY_MATRIX = new Matrix4();
 function renderAllComponents() {
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
@@ -306,10 +316,10 @@ class Component {
     }
 
     render(parentMatrix) {
-        let transformMatrix = new Matrix4();
-        transformMatrix = transformMatrix.multiply(parentMatrix);
-        transformMatrix = transformMatrix.multiply(this.matrix);
-        gl.uniformMatrix4fv(u_TransformMatrix, false, transformMatrix.elements);
+        _renderingHelperMatrix.setIdentity();
+        _renderingHelperMatrix.multiply(parentMatrix);
+        _renderingHelperMatrix.multiply(this.matrix);
+        gl.uniformMatrix4fv(u_TransformMatrix, false, _renderingHelperMatrix.elements);
         
         for (let shape of this._shapes) {
             shape.render();
