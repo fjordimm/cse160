@@ -334,10 +334,12 @@ async function tick(deltaTime, totalTimeElapsed) {
 function doAnimalMovementSliders(deltaTime, totalTimeElapsed) {
     oxBackLeftLeg.animationMatrix.setRotate(-getSliderValue("slider-back-left-leg"), 1, 0, 0);
     oxBackLeftLegLower.animationMatrix.setRotate(-getSliderValue("slider-back-left-leg-lower"), 1, 0, 0);
-    oxBackLeftLegLowerFoot.animationMatrix.setRotate(-getSliderValue("slider-back-left-leg-lower-foot"), 1, 0, 0);
+    oxBackLeftLegLowerFoot.animationMatrix.setRotate(getSliderValue("slider-back-left-leg-lower-foot-y"), 0, 1, 0);
+    oxBackLeftLegLowerFoot.animationMatrix.rotate(-getSliderValue("slider-back-left-leg-lower-foot-x"), 1, 0, 0);
     oxBackRightLeg.animationMatrix.setRotate(-getSliderValue("slider-back-right-leg"), 1, 0, 0);
     oxBackRightLegLower.animationMatrix.setRotate(-getSliderValue("slider-back-right-leg-lower"), 1, 0, 0);
-    oxBackRightLegLowerFoot.animationMatrix.setRotate(-getSliderValue("slider-back-right-leg-lower-foot"), 1, 0, 0);
+    oxBackRightLegLowerFoot.animationMatrix.setRotate(getSliderValue("slider-back-right-leg-lower-foot-y"), 0, 1, 0);
+    oxBackRightLegLowerFoot.animationMatrix.rotate(-getSliderValue("slider-back-right-leg-lower-foot-x"), 1, 0, 0);
 }
 
 function doAnimalMovementAnimation(deltaTime, totalTimeElapsed) {
@@ -410,13 +412,6 @@ async function countFramesAndUpdateDisplay() {
         fpsdisplay.innerHTML = `${frameCounter}`;
     }
 }
-
-// function updateFpsDisplay(frameLengthMs) {
-//     let fps = 1000 / frameLengthMs;
-
-//     let fpsdisplay = document.getElementById("fpsdisplay");
-//     fpsdisplay.innerHTML = `${fps.toFixed(1)}`;
-// }
 
 function getSliderValue(name) {
     return document.getElementById(name).value;
