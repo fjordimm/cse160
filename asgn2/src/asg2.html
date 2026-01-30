@@ -8,13 +8,18 @@
 
 <body onload="main()">
     <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 10px;">
+        <div style="display: flex; flex-direction: row; gap: 10px;">
+            <span>FPS:</span>
+            <textarea id="fpsdisplay" readOnly style="resize: none; width: 5em; height: 3ex;">---</textarea>
+        </div>
+        
         <canvas id="webgl" width="400" height="400">
             Please use a browser that supports "canvas"
         </canvas>
 
         <div style="display: flex; flex-direction: row; gap: 10px;">
-            <span>FPS:</span>
-            <textarea id="fpsdisplay" readOnly style="resize: none; width: 5em; height: 3ex;">---</textarea>
+            <span>Rotate</span>
+            <input id="rotationSlider" oninput="handleRotationSlider(this.value);" type="range" min="-180" max="180" value="0">
         </div>
     </div>
 

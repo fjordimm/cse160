@@ -158,8 +158,8 @@ function handleMouseMove(ev) {
         let dx = x - lastMouseX;
         let dy = y - lastMouseY;
 
-        globalRotationMatrixJustY.rotate(-GLOBAL_ROTATION_SPEED * dx, 0, 1, 0);
         globalRotationMatrixJustX.rotate(GLOBAL_ROTATION_SPEED * dy, 1, 0, 0);
+        globalRotationMatrixJustY.rotate(-GLOBAL_ROTATION_SPEED * dx, 0, 1, 0);
         globalRotationMatrix = new Matrix4();
         globalRotationMatrix = globalRotationMatrix.multiply(globalRotationMatrixJustX);
         globalRotationMatrix = globalRotationMatrix.multiply(globalRotationMatrixJustY);
@@ -167,6 +167,13 @@ function handleMouseMove(ev) {
 
     lastMouseX = x;
     lastMouseY = y;
+}
+
+function handleRotationSlider(angle) {
+    globalRotationMatrixJustY.setRotate(-angle, 0, 1, 0);
+    globalRotationMatrix = new Matrix4();
+    globalRotationMatrix = globalRotationMatrix.multiply(globalRotationMatrixJustX);
+    globalRotationMatrix = globalRotationMatrix.multiply(globalRotationMatrixJustY);
 }
 
 function updateFpsDisplay(frameLengthMs) {
