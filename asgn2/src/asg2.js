@@ -73,13 +73,14 @@ function setupGLSLVariables() {
 }
 
 // Main Globals
+const MIN_FRAME_LENGTH = 16; // 16 for 60fps.
 let listOfShapes;
 let globalRotationMatrixJustY;
 let globalRotationMatrixJustX;
 let globalRotationMatrix;
 const GLOBAL_ROTATION_SPEED = 90.0;
 
-function main() {
+async function main() {
     setupWebGL();
     setupGLSLVariables();
 
@@ -100,6 +101,34 @@ function main() {
     renderAllShapes();
 
     canvas.onmousemove = function (ev) { handleMouseMove(ev); }
+
+    let previousTime = Date.now();
+    while (true) {
+        let deltaTime = Date.now() - previousTime;
+        await tick();
+
+        // Waste remaining time if it was faster than MIN_FRAME_LENGTH to enforce a maximum fps.
+        let remainingTime = MIN_FRAME_LENGTH - (Date.now() - previousTime);
+        if (remainingTime > 0) {
+            await new Promise(r => setTimeout(r, remainingTime));
+        }
+
+        updateFpsDisplay(Date.now() - previousTime);
+
+        previousTime = Date.now();
+    }
+}
+
+function setupShapes() {
+    const cube = new Cube([0, 1, 1, 1]);
+    // cube.matrix.rotate(-30, 1, 0, 0);
+    // cube.matrix.rotate(30, 0, 1, 0);
+    cube.matrix.scale(0.1, 0.1, 0.1);
+    listOfShapes.push(cube);
+}
+
+async function tick() {
+    renderAllShapes();
 }
 
 // HTML Interface Globals
@@ -128,13 +157,25 @@ function handleMouseMove(ev) {
         globalRotationMatrix = new Matrix4();
         globalRotationMatrix = globalRotationMatrix.multiply(globalRotationMatrixJustX);
         globalRotationMatrix = globalRotationMatrix.multiply(globalRotationMatrixJustY);
-        renderAllShapes();
-
-        // console.log(globalRotationMatrix.multiplyVector3(new Vector3([1, 0, 0])));
     }
 
     lastMouseX = x;
     lastMouseY = y;
+}
+
+let _fpsMemo = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+function updateFpsDisplay(frameLengthMs) {
+    let newFps = 1000 / frameLengthMs;
+
+    for (let i = 0; i < _fpsMemo.length - 1; i++) {
+        _fpsMemo[i] = _fpsMemo[i + 1];
+    }
+    _fpsMemo[_fpsMemo.length - 1] = newFps;
+
+    let avgFps = _fpsMemo.reduceRight((acc, cur) => acc + cur, 0) / _fpsMemo.length;
+
+    let fpsdisplay = document.getElementById("fpsdisplay");
+    fpsdisplay.innerHTML = `${avgFps.toFixed(1)}`;
 }
 
 function renderAllShapes() {
@@ -143,14 +184,6 @@ function renderAllShapes() {
     for (let shape of listOfShapes) {
         shape.render();
     }
-}
-
-function setupShapes() {
-    const cube = new Cube([0, 1, 1, 1]);
-    // cube.matrix.rotate(-30, 1, 0, 0);
-    // cube.matrix.rotate(30, 0, 1, 0);
-    cube.matrix.scale(0.1, 0.1, 0.1);
-    listOfShapes.push(cube);
 }
 
 class Cube {
