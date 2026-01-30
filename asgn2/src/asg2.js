@@ -97,7 +97,6 @@ let pokeTimeElapsed;
 const MIN_FRAME_LENGTH = 16; // 16 for 60fps.
 const GLOBAL_ROTATION_SPEED = 150.0;
 const GLOBAL_SCROLL_SPEED = 15.0;
-const _renderingHelperMatrix = new Matrix4(); // So a new object doesn't need to be created each time.
 const _IDENTITY_MATRIX = new Matrix4();
 
 async function main() {
@@ -164,16 +163,20 @@ function updateGlobalCameraMatrix() {
 
 // const COLOR_FUR1 = [0.267, 0.192, 0.118, 1];
 const COLOR_FUR1 = [1, 1, 1, 1];
+const COLOR_DEBUG1 = [1, 0, 1, 1];
+const COLOR_DEBUG2 = [0, 1, 1, 1];
 
 let oxBody;
 let oxBackLeftLeg;
 let oxBackLeftLegLower;
+let oxBackLeftLegLowerFoot;
 let oxHead;
 
 function setupComponents() {
     oxBody = new Component();
     oxBackLeftLeg = new Component();
     oxBackLeftLegLower = new Component();
+    oxBackLeftLegLowerFoot = new Component();
     oxHead = new Component();
 
     // body
@@ -184,17 +187,18 @@ function setupComponents() {
     }
     {
         const s = new CylinderHoriz(COLOR_FUR1, 30);
-        s.matrix.translate(0, 0.015, 0.05);
-        s.matrix.scale(0.18, 0.18, 0.4);
+        s.matrix.translate(0, 0.015, 0.1);
+        s.matrix.scale(0.18, 0.18, 0.5);
         oxBody.addShape(s);
     }
     {
         // back left leg
-        oxBackLeftLeg.matrix.translate(0.1, 0, 0.35);
+        oxBody.addChild(oxBackLeftLeg);
+        oxBackLeftLeg.matrix.translate(0.1, 0, 0.5);
         {
             const s = new CylinderVert(COLOR_FUR1, 10);
             s.matrix.translate(0, -0.12, 0);
-            s.matrix.scale(0.08, 0.12, 0.08);
+            s.matrix.scale(0.075, 0.12, 0.075);
             oxBackLeftLeg.addShape(s);
         }
         {
@@ -205,15 +209,41 @@ function setupComponents() {
         }
         {
             // back left leg lower
+            oxBackLeftLeg.addChild(oxBackLeftLegLower);
             oxBackLeftLegLower.matrix.translate(0, -0.3, 0);
             {
                 const s = new CylinderVert(COLOR_FUR1, 8);
-                s.matrix.scale(0.04, 0.04, 0.04);
+                s.matrix.translate(0, -0.07, 0);
+                s.matrix.scale(0.04, 0.1, 0.04);
                 oxBackLeftLegLower.addShape(s);
             }
-            oxBackLeftLeg.addChild(oxBackLeftLegLower);
+            {
+                // back left leg lower foot
+                oxBackLeftLegLowerFoot.matrix.translate(0, -0.17, 0);
+                {
+                    const s = new Cube(COLOR_FUR1);
+                    s.matrix.scale(0.045, 0.02, 0.05);
+                    oxBackLeftLegLowerFoot.addShape(s);
+                }
+                {
+                    const s = new Cube(COLOR_FUR1);
+                    s.matrix.translate(0.015, 0, 0);
+                    s.matrix.rotate(-15, 0, 1, 0);
+                    s.matrix.translate(0, 0, -0.06);
+                    s.matrix.scale(0.0225, 0.02, 0.0225);
+                    oxBackLeftLegLowerFoot.addShape(s);
+                }
+                {
+                    const s = new Cube(COLOR_FUR1);
+                    s.matrix.translate(-0.015, 0, 0);
+                    s.matrix.rotate(15, 0, 1, 0);
+                    s.matrix.translate(0, 0, -0.06);
+                    s.matrix.scale(0.0225, 0.02, 0.0225);
+                    oxBackLeftLegLowerFoot.addShape(s);
+                }
+                oxBackLeftLegLower.addChild(oxBackLeftLegLowerFoot);
+            }
         }
-        oxBody.addChild(oxBackLeftLeg);
     }
 
     listOfComponents.push(oxBody);
@@ -236,6 +266,7 @@ async function tick(deltaTime, totalTimeElapsed) {
 function doAnimalMovementSliders(deltaTime, totalTimeElapsed) {
     oxBackLeftLeg.animationMatrix.setRotate(-getSliderValue("slider-back-left-leg"), 1, 0, 0);
     oxBackLeftLegLower.animationMatrix.setRotate(-getSliderValue("slider-back-left-leg-lower"), 1, 0, 0);
+    oxBackLeftLegLowerFoot.animationMatrix.setRotate(-getSliderValue("slider-back-left-leg-lower-foot"), 1, 0, 0);
 }
 
 function doAnimalMovementAnimation(deltaTime, totalTimeElapsed) {
@@ -528,10 +559,6 @@ class Component {
     }
 
     render(parentMatrix) {
-        // _renderingHelperMatrix.setIdentity();
-        // _renderingHelperMatrix.multiply(parentMatrix);
-        // _renderingHelperMatrix.multiply(this.matrix);
-        // _renderingHelperMatrix.multiply(this.animationMatrix);
         const finalMatrix = new Matrix4();
         finalMatrix.multiply(parentMatrix);
         finalMatrix.multiply(this.matrix);
