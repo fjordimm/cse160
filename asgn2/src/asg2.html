@@ -7,43 +7,62 @@
 </head>
 
 <body onload="main()">
-    <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 10px;">
-        <div style="display: flex; flex-direction: row; gap: 10px;">
-            <span>FPS:</span>
-            <textarea id="fpsdisplay" readOnly style="resize: none; width: 5em; height: 3ex;">---</textarea>
-        </div>
-        
-        <canvas id="webgl" width="400" height="400">
-            Please use a browser that supports "canvas"
-        </canvas>
-
-        <span>Scroll to zoom</span>
-
-        <div style="display: flex; flex-direction: row; gap: 10px;">
-            <span>Rotate</span>
-            <input oninput="handleRotationSlider(this.value);" type="range" min="-180" max="180" value="0">
+    <div style="display: flex; flex-direction: row; gap: 10px;">
+        <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 10px;">
+            <div style="display: flex; flex-direction: row; gap: 10px;">
+                <span>FPS:</span>
+                <textarea id="fpsdisplay" readOnly style="resize: none; width: 5em; height: 3ex;">---</textarea>
+            </div>
+            
+            <canvas id="webgl" width="400" height="400">
+                Please use a browser that supports "canvas"
+            </canvas>
         </div>
 
-        <div style="display: flex; flex-direction: row; gap: 10px;">
-            <input type="button" value="Start Animation" onclick="handleStartAnimation()">
-            <input type="button" value="Stop Animation" onclick="handleStopAnimation()">
-        </div>
+        <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 10px;">
+            <span>Scroll to zoom</span>
 
-        <span>-----Control-----</span>
+            <div style="display: flex; flex-direction: row; gap: 10px;">
+                <span>Rotate</span>
+                <input oninput="handleRotationSlider(this.value);" type="range" min="-180" max="180" value="0">
+            </div>
 
-        <div style="display: flex; flex-direction: row; gap: 10px;">
-            <span>Back Left Leg</span>
-            <input id="slider-back-left-leg" type="range" min="-30" max="30" value="0">
-        </div>
+            <div style="display: flex; flex-direction: row; gap: 10px;">
+                <input type="button" value="Start Animation" onclick="handleStartAnimation()">
+                <input type="button" value="Stop Animation" onclick="handleStopAnimation()">
+            </div>
 
-        <div style="display: flex; flex-direction: row; gap: 10px;">
-            <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Lower</span>
-            <input id="slider-back-left-leg-lower" type="range" min="-30" max="30" value="0">
-        </div>
+            <span>-----Control-----</span>
 
-        <div style="display: flex; flex-direction: row; gap: 10px;">
-            <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Foot</span>
-            <input id="slider-back-left-leg-lower-foot" type="range" min="-30" max="30" value="0">
+            <div style="display: flex; flex-direction: row; gap: 10px;">
+                <span>Back Left Leg</span>
+                <input id="slider-back-left-leg" type="range" min="-30" max="30" value="0">
+            </div>
+
+            <div style="display: flex; flex-direction: row; gap: 10px;">
+                <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Lower</span>
+                <input id="slider-back-left-leg-lower" type="range" min="-30" max="30" value="0">
+            </div>
+
+            <div style="display: flex; flex-direction: row; gap: 10px;">
+                <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Foot</span>
+                <input id="slider-back-left-leg-lower-foot" type="range" min="-30" max="30" value="0">
+            </div>
+
+            <div style="display: flex; flex-direction: row; gap: 10px;">
+                <span>Back Right Leg</span>
+                <input id="slider-back-right-leg" type="range" min="-30" max="30" value="0">
+            </div>
+
+            <div style="display: flex; flex-direction: row; gap: 10px;">
+                <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Lower</span>
+                <input id="slider-back-right-leg-lower" type="range" min="-30" max="30" value="0">
+            </div>
+
+            <div style="display: flex; flex-direction: row; gap: 10px;">
+                <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Foot</span>
+                <input id="slider-back-right-leg-lower-foot" type="range" min="-30" max="30" value="0">
+            </div>
         </div>
     </div>
 

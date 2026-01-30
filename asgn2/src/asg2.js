@@ -170,6 +170,9 @@ let oxBody;
 let oxBackLeftLeg;
 let oxBackLeftLegLower;
 let oxBackLeftLegLowerFoot;
+let oxBackRightLeg;
+let oxBackRightLegLower;
+let oxBackRightLegLowerFoot;
 let oxHead;
 
 function setupComponents() {
@@ -177,6 +180,9 @@ function setupComponents() {
     oxBackLeftLeg = new Component();
     oxBackLeftLegLower = new Component();
     oxBackLeftLegLowerFoot = new Component();
+    oxBackRightLeg = new Component();
+    oxBackRightLegLower = new Component();
+    oxBackRightLegLowerFoot = new Component();
     oxHead = new Component();
 
     // body
@@ -193,55 +199,119 @@ function setupComponents() {
     }
     {
         // back left leg
-        oxBody.addChild(oxBackLeftLeg);
-        oxBackLeftLeg.matrix.translate(0.1, 0, 0.5);
         {
-            const s = new CylinderVert(COLOR_FUR1, 10);
-            s.matrix.translate(0, -0.12, 0);
-            s.matrix.scale(0.075, 0.12, 0.075);
-            oxBackLeftLeg.addShape(s);
-        }
-        {
-            const s = new CylinderVert(COLOR_FUR1, 10);
-            s.matrix.translate(0, -0.15, 0);
-            s.matrix.scale(0.06, 0.15, 0.06);
-            oxBackLeftLeg.addShape(s);
-        }
-        {
-            // back left leg lower
-            oxBackLeftLeg.addChild(oxBackLeftLegLower);
-            oxBackLeftLegLower.matrix.translate(0, -0.3, 0);
+            oxBody.addChild(oxBackLeftLeg);
+            oxBackLeftLeg.matrix.translate(0.1, 0, 0.5);
             {
-                const s = new CylinderVert(COLOR_FUR1, 8);
-                s.matrix.translate(0, -0.07, 0);
-                s.matrix.scale(0.04, 0.1, 0.04);
-                oxBackLeftLegLower.addShape(s);
+                const s = new CylinderVert(COLOR_FUR1, 10);
+                s.matrix.translate(0, -0.12, 0);
+                s.matrix.scale(0.075, 0.12, 0.075);
+                oxBackLeftLeg.addShape(s);
             }
             {
-                // back left leg lower foot
-                oxBackLeftLegLowerFoot.matrix.translate(0, -0.17, 0);
+                const s = new CylinderVert(COLOR_FUR1, 10);
+                s.matrix.translate(0, -0.15, 0);
+                s.matrix.scale(0.06, 0.15, 0.06);
+                oxBackLeftLeg.addShape(s);
+            }
+            {
+                // back left leg lower
                 {
-                    const s = new Cube(COLOR_FUR1);
-                    s.matrix.scale(0.045, 0.02, 0.05);
-                    oxBackLeftLegLowerFoot.addShape(s);
+                    oxBackLeftLeg.addChild(oxBackLeftLegLower);
+                    oxBackLeftLegLower.matrix.translate(0, -0.3, 0);
+                    {
+                        const s = new CylinderVert(COLOR_FUR1, 8);
+                        s.matrix.translate(0, -0.07, 0);
+                        s.matrix.scale(0.04, 0.1, 0.04);
+                        oxBackLeftLegLower.addShape(s);
+                    }
+                    {
+                        // back left leg lower foot
+                        {
+                            oxBackLeftLegLower.addChild(oxBackLeftLegLowerFoot);
+                            oxBackLeftLegLowerFoot.matrix.translate(0, -0.17, 0);
+                            {
+                                const s = new Cube(COLOR_FUR1);
+                                s.matrix.scale(0.045, 0.02, 0.05);
+                                oxBackLeftLegLowerFoot.addShape(s);
+                            }
+                            {
+                                const s = new Cube(COLOR_FUR1);
+                                s.matrix.translate(0.015, 0, 0);
+                                s.matrix.rotate(-15, 0, 1, 0);
+                                s.matrix.translate(0, 0, -0.06);
+                                s.matrix.scale(0.0225, 0.02, 0.0225);
+                                oxBackLeftLegLowerFoot.addShape(s);
+                            }
+                            {
+                                const s = new Cube(COLOR_FUR1);
+                                s.matrix.translate(-0.015, 0, 0);
+                                s.matrix.rotate(15, 0, 1, 0);
+                                s.matrix.translate(0, 0, -0.06);
+                                s.matrix.scale(0.0225, 0.02, 0.0225);
+                                oxBackLeftLegLowerFoot.addShape(s);
+                            }
+                        }
+                    }
                 }
+            }
+        }
+        // back right leg
+        {
+            oxBody.addChild(oxBackRightLeg);
+            oxBackRightLeg.matrix.translate(-0.1, 0, 0.5);
+            {
+                const s = new CylinderVert(COLOR_FUR1, 10);
+                s.matrix.translate(0, -0.12, 0);
+                s.matrix.scale(0.075, 0.12, 0.075);
+                oxBackRightLeg.addShape(s);
+            }
+            {
+                const s = new CylinderVert(COLOR_FUR1, 10);
+                s.matrix.translate(0, -0.15, 0);
+                s.matrix.scale(0.06, 0.15, 0.06);
+                oxBackRightLeg.addShape(s);
+            }
+            {
+                // back right leg lower
                 {
-                    const s = new Cube(COLOR_FUR1);
-                    s.matrix.translate(0.015, 0, 0);
-                    s.matrix.rotate(-15, 0, 1, 0);
-                    s.matrix.translate(0, 0, -0.06);
-                    s.matrix.scale(0.0225, 0.02, 0.0225);
-                    oxBackLeftLegLowerFoot.addShape(s);
+                    oxBackRightLeg.addChild(oxBackRightLegLower);
+                    oxBackRightLegLower.matrix.translate(0, -0.3, 0);
+                    {
+                        const s = new CylinderVert(COLOR_FUR1, 8);
+                        s.matrix.translate(0, -0.07, 0);
+                        s.matrix.scale(0.04, 0.1, 0.04);
+                        oxBackRightLegLower.addShape(s);
+                    }
+                    {
+                        // back right leg lower foot
+                        {
+                            oxBackRightLegLower.addChild(oxBackRightLegLowerFoot);
+                            oxBackRightLegLowerFoot.matrix.translate(0, -0.17, 0);
+                            {
+                                const s = new Cube(COLOR_FUR1);
+                                s.matrix.scale(0.045, 0.02, 0.05);
+                                oxBackRightLegLowerFoot.addShape(s);
+                            }
+                            {
+                                const s = new Cube(COLOR_FUR1);
+                                s.matrix.translate(0.015, 0, 0);
+                                s.matrix.rotate(-15, 0, 1, 0);
+                                s.matrix.translate(0, 0, -0.06);
+                                s.matrix.scale(0.0225, 0.02, 0.0225);
+                                oxBackRightLegLowerFoot.addShape(s);
+                            }
+                            {
+                                const s = new Cube(COLOR_FUR1);
+                                s.matrix.translate(-0.015, 0, 0);
+                                s.matrix.rotate(15, 0, 1, 0);
+                                s.matrix.translate(0, 0, -0.06);
+                                s.matrix.scale(0.0225, 0.02, 0.0225);
+                                oxBackRightLegLowerFoot.addShape(s);
+                            }
+                        }
+                    }
                 }
-                {
-                    const s = new Cube(COLOR_FUR1);
-                    s.matrix.translate(-0.015, 0, 0);
-                    s.matrix.rotate(15, 0, 1, 0);
-                    s.matrix.translate(0, 0, -0.06);
-                    s.matrix.scale(0.0225, 0.02, 0.0225);
-                    oxBackLeftLegLowerFoot.addShape(s);
-                }
-                oxBackLeftLegLower.addChild(oxBackLeftLegLowerFoot);
             }
         }
     }
@@ -267,6 +337,9 @@ function doAnimalMovementSliders(deltaTime, totalTimeElapsed) {
     oxBackLeftLeg.animationMatrix.setRotate(-getSliderValue("slider-back-left-leg"), 1, 0, 0);
     oxBackLeftLegLower.animationMatrix.setRotate(-getSliderValue("slider-back-left-leg-lower"), 1, 0, 0);
     oxBackLeftLegLowerFoot.animationMatrix.setRotate(-getSliderValue("slider-back-left-leg-lower-foot"), 1, 0, 0);
+    oxBackRightLeg.animationMatrix.setRotate(-getSliderValue("slider-back-right-leg"), 1, 0, 0);
+    oxBackRightLegLower.animationMatrix.setRotate(-getSliderValue("slider-back-right-leg-lower"), 1, 0, 0);
+    oxBackRightLegLowerFoot.animationMatrix.setRotate(-getSliderValue("slider-back-right-leg-lower-foot"), 1, 0, 0);
 }
 
 function doAnimalMovementAnimation(deltaTime, totalTimeElapsed) {
