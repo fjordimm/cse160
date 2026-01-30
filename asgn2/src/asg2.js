@@ -91,6 +91,7 @@ let globalCameraMatrixRotY;
 let globalCameraMatrixRotX;
 let globalCameraMatrixZoom;
 let globalCameraMatrix;
+let frameCounter;
 let animalMovement; // One of "sliders", "animation", or "poke".
 let animationTimeElapsed;
 let pokeTimeElapsed;
@@ -116,6 +117,7 @@ async function main() {
     globalCameraMatrixRotX = new Matrix4();
     globalCameraMatrixZoom = new Matrix4();
     globalCameraMatrix = new Matrix4();
+    frameCounter = 0;
     animalMovement = "sliders";
     animationTimeElapsed = 0;
     pokeTimeElapsed = 0;
@@ -127,10 +129,11 @@ async function main() {
     canvas.onmousedown = function (ev) { handleMouseClick(ev); };
     window.addEventListener("wheel", function (ev) { handleScroll(ev); });
 
+    countFramesAndUpdateDisplay();
+
     let startTime = Date.now();
     let previousTime = Date.now();
     let previousDeltaTime = 0;
-    let fpsUpdateCounter = 0;
     while (true) {
         await tick(previousDeltaTime, Date.now() - startTime);
 
@@ -140,15 +143,10 @@ async function main() {
             await new Promise(r => setTimeout(r, remainingTime));
         }
 
-        // Update FPS display, but only do it every 100ms.
-        fpsUpdateCounter += Date.now() - previousTime;
-        if (fpsUpdateCounter > 100) {
-            updateFpsDisplay(Date.now() - previousTime);
-            fpsUpdateCounter = 0;
-        }
-
         previousDeltaTime = Date.now() - previousTime;
         previousTime = Date.now();
+
+        frameCounter++;
     }
 }
 
@@ -405,12 +403,20 @@ function handleRotationSlider(angle) {
     updateGlobalCameraMatrix();
 }
 
-function updateFpsDisplay(frameLengthMs) {
-    let fps = 1000 / frameLengthMs;
-
-    let fpsdisplay = document.getElementById("fpsdisplay");
-    fpsdisplay.innerHTML = `${fps.toFixed(1)}`;
+async function countFramesAndUpdateDisplay() {
+    while (true) {
+        frameCounter = 0;
+        await new Promise(r => setTimeout(r, 1000));
+        fpsdisplay.innerHTML = `${frameCounter}`;
+    }
 }
+
+// function updateFpsDisplay(frameLengthMs) {
+//     let fps = 1000 / frameLengthMs;
+
+//     let fpsdisplay = document.getElementById("fpsdisplay");
+//     fpsdisplay.innerHTML = `${fps.toFixed(1)}`;
+// }
 
 function getSliderValue(name) {
     return document.getElementById(name).value;
