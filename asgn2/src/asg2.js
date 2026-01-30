@@ -86,12 +86,13 @@ function setupGLSLVariables() {
 ///// Main /////
 
 // Main Globals
-const MIN_FRAME_LENGTH = 16; // 16 for 60fps.
 let listOfComponents;
 let globalRotationMatrixJustY;
 let globalRotationMatrixJustX;
 let globalRotationMatrix;
-const GLOBAL_ROTATION_SPEED = 90.0;
+let sliderBindings;
+const MIN_FRAME_LENGTH = 16; // 16 for 60fps.
+const GLOBAL_ROTATION_SPEED = 150.0;
 const _renderingHelperMatrix = new Matrix4(); // So a new object doesn't need to be created each time.
 const _IDENTITY_MATRIX = new Matrix4();
 
@@ -111,6 +112,7 @@ async function main() {
     globalRotationMatrixJustY = new Matrix4();
     globalRotationMatrixJustX = new Matrix4();
     globalRotationMatrix = new Matrix4();
+    sliderBindings = [];
 
     setupComponents();
     // renderAllComponents();
@@ -144,53 +146,50 @@ async function main() {
 
 const COLOR_DEBUG1 = [0, 1, 1, 1];
 
+let oxBody;
+let oxHead;
+
 function setupComponents() {
-    const body = new Component();
-    const head = new Component();
+    oxBody = new Component();
+    oxHead = new Component();
 
     // body
     {
         {
             const s = new Cube(COLOR_DEBUG1);
             s.matrix.scale(0.3, 0.3, 0.3);
-            body.addShape(s);
+            oxBody.addShape(s);
         }
         {
             const s = new Cube(COLOR_DEBUG1);
             s.matrix.scale(0.25, 0.35, 0.25);
-            body.addShape(s);
+            oxBody.addShape(s);
         }
         {
             // head
-            head.matrix.translate(0, 0.5, 0);
+            oxHead.matrix.translate(0, 0.5, 0);
             {
                 {
                     const s = new Cube(COLOR_DEBUG1);
                     s.matrix.scale(0.15, 0.15, 0.15);
-                    head.addShape(s);
+                    oxHead.addShape(s);
                 }
-                // {
-                //     const s = new Cube(COLOR_DEBUG1);
-                //     s.matrix.translate(0, 0, -0.5);
-                //     s.matrix.scale(0.05, 0.05, 0.05);
-                //     head.addShape(s);
-                // }
+                {
+                    const s = new Cube(COLOR_DEBUG1);
+                    s.matrix.translate(0, 0, -0.2);
+                    s.matrix.scale(0.05, 0.05, 0.05);
+                    oxHead.addShape(s);
+                }
             }
-            body.addChild(head);
+            oxBody.addChild(oxHead);
         }
     }
-    listOfComponents.push(body);
-
-    // const cube = new Cube([0, 1, 1, 1]);
-    // cube.matrix.scale(0.1, 0.1, 0.1);
-    
-    // const guy = new Component();
-    // guy.addShape(cube);
-    // guy.matrix.translate(0, 0.5, 0);
-    // listOfComponents.push(guy);
+    listOfComponents.push(oxBody);
 }
 
 async function tick() {
+    oxHead.animationMatrix.rotate(1, 0, 1, 0);
+
     renderAllComponents();
 }
 
@@ -303,6 +302,7 @@ function drawTriangle(vertices) {
 class Component {
     constructor() {
         this.matrix = new Matrix4();
+        this.animationMatrix = new Matrix4();
         this._shapes = [];
         this._children = [];
     }
@@ -319,6 +319,7 @@ class Component {
         _renderingHelperMatrix.setIdentity();
         _renderingHelperMatrix.multiply(parentMatrix);
         _renderingHelperMatrix.multiply(this.matrix);
+        _renderingHelperMatrix.multiply(this.animationMatrix);
         gl.uniformMatrix4fv(u_TransformMatrix, false, _renderingHelperMatrix.elements);
         
         for (let shape of this._shapes) {

@@ -19,7 +19,14 @@
 
         <div style="display: flex; flex-direction: row; gap: 10px;">
             <span>Rotate</span>
-            <input id="rotationSlider" oninput="handleRotationSlider(this.value);" type="range" min="-180" max="180" value="0">
+            <input oninput="handleRotationSlider(this.value);" type="range" min="-180" max="180" value="0">
+        </div>
+
+        <span>-----Control-----</span>
+
+        <div style="display: flex; flex-direction: row; gap: 10px;">
+            <span>Head</span>
+            <input id="slider-head" type="range" min="-180" max="180" value="0">
         </div>
     </div>
 
