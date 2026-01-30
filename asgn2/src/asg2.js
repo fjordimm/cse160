@@ -3,10 +3,11 @@
 
 var VSHADER_SOURCE = `
 uniform mat4 u_ModelMatrix;
+uniform mat4 u_TransformMatrix;
 uniform mat4 u_GlobalRotationMatrix;
 attribute vec4 a_Position;
 void main() {
-    gl_Position = u_GlobalRotationMatrix * u_ModelMatrix * a_Position;
+    gl_Position = u_GlobalRotationMatrix * u_TransformMatrix * u_ModelMatrix * a_Position;
 }
 `;
 
@@ -25,6 +26,7 @@ let gl;
 let vertexBuffer;
 let u_FragColor;
 let u_ModelMatrix;
+let u_TransformMatrix;
 let u_GlobalRotationMatrix;
 let a_Position;
 
@@ -62,6 +64,12 @@ function setupGLSLVariables() {
         return;
     }
 
+    u_TransformMatrix = gl.getUniformLocation(gl.program, 'u_TransformMatrix');
+    if (!u_TransformMatrix) {
+        console.log('Failed to get the storage location of u_TransformMatrix');
+        return;
+    }
+
     u_GlobalRotationMatrix = gl.getUniformLocation(gl.program, 'u_GlobalRotationMatrix');
     if (!u_GlobalRotationMatrix) {
         console.log('Failed to get the storage location of u_GlobalRotationMatrix');
@@ -79,7 +87,7 @@ function setupGLSLVariables() {
 
 // Main Globals
 const MIN_FRAME_LENGTH = 16; // 16 for 60fps.
-let listOfShapes;
+let listOfComponents;
 let globalRotationMatrixJustY;
 let globalRotationMatrixJustX;
 let globalRotationMatrix;
@@ -97,13 +105,13 @@ async function main() {
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-    listOfShapes = [];
+    listOfComponents = [];
     globalRotationMatrixJustY = new Matrix4();
     globalRotationMatrixJustX = new Matrix4();
     globalRotationMatrix = new Matrix4();
 
-    setupShapes();
-    // renderAllShapes();
+    setupComponents();
+    // renderAllComponents();
 
     canvas.onmousemove = function (ev) { handleMouseMove(ev); }
 
@@ -132,16 +140,47 @@ async function main() {
 
 ///// Animal-Specific /////
 
-function setupShapes() {
-    const cube = new Cube([0, 1, 1, 1]);
-    // cube.matrix.rotate(-30, 1, 0, 0);
-    // cube.matrix.rotate(30, 0, 1, 0);
-    cube.matrix.scale(0.1, 0.1, 0.1);
-    listOfShapes.push(cube);
+const COLOR_DEBUG1 = [0, 1, 1, 1];
+
+function setupComponents() {
+    const body = new Component();
+    {
+        {
+            const s = new Cube(COLOR_DEBUG1);
+            s.matrix.scale(0.3, 0.3, 0.3);
+            body.addShape(s);
+        }
+        {
+            const s = new Cube(COLOR_DEBUG1);
+            s.matrix.scale(0.25, 0.35, 0.25);
+            body.addShape(s);
+        }
+        {
+            const head = new Component();
+            {
+                {
+                    const s = new Cube(COLOR_DEBUG1);
+                    s.matrix.translate(0, 0.5, 0);
+                    s.matrix.scale(0.15, 0.15, 0.15);
+                    head.addShape(s);
+                }
+            }
+            body.addChild(head);
+        }
+    }
+    listOfComponents.push(body);
+
+    // const cube = new Cube([0, 1, 1, 1]);
+    // cube.matrix.scale(0.1, 0.1, 0.1);
+    
+    // const guy = new Component();
+    // guy.addShape(cube);
+    // guy.matrix.translate(0, 0.5, 0);
+    // listOfComponents.push(guy);
 }
 
 async function tick() {
-    renderAllShapes();
+    renderAllComponents();
 }
 
 ///// HTML Interface Stuff /////
@@ -194,11 +233,12 @@ function updateFpsDisplay(frameLengthMs) {
 
 ///// Rendering /////
 
-function renderAllShapes() {
+const _IDENTITY_MATRIX = new Matrix4();
+function renderAllComponents() {
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-    for (let shape of listOfShapes) {
-        shape.render();
+    for (let component of listOfComponents) {
+        component.render(_IDENTITY_MATRIX);
     }
 }
 
@@ -248,4 +288,35 @@ function drawTriangle(vertices) {
     gl.enableVertexAttribArray(a_Position);
 
     gl.drawArrays(gl.TRIANGLES, 0, 3);
+}
+
+class Component {
+    constructor() {
+        this.matrix = new Matrix4();
+        this._shapes = [];
+        this._children = [];
+    }
+
+    addShape(shape) {
+        this._shapes.push(shape);
+    }
+
+    addChild(child) {
+        this._children.push(child);
+    }
+
+    render(parentMatrix) {
+        let transformMatrix = new Matrix4();
+        transformMatrix = transformMatrix.multiply(parentMatrix);
+        transformMatrix = transformMatrix.multiply(this.matrix);
+        gl.uniformMatrix4fv(u_TransformMatrix, false, transformMatrix.elements);
+        
+        for (let shape of this._shapes) {
+            shape.render();
+        }
+
+        for (let child of this._children) {
+            child.render(parentMatrix);
+        }
+    }
 }
