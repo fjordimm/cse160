@@ -22,6 +22,11 @@
             <input oninput="handleRotationSlider(this.value);" type="range" min="-180" max="180" value="0">
         </div>
 
+        <div style="display: flex; flex-direction: row; gap: 10px;">
+            <input type="button" value="Start Animation" onclick="handleStartAnimation()">
+            <input type="button" value="Stop Animation" onclick="handleStopAnimation()">
+        </div>
+
         <span>-----Control-----</span>
 
         <div style="display: flex; flex-direction: row; gap: 10px;">

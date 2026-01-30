@@ -90,7 +90,7 @@ let listOfComponents;
 let globalRotationMatrixJustY;
 let globalRotationMatrixJustX;
 let globalRotationMatrix;
-let sliderBindings;
+let animalMovement; // One of "sliders", "animation", or "poke".
 const MIN_FRAME_LENGTH = 16; // 16 for 60fps.
 const GLOBAL_ROTATION_SPEED = 150.0;
 const _renderingHelperMatrix = new Matrix4(); // So a new object doesn't need to be created each time.
@@ -112,18 +112,19 @@ async function main() {
     globalRotationMatrixJustY = new Matrix4();
     globalRotationMatrixJustX = new Matrix4();
     globalRotationMatrix = new Matrix4();
-    sliderBindings = [];
+    animalMovement = "sliders";
 
     setupComponents();
     // renderAllComponents();
 
     canvas.onmousemove = function (ev) { handleMouseMove(ev); }
 
+    let startTime = Date.now();
     let previousTime = Date.now();
+    let previousDeltaTime = 0;
     let fpsUpdateCounter = 0;
     while (true) {
-        let deltaTime = Date.now() - previousTime;
-        await tick();
+        await tick(previousDeltaTime, Date.now() - startTime);
 
         // Waste remaining time if it was faster than MIN_FRAME_LENGTH to enforce a maximum fps.
         let remainingTime = MIN_FRAME_LENGTH - (Date.now() - previousTime);
@@ -138,6 +139,7 @@ async function main() {
             fpsUpdateCounter = 0;
         }
 
+        previousDeltaTime = Date.now() - previousTime;
         previousTime = Date.now();
     }
 }
@@ -187,10 +189,26 @@ function setupComponents() {
     listOfComponents.push(oxBody);
 }
 
-async function tick() {
-    oxHead.animationMatrix.rotate(1, 0, 1, 0);
+async function tick(deltaTime, totalTimeElapsed) {
+    if (animalMovement === "sliders") {
+        doAnimalMovementSliders(deltaTime, totalTimeElapsed);
+    } else if (animalMovement === "animation") {
+        doAnimalMovementAnimation(deltaTime, totalTimeElapsed);
+    } else if (animalMovement === "poke") {
+        throw new Error("Not implemented yet.");
+    } else {
+        throw new Error("Invalid value for animalMovement.");
+    }
 
     renderAllComponents();
+}
+
+function doAnimalMovementSliders(deltaTime, totalTimeElapsed) {
+    oxHead.animationMatrix.setRotate(-getSliderValue("slider-head"), 0, 1, 0);
+}
+
+function doAnimalMovementAnimation(deltaTime, totalTimeElapsed) {
+    oxHead.animationMatrix.setRotate(-0.1 * totalTimeElapsed, 0, 1, 0);
 }
 
 ///// HTML Interface Stuff /////
@@ -239,6 +257,18 @@ function updateFpsDisplay(frameLengthMs) {
 
     let fpsdisplay = document.getElementById("fpsdisplay");
     fpsdisplay.innerHTML = `${fps.toFixed(1)}`;
+}
+
+function getSliderValue(name) {
+    return document.getElementById(name).value;
+}
+
+function handleStartAnimation() {
+    animalMovement = "animation";
+}
+
+function handleStopAnimation() {
+    animalMovement = "sliders";
 }
 
 ///// Rendering /////
