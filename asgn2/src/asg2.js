@@ -74,8 +74,10 @@ function setupGLSLVariables() {
 
 // Main Globals
 let listOfShapes;
+let globalRotationMatrixJustY;
+let globalRotationMatrixJustX;
 let globalRotationMatrix;
-const GLOBAL_ROTATION_SPEED = 50.0;
+const GLOBAL_ROTATION_SPEED = 90.0;
 
 function main() {
     setupWebGL();
@@ -90,6 +92,8 @@ function main() {
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     listOfShapes = [];
+    globalRotationMatrixJustY = new Matrix4();
+    globalRotationMatrixJustX = new Matrix4();
     globalRotationMatrix = new Matrix4();
 
     setupShapes();
@@ -119,9 +123,14 @@ function handleMouseMove(ev) {
         let dx = x - lastMouseX;
         let dy = y - lastMouseY;
 
-        globalRotationMatrix.rotate(GLOBAL_ROTATION_SPEED * dy, 1, 0, 0);
-        globalRotationMatrix.rotate(-GLOBAL_ROTATION_SPEED * dx, 0, 1, 0);
+        globalRotationMatrixJustY.rotate(-GLOBAL_ROTATION_SPEED * dx, 0, 1, 0);
+        globalRotationMatrixJustX.rotate(GLOBAL_ROTATION_SPEED * dy, 1, 0, 0);
+        globalRotationMatrix = new Matrix4();
+        globalRotationMatrix = globalRotationMatrix.multiply(globalRotationMatrixJustX);
+        globalRotationMatrix = globalRotationMatrix.multiply(globalRotationMatrixJustY);
         renderAllShapes();
+
+        // console.log(globalRotationMatrix.multiplyVector3(new Vector3([1, 0, 0])));
     }
 
     lastMouseX = x;
@@ -150,10 +159,10 @@ class Cube {
         // Fake shading
         this._color_top = [this._color[0], this._color[1], this._color[2], this._color[3]];
         this._color_front = [this._color[0] * 0.80, this._color[1] * 0.80, this._color[2] * 0.80, this._color[3]];
-        this._color_right = [this._color[0] * 0.88, this._color[1] * 0.88, this._color[2] * 0.88, this._color[3]];
-        this._color_back = [this._color[0] * 0.84, this._color[1] * 0.84, this._color[2] * 0.84, this._color[3]];
-        this._color_left = [this._color[0] * 0.92, this._color[1] * 0.92, this._color[2] * 0.92, this._color[3]];
-        this._color_bottom = [this._color[0] * 0.7, this._color[1] * 0.7, this._color[2] * 0.7, this._color[3]];
+        this._color_right = [this._color[0] * 0.84, this._color[1] * 0.84, this._color[2] * 0.84, this._color[3]];
+        this._color_back = [this._color[0] * 0.82, this._color[1] * 0.82, this._color[2] * 0.82, this._color[3]];
+        this._color_left = [this._color[0] * 0.86, this._color[1] * 0.86, this._color[2] * 0.92, this._color[3]];
+        this._color_bottom = [this._color[0] * 0.5, this._color[1] * 0.5, this._color[2] * 0.5, this._color[3]];
     
         this.matrix = new Matrix4();
     }
