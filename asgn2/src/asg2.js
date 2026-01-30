@@ -1,8 +1,9 @@
 var VSHADER_SOURCE = `
 uniform mat4 u_ModelMatrix;
+uniform mat4 u_GlobalRotationMatrix;
 attribute vec4 a_Position;
 void main() {
-    gl_Position = u_ModelMatrix * a_Position;
+    gl_Position = u_GlobalRotationMatrix * u_ModelMatrix * a_Position;
 }
 `;
 
@@ -21,6 +22,7 @@ let gl;
 let vertexBuffer;
 let u_FragColor;
 let u_ModelMatrix;
+let u_GlobalRotationMatrix;
 let a_Position;
 
 function setupWebGL() {
@@ -57,6 +59,12 @@ function setupGLSLVariables() {
         return;
     }
 
+    u_GlobalRotationMatrix = gl.getUniformLocation(gl.program, 'u_GlobalRotationMatrix');
+    if (!u_GlobalRotationMatrix) {
+        console.log('Failed to get the storage location of u_GlobalRotationMatrix');
+        return;
+    }
+
     a_Position = gl.getAttribLocation(gl.program, 'a_Position');
     if (a_Position < 0) {
         console.log('Failed to get the storage location of a_Position');
@@ -64,8 +72,10 @@ function setupGLSLVariables() {
     }
 }
 
-// Other Globals
-// let listOfShapes = [];
+// Main Globals
+let listOfShapes;
+let globalRotationMatrix;
+const GLOBAL_ROTATION_SPEED = 50.0;
 
 function main() {
     setupWebGL();
@@ -79,16 +89,63 @@ function main() {
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-    const M = new Matrix4();
-    M.rotate(-30, 1, 0, 0);
-    M.rotate(30, 0, 1, 0);
-    M.scale(0.3, 0.3, 0.3);
-    const cube = new Cube([1, 0, 0, 1], M);
-    cube.render();
+    listOfShapes = [];
+    globalRotationMatrix = new Matrix4();
+
+    setupShapes();
+    renderAllShapes();
+
+    canvas.onmousemove = function (ev) { handleMouseMove(ev); }
+}
+
+// HTML Interface Globals
+let lastMouseX = 0;
+let lastMouseY = 0;
+
+function convertCoordsEventToGL(ev) {
+    let x = ev.clientX; // x coordinate of a mouse pointer
+    let y = ev.clientY; // y coordinate of a mouse pointer
+    let rect = ev.target.getBoundingClientRect();
+
+    x = ((x - rect.left) - canvas.width / 2) / (canvas.width / 2);
+    y = (canvas.height / 2 - (y - rect.top)) / (canvas.height / 2);
+
+    return [x, y];
+}
+
+function handleMouseMove(ev) {
+    let [x, y] = convertCoordsEventToGL(ev);
+    if (ev.buttons === 1) {
+        let dx = x - lastMouseX;
+        let dy = y - lastMouseY;
+
+        globalRotationMatrix.rotate(GLOBAL_ROTATION_SPEED * dy, 1, 0, 0);
+        globalRotationMatrix.rotate(-GLOBAL_ROTATION_SPEED * dx, 0, 1, 0);
+        renderAllShapes();
+    }
+
+    lastMouseX = x;
+    lastMouseY = y;
+}
+
+function renderAllShapes() {
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+    for (let shape of listOfShapes) {
+        shape.render();
+    }
+}
+
+function setupShapes() {
+    const cube = new Cube([0, 1, 1, 1]);
+    // cube.matrix.rotate(-30, 1, 0, 0);
+    // cube.matrix.rotate(30, 0, 1, 0);
+    cube.matrix.scale(0.1, 0.1, 0.1);
+    listOfShapes.push(cube);
 }
 
 class Cube {
-    constructor(color, matrix) {
+    constructor(color) {
         this._color = color;
         // Fake shading
         this._color_top = [this._color[0], this._color[1], this._color[2], this._color[3]];
@@ -98,10 +155,11 @@ class Cube {
         this._color_left = [this._color[0] * 0.92, this._color[1] * 0.92, this._color[2] * 0.92, this._color[3]];
         this._color_bottom = [this._color[0] * 0.7, this._color[1] * 0.7, this._color[2] * 0.7, this._color[3]];
     
-        this.matrix = matrix;
+        this.matrix = new Matrix4();
     }
 
     render() {
+        gl.uniformMatrix4fv(u_GlobalRotationMatrix, false, globalRotationMatrix.elements);
         gl.uniformMatrix4fv(u_ModelMatrix, false, this.matrix.elements);
 
         gl.uniform4f(u_FragColor, ...this._color_top);
@@ -133,28 +191,3 @@ function drawTriangle(vertices) {
 
     gl.drawArrays(gl.TRIANGLES, 0, 3);
 }
-
-// function drawCube() {
-//     let vertices = [
-//         -0.1, -0.1, 0,
-//         0.1, -0.1, 0,
-//         0, 0.1, 0
-//     ];
-
-//     gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-//     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.DYNAMIC_DRAW);
-//     gl.vertexAttribPointer(a_Position, 2, gl.FLOAT, false, 0, 0);
-//     gl.enableVertexAttribArray(a_Position);
-
-//     gl.uniform4f(u_FragColor, this.color[0], this.color[1], this.color[2], this.color[3]);
-
-//     gl.drawArrays(gl.TRIANGLES, 0, 3);
-// }
-
-// function renderAllShapes() {
-//     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-//     for (let shape of listOfShapes) {
-//         shape.render();
-//     }
-// }
