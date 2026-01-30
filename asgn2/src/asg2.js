@@ -91,6 +91,8 @@ let globalRotationMatrixJustY;
 let globalRotationMatrixJustX;
 let globalRotationMatrix;
 let animalMovement; // One of "sliders", "animation", or "poke".
+let animationTimeElapsed;
+let pokeTimeElapsed;
 const MIN_FRAME_LENGTH = 16; // 16 for 60fps.
 const GLOBAL_ROTATION_SPEED = 150.0;
 const _renderingHelperMatrix = new Matrix4(); // So a new object doesn't need to be created each time.
@@ -112,12 +114,15 @@ async function main() {
     globalRotationMatrixJustY = new Matrix4();
     globalRotationMatrixJustX = new Matrix4();
     globalRotationMatrix = new Matrix4();
-    animalMovement = "sliders";
+    animalMovement = "animation";
+    animationTimeElapsed = 0;
+    pokeTimeElapsed = 0;
 
     setupComponents();
     // renderAllComponents();
 
-    canvas.onmousemove = function (ev) { handleMouseMove(ev); }
+    canvas.onmousemove = function (ev) { handleMouseMove(ev); };
+    canvas.onmousedown = function (ev) { handleMouseClick(ev); };
 
     let startTime = Date.now();
     let previousTime = Date.now();
@@ -195,7 +200,7 @@ async function tick(deltaTime, totalTimeElapsed) {
     } else if (animalMovement === "animation") {
         doAnimalMovementAnimation(deltaTime, totalTimeElapsed);
     } else if (animalMovement === "poke") {
-        throw new Error("Not implemented yet.");
+        doAnimalMovementPoke(deltaTime, totalTimeElapsed);
     } else {
         throw new Error("Invalid value for animalMovement.");
     }
@@ -208,7 +213,15 @@ function doAnimalMovementSliders(deltaTime, totalTimeElapsed) {
 }
 
 function doAnimalMovementAnimation(deltaTime, totalTimeElapsed) {
-    oxHead.animationMatrix.setRotate(-0.1 * totalTimeElapsed, 0, 1, 0);
+    animationTimeElapsed += deltaTime;
+
+    oxHead.animationMatrix.setRotate(-0.1 * animationTimeElapsed, 0, 1, 0);
+}
+
+function doAnimalMovementPoke(deltaTime, totalTimeElapsed) {
+    pokeTimeElapsed += deltaTime;
+
+    oxHead.animationMatrix.setScale(1 + 0.001 * pokeTimeElapsed, 1 + 0.001 * pokeTimeElapsed, 1 + 0.001 * pokeTimeElapsed);
 }
 
 ///// HTML Interface Stuff /////
@@ -245,6 +258,13 @@ function handleMouseMove(ev) {
     lastMouseY = y;
 }
 
+function handleMouseClick(ev) {
+    if (ev.shiftKey) {
+        animalMovement = "poke";
+        pokeTimeElapsed = 0;
+    }
+}
+
 function handleRotationSlider(angle) {
     globalRotationMatrixJustY.setRotate(-angle, 0, 1, 0);
     globalRotationMatrix.setIdentity();
@@ -265,6 +285,7 @@ function getSliderValue(name) {
 
 function handleStartAnimation() {
     animalMovement = "animation";
+    animationTimeElapsed = 0;
 }
 
 function handleStopAnimation() {
