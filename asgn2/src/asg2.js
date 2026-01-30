@@ -117,7 +117,7 @@ async function main() {
     globalCameraMatrixRotX = new Matrix4();
     globalCameraMatrixZoom = new Matrix4();
     globalCameraMatrix = new Matrix4();
-    animalMovement = "animation";
+    animalMovement = "sliders";
     animationTimeElapsed = 0;
     pokeTimeElapsed = 0;
 
@@ -167,55 +167,53 @@ const COLOR_FUR1 = [1, 1, 1, 1];
 
 let oxBody;
 let oxBackLeftLeg;
+let oxBackLeftLegLower;
 let oxHead;
 
 function setupComponents() {
     oxBody = new Component();
     oxBackLeftLeg = new Component();
+    oxBackLeftLegLower = new Component();
     oxHead = new Component();
 
     // body
     {
+        const s = new CylinderHoriz(COLOR_FUR1, 30);
+        s.matrix.scale(0.2, 0.2, 0.25);
+        oxBody.addShape(s);
+    }
+    {
+        const s = new CylinderHoriz(COLOR_FUR1, 30);
+        s.matrix.translate(0, 0.015, 0.05);
+        s.matrix.scale(0.18, 0.18, 0.4);
+        oxBody.addShape(s);
+    }
+    {
+        // back left leg
+        oxBackLeftLeg.matrix.translate(0.1, 0, 0.35);
         {
-            const s = new CylinderHoriz(COLOR_FUR1, 15);
-            s.matrix.scale(0.2, 0.2, 0.25);
-            oxBody.addShape(s);
+            const s = new CylinderVert(COLOR_FUR1, 10);
+            s.matrix.translate(0, -0.12, 0);
+            s.matrix.scale(0.08, 0.12, 0.08);
+            oxBackLeftLeg.addShape(s);
         }
         {
-            const s = new CylinderHoriz(COLOR_FUR1, 15);
-            s.matrix.translate(0, 0.015, 0.05);
-            s.matrix.scale(0.18, 0.18, 0.4);
-            oxBody.addShape(s);
+            const s = new CylinderVert(COLOR_FUR1, 10);
+            s.matrix.translate(0, -0.15, 0);
+            s.matrix.scale(0.06, 0.15, 0.06);
+            oxBackLeftLeg.addShape(s);
         }
         {
-            // back left leg
+            // back left leg lower
+            oxBackLeftLegLower.matrix.translate(0, -0.3, 0);
             {
-                {
-                    const s = new CylinderVert(COLOR_FUR1, 10);
-                    s.matrix.scale(0.1, 0.9, 0.1);
-                    oxBackLeftLeg.addShape(s);
-                }
+                const s = new CylinderVert(COLOR_FUR1, 8);
+                s.matrix.scale(0.04, 0.04, 0.04);
+                oxBackLeftLegLower.addShape(s);
             }
-            oxBody.addChild(oxBackLeftLeg);
+            oxBackLeftLeg.addChild(oxBackLeftLegLower);
         }
-        {
-            // head
-            // oxHead.matrix.translate(0, 0.5, 0);
-            // {
-            //     {
-            //         const s = new Cube(COLOR_DEBUG1);
-            //         s.matrix.scale(0.15, 0.15, 0.15);
-            //         oxHead.addShape(s);
-            //     }
-            //     {
-            //         const s = new Cube(COLOR_DEBUG1);
-            //         s.matrix.translate(0, 0, -0.2);
-            //         s.matrix.scale(0.05, 0.05, 0.05);
-            //         oxHead.addShape(s);
-            //     }
-            // }
-            // oxBody.addChild(oxHead);
-        }
+        oxBody.addChild(oxBackLeftLeg);
     }
 
     listOfComponents.push(oxBody);
@@ -236,7 +234,8 @@ async function tick(deltaTime, totalTimeElapsed) {
 }
 
 function doAnimalMovementSliders(deltaTime, totalTimeElapsed) {
-    oxHead.animationMatrix.setRotate(-getSliderValue("slider-head"), 0, 1, 0);
+    oxBackLeftLeg.animationMatrix.setRotate(-getSliderValue("slider-back-left-leg"), 1, 0, 0);
+    oxBackLeftLegLower.animationMatrix.setRotate(-getSliderValue("slider-back-left-leg-lower"), 1, 0, 0);
 }
 
 function doAnimalMovementAnimation(deltaTime, totalTimeElapsed) {
@@ -382,7 +381,7 @@ class CylinderVert {
             for (let seg = 0; seg < segments; seg++) {
                 let shade = Math.cos(seg * segAngle);
                 shade = (shade + 1) / 2; // Changes range from [-1, 1] to [0, 1]
-                shade = 0.75 + shade * 0.15; // Changes range from [0, 1] to [0.75, 0.9]
+                shade = 0.8 + shade * 0.06; // Changes range from [0, 1] to [0.8, 0.86]
                 this._color_sides[seg] = [this._color[0] * shade, this._color[1] * shade, this._color[2] * shade, this._color[3]];
             }
         }
@@ -529,18 +528,22 @@ class Component {
     }
 
     render(parentMatrix) {
-        _renderingHelperMatrix.setIdentity();
-        _renderingHelperMatrix.multiply(parentMatrix);
-        _renderingHelperMatrix.multiply(this.matrix);
-        _renderingHelperMatrix.multiply(this.animationMatrix);
-        gl.uniformMatrix4fv(u_TransformMatrix, false, _renderingHelperMatrix.elements);
+        // _renderingHelperMatrix.setIdentity();
+        // _renderingHelperMatrix.multiply(parentMatrix);
+        // _renderingHelperMatrix.multiply(this.matrix);
+        // _renderingHelperMatrix.multiply(this.animationMatrix);
+        const finalMatrix = new Matrix4();
+        finalMatrix.multiply(parentMatrix);
+        finalMatrix.multiply(this.matrix);
+        finalMatrix.multiply(this.animationMatrix);
+        gl.uniformMatrix4fv(u_TransformMatrix, false, finalMatrix.elements);
         
         for (let shape of this._shapes) {
             shape.render();
         }
 
         for (let child of this._children) {
-            child.render(parentMatrix);
+            child.render(finalMatrix);
         }
     }
 }
