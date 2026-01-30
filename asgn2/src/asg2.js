@@ -162,7 +162,8 @@ function updateGlobalCameraMatrix() {
 
 ///// Animal-Specific /////
 
-const COLOR_FUR1 = [0.267, 0.192, 0.118, 1];
+// const COLOR_FUR1 = [0.267, 0.192, 0.118, 1];
+const COLOR_FUR1 = [1, 0, 1, 1];
 
 let oxBody;
 let oxHead;
@@ -173,9 +174,21 @@ function setupComponents() {
 
     // body
     {
+        // {
+        //     const s = new Cube(COLOR_FUR1);
+        //     s.matrix.scale(0.2, 0.2, 0.25);
+        //     oxBody.addShape(s);
+        // }
+        // {
+        //     const s = new Cube(COLOR_FUR1);
+        //     s.matrix.translate(0, 0.04, 0.1);
+        //     s.matrix.scale(0.15, 0.15, 0.4);
+        //     oxBody.addShape(s);
+        // }
         {
-            const s = new Cube(COLOR_FUR1);
-            s.matrix.scale(0.3, 0.3, 0.3);
+            const s = new Cylinder(COLOR_FUR1, 8);
+            // s.matrix.translate(0, 0.3, 0);
+            s.matrix.scale(0.4, 0.4, 0.4);
             oxBody.addShape(s);
         }
         {
@@ -347,6 +360,63 @@ class Cube {
         gl.uniform4f(u_FragColor, ...this._color_bottom);
         drawTriangle([-1, -1, 1, 1, -1, 1, -1, -1, -1]);
         drawTriangle([1, -1, -1, -1, -1, -1, 1, -1, 1]);
+    }
+}
+
+class Cylinder {
+    constructor(color, segments) {
+        this._color = color;
+        // Fake shading
+        this._color_top = [this._color[0], this._color[1], this._color[2], this._color[3]];
+        this._color_side = [this._color[0] * 0.8, this._color[1] * 0.8, this._color[2] * 0.8, this._color[3]];
+        this._color_bottom = [this._color[0] * 0.5, this._color[1] * 0.5, this._color[2] * 0.5, this._color[3]];
+    
+        this._segments = segments;
+
+        this.matrix = new Matrix4();
+    }
+
+    render() {
+        gl.uniformMatrix4fv(u_GlobalCameraMatrix, false, globalCameraMatrix.elements);
+        gl.uniformMatrix4fv(u_ModelMatrix, false, this.matrix.elements);
+
+        const segAngle = 2 * Math.PI / this._segments;
+        for (let seg = 0; seg < this._segments; seg++) {
+            const angle1 = seg * segAngle;
+            const angle2 = (seg + 1) * segAngle;
+
+            const x1 = Math.cos(angle1);
+            const z1 = Math.sin(angle1);
+
+            const x2 = Math.cos(angle2);
+            const z2 = Math.sin(angle2);
+
+            gl.uniform4f(u_FragColor, ...this._color_top);
+            drawTriangle([
+                0,  1, 0,
+                x1, 1, z1,
+                x2, 1, z2
+            ]);
+
+            gl.uniform4f(u_FragColor, ...this._color_side);
+            drawTriangle([
+                x1, -1, z1,
+                x2, -1, z2,
+                x1, 1, z1
+            ]);
+            drawTriangle([
+                x2, 1, z2,
+                x1, 1, z1,
+                x2, -1, z2
+            ]);
+
+            gl.uniform4f(u_FragColor, ...this._color_bottom);
+            drawTriangle([
+                0,  -1, 0,
+                x2, -1, z2,
+                x1, -1, z1
+            ]);
+        }
     }
 }
 
