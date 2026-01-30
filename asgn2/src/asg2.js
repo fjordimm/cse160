@@ -163,33 +163,40 @@ function updateGlobalCameraMatrix() {
 ///// Animal-Specific /////
 
 // const COLOR_FUR1 = [0.267, 0.192, 0.118, 1];
-const COLOR_FUR1 = [1, 0, 1, 1];
+const COLOR_FUR1 = [1, 1, 1, 1];
 
 let oxBody;
+let oxBackLeftLeg;
 let oxHead;
 
 function setupComponents() {
     oxBody = new Component();
+    oxBackLeftLeg = new Component();
     oxHead = new Component();
 
     // body
     {
-        // {
-        //     const s = new Cube(COLOR_FUR1);
-        //     s.matrix.scale(0.2, 0.2, 0.25);
-        //     oxBody.addShape(s);
-        // }
-        // {
-        //     const s = new Cube(COLOR_FUR1);
-        //     s.matrix.translate(0, 0.04, 0.1);
-        //     s.matrix.scale(0.15, 0.15, 0.4);
-        //     oxBody.addShape(s);
-        // }
         {
-            const s = new CylinderHoriz(COLOR_FUR1, 8);
-            // s.matrix.translate(0, 0.3, 0);
-            s.matrix.scale(0.4, 0.4, 0.4);
+            const s = new CylinderHoriz(COLOR_FUR1, 15);
+            s.matrix.scale(0.2, 0.2, 0.25);
             oxBody.addShape(s);
+        }
+        {
+            const s = new CylinderHoriz(COLOR_FUR1, 15);
+            s.matrix.translate(0, 0.015, 0.05);
+            s.matrix.scale(0.18, 0.18, 0.4);
+            oxBody.addShape(s);
+        }
+        {
+            // back left leg
+            {
+                {
+                    const s = new CylinderVert(COLOR_FUR1, 10);
+                    s.matrix.scale(0.1, 0.9, 0.1);
+                    oxBackLeftLeg.addShape(s);
+                }
+            }
+            oxBody.addChild(oxBackLeftLeg);
         }
         {
             // head
@@ -210,6 +217,7 @@ function setupComponents() {
             // oxBody.addChild(oxHead);
         }
     }
+
     listOfComponents.push(oxBody);
 }
 
@@ -368,7 +376,16 @@ class CylinderVert {
         this._color = color;
         // Fake shading
         this._color_top = [this._color[0], this._color[1], this._color[2], this._color[3]];
-        this._color_side = [this._color[0] * 0.8, this._color[1] * 0.8, this._color[2] * 0.8, this._color[3]];
+        this._color_sides = [];
+        {
+            const segAngle = 2 * Math.PI / segments;
+            for (let seg = 0; seg < segments; seg++) {
+                let shade = Math.cos(seg * segAngle);
+                shade = (shade + 1) / 2; // Changes range from [-1, 1] to [0, 1]
+                shade = 0.75 + shade * 0.15; // Changes range from [0, 1] to [0.75, 0.9]
+                this._color_sides[seg] = [this._color[0] * shade, this._color[1] * shade, this._color[2] * shade, this._color[3]];
+            }
+        }
         this._color_bottom = [this._color[0] * 0.5, this._color[1] * 0.5, this._color[2] * 0.5, this._color[3]];
     
         this._segments = segments;
@@ -398,7 +415,7 @@ class CylinderVert {
                 x2, 1, z2
             ]);
 
-            gl.uniform4f(u_FragColor, ...this._color_side);
+            gl.uniform4f(u_FragColor, ...this._color_sides[seg]);
             drawTriangle([
                 x1, -1, z1,
                 x2, -1, z2,
