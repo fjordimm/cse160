@@ -72,13 +72,16 @@ function main() {
     setupGLSLVariables();
 
     gl.enable(gl.DEPTH_TEST);
+    gl.enable(gl.CULL_FACE);
+    gl.cullFace(gl.BACK);
+    gl.frontFace(gl.CCW);
 
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     const M = new Matrix4();
-    M.rotate(-45, 1, 0, 0);
-    M.rotate(45, 0, 1, 0);
+    M.rotate(-30, 1, 0, 0);
+    M.rotate(30, 0, 1, 0);
     M.scale(0.3, 0.3, 0.3);
     const cube = new Cube([1, 0, 0, 1], M);
     cube.render();
@@ -87,10 +90,11 @@ function main() {
 class Cube {
     constructor(color, matrix) {
         this._color = color;
-        this._color_top = [this._color[0] * 1.0, this._color[1] * 1.0, this._color[2] * 1.0, this._color[3]];
+        // Fake shading
+        this._color_top = [this._color[0], this._color[1], this._color[2], this._color[3]];
         this._color_front = [this._color[0] * 0.80, this._color[1] * 0.80, this._color[2] * 0.80, this._color[3]];
-        this._color_right = [this._color[0] * 0.84, this._color[1] * 0.84, this._color[2] * 0.84, this._color[3]];
-        this._color_back = [this._color[0] * 0.88, this._color[1] * 0.88, this._color[2] * 0.88, this._color[3]];
+        this._color_right = [this._color[0] * 0.88, this._color[1] * 0.88, this._color[2] * 0.88, this._color[3]];
+        this._color_back = [this._color[0] * 0.84, this._color[1] * 0.84, this._color[2] * 0.84, this._color[3]];
         this._color_left = [this._color[0] * 0.92, this._color[1] * 0.92, this._color[2] * 0.92, this._color[3]];
         this._color_bottom = [this._color[0] * 0.7, this._color[1] * 0.7, this._color[2] * 0.7, this._color[3]];
     
@@ -100,12 +104,24 @@ class Cube {
     render() {
         gl.uniformMatrix4fv(u_ModelMatrix, false, this.matrix.elements);
 
+        gl.uniform4f(u_FragColor, ...this._color_top);
+        drawTriangle([-1, 1, -1, 1, 1, -1, -1, 1, 1]);
+        drawTriangle([1, 1, 1, -1, 1, 1, 1, 1, -1]);
         gl.uniform4f(u_FragColor, ...this._color_front);
         drawTriangle([-1, -1, -1, 1, -1, -1, -1, 1, -1]);
         drawTriangle([1, 1, -1, -1, 1, -1, 1, -1, -1]);
         gl.uniform4f(u_FragColor, ...this._color_right);
         drawTriangle([1, -1, -1, 1, -1, 1, 1, 1, -1]);
         drawTriangle([1, 1, 1, 1, 1, -1, 1, -1, 1]);
+        gl.uniform4f(u_FragColor, ...this._color_back);
+        drawTriangle([1, -1, 1, -1, -1, 1, 1, 1, 1]);
+        drawTriangle([-1, 1, 1, 1, 1, 1, -1, -1, 1]);
+        gl.uniform4f(u_FragColor, ...this._color_left);
+        drawTriangle([-1, -1, 1, -1, -1, -1, -1, 1, 1]);
+        drawTriangle([-1, 1, -1, -1, 1, 1, -1, -1, -1]);
+        gl.uniform4f(u_FragColor, ...this._color_bottom);
+        drawTriangle([-1, -1, 1, 1, -1, 1, -1, -1, -1]);
+        drawTriangle([1, -1, -1, -1, -1, -1, 1, -1, 1]);
     }
 }
 
