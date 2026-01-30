@@ -1,0 +1,1 @@
+- Used Claude to figure out scroll events.

@@ -4,10 +4,10 @@
 var VSHADER_SOURCE = `
 uniform mat4 u_ModelMatrix;
 uniform mat4 u_TransformMatrix;
-uniform mat4 u_GlobalRotationMatrix;
+uniform mat4 u_GlobalCameraMatrix;
 attribute vec4 a_Position;
 void main() {
-    gl_Position = u_GlobalRotationMatrix * u_TransformMatrix * u_ModelMatrix * a_Position;
+    gl_Position = u_GlobalCameraMatrix * u_TransformMatrix * u_ModelMatrix * a_Position;
 }
 `;
 
@@ -27,7 +27,7 @@ let vertexBuffer;
 let u_FragColor;
 let u_ModelMatrix;
 let u_TransformMatrix;
-let u_GlobalRotationMatrix;
+let u_GlobalCameraMatrix;
 let a_Position;
 
 function setupWebGL() {
@@ -70,9 +70,9 @@ function setupGLSLVariables() {
         return;
     }
 
-    u_GlobalRotationMatrix = gl.getUniformLocation(gl.program, 'u_GlobalRotationMatrix');
-    if (!u_GlobalRotationMatrix) {
-        console.log('Failed to get the storage location of u_GlobalRotationMatrix');
+    u_GlobalCameraMatrix = gl.getUniformLocation(gl.program, 'u_GlobalCameraMatrix');
+    if (!u_GlobalCameraMatrix) {
+        console.log('Failed to get the storage location of u_GlobalCameraMatrix');
         return;
     }
 
@@ -87,14 +87,16 @@ function setupGLSLVariables() {
 
 // Main Globals
 let listOfComponents;
-let globalRotationMatrixJustY;
-let globalRotationMatrixJustX;
-let globalRotationMatrix;
+let globalCameraMatrixRotY;
+let globalCameraMatrixRotX;
+let globalCameraMatrixZoom;
+let globalCameraMatrix;
 let animalMovement; // One of "sliders", "animation", or "poke".
 let animationTimeElapsed;
 let pokeTimeElapsed;
 const MIN_FRAME_LENGTH = 16; // 16 for 60fps.
 const GLOBAL_ROTATION_SPEED = 150.0;
+const GLOBAL_SCROLL_SPEED = 15.0;
 const _renderingHelperMatrix = new Matrix4(); // So a new object doesn't need to be created each time.
 const _IDENTITY_MATRIX = new Matrix4();
 
@@ -111,9 +113,10 @@ async function main() {
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     listOfComponents = [];
-    globalRotationMatrixJustY = new Matrix4();
-    globalRotationMatrixJustX = new Matrix4();
-    globalRotationMatrix = new Matrix4();
+    globalCameraMatrixRotY = new Matrix4();
+    globalCameraMatrixRotX = new Matrix4();
+    globalCameraMatrixZoom = new Matrix4();
+    globalCameraMatrix = new Matrix4();
     animalMovement = "animation";
     animationTimeElapsed = 0;
     pokeTimeElapsed = 0;
@@ -123,6 +126,7 @@ async function main() {
 
     canvas.onmousemove = function (ev) { handleMouseMove(ev); };
     canvas.onmousedown = function (ev) { handleMouseClick(ev); };
+    window.addEventListener("wheel", function (ev) { handleScroll(ev); });
 
     let startTime = Date.now();
     let previousTime = Date.now();
@@ -149,9 +153,16 @@ async function main() {
     }
 }
 
+function updateGlobalCameraMatrix() {
+    globalCameraMatrix.setIdentity();
+    globalCameraMatrix.multiply(globalCameraMatrixZoom);
+    globalCameraMatrix.multiply(globalCameraMatrixRotX);
+    globalCameraMatrix.multiply(globalCameraMatrixRotY);
+}
+
 ///// Animal-Specific /////
 
-const COLOR_DEBUG1 = [0, 1, 1, 1];
+const COLOR_FUR1 = [0.267, 0.192, 0.118, 1];
 
 let oxBody;
 let oxHead;
@@ -163,32 +174,27 @@ function setupComponents() {
     // body
     {
         {
-            const s = new Cube(COLOR_DEBUG1);
+            const s = new Cube(COLOR_FUR1);
             s.matrix.scale(0.3, 0.3, 0.3);
             oxBody.addShape(s);
         }
         {
-            const s = new Cube(COLOR_DEBUG1);
-            s.matrix.scale(0.25, 0.35, 0.25);
-            oxBody.addShape(s);
-        }
-        {
             // head
-            oxHead.matrix.translate(0, 0.5, 0);
-            {
-                {
-                    const s = new Cube(COLOR_DEBUG1);
-                    s.matrix.scale(0.15, 0.15, 0.15);
-                    oxHead.addShape(s);
-                }
-                {
-                    const s = new Cube(COLOR_DEBUG1);
-                    s.matrix.translate(0, 0, -0.2);
-                    s.matrix.scale(0.05, 0.05, 0.05);
-                    oxHead.addShape(s);
-                }
-            }
-            oxBody.addChild(oxHead);
+            // oxHead.matrix.translate(0, 0.5, 0);
+            // {
+            //     {
+            //         const s = new Cube(COLOR_DEBUG1);
+            //         s.matrix.scale(0.15, 0.15, 0.15);
+            //         oxHead.addShape(s);
+            //     }
+            //     {
+            //         const s = new Cube(COLOR_DEBUG1);
+            //         s.matrix.translate(0, 0, -0.2);
+            //         s.matrix.scale(0.05, 0.05, 0.05);
+            //         oxHead.addShape(s);
+            //     }
+            // }
+            // oxBody.addChild(oxHead);
         }
     }
     listOfComponents.push(oxBody);
@@ -215,13 +221,13 @@ function doAnimalMovementSliders(deltaTime, totalTimeElapsed) {
 function doAnimalMovementAnimation(deltaTime, totalTimeElapsed) {
     animationTimeElapsed += deltaTime;
 
-    oxHead.animationMatrix.setRotate(-0.1 * animationTimeElapsed, 0, 1, 0);
+    // oxHead.animationMatrix.setRotate(-0.1 * animationTimeElapsed, 0, 1, 0);
 }
 
 function doAnimalMovementPoke(deltaTime, totalTimeElapsed) {
     pokeTimeElapsed += deltaTime;
 
-    oxHead.animationMatrix.setScale(1 + 0.001 * pokeTimeElapsed, 1 + 0.001 * pokeTimeElapsed, 1 + 0.001 * pokeTimeElapsed);
+    // oxHead.animationMatrix.setScale(1 + 0.001 * pokeTimeElapsed, 1 + 0.001 * pokeTimeElapsed, 1 + 0.001 * pokeTimeElapsed);
 }
 
 ///// HTML Interface Stuff /////
@@ -247,11 +253,9 @@ function handleMouseMove(ev) {
         let dx = x - lastMouseX;
         let dy = y - lastMouseY;
 
-        globalRotationMatrixJustX.rotate(GLOBAL_ROTATION_SPEED * dy, 1, 0, 0);
-        globalRotationMatrixJustY.rotate(-GLOBAL_ROTATION_SPEED * dx, 0, 1, 0);
-        globalRotationMatrix.setIdentity();
-        globalRotationMatrix.multiply(globalRotationMatrixJustX);
-        globalRotationMatrix.multiply(globalRotationMatrixJustY);
+        globalCameraMatrixRotX.rotate(GLOBAL_ROTATION_SPEED * dy, 1, 0, 0);
+        globalCameraMatrixRotY.rotate(-GLOBAL_ROTATION_SPEED * dx, 0, 1, 0);
+        updateGlobalCameraMatrix();
     }
 
     lastMouseX = x;
@@ -265,11 +269,16 @@ function handleMouseClick(ev) {
     }
 }
 
+function handleScroll(ev) {
+    let scale = 1 - GLOBAL_SCROLL_SPEED * ev.deltaY / 10000;
+
+    globalCameraMatrixZoom.scale(scale, scale, scale);
+    updateGlobalCameraMatrix();
+}
+
 function handleRotationSlider(angle) {
-    globalRotationMatrixJustY.setRotate(-angle, 0, 1, 0);
-    globalRotationMatrix.setIdentity();
-    globalRotationMatrix.multiply(globalRotationMatrixJustX);
-    globalRotationMatrix.multiply(globalRotationMatrixJustY);
+    globalCameraMatrixRotY.setRotate(-angle, 0, 1, 0);
+    updateGlobalCameraMatrix();
 }
 
 function updateFpsDisplay(frameLengthMs) {
@@ -317,7 +326,7 @@ class Cube {
     }
 
     render() {
-        gl.uniformMatrix4fv(u_GlobalRotationMatrix, false, globalRotationMatrix.elements);
+        gl.uniformMatrix4fv(u_GlobalCameraMatrix, false, globalCameraMatrix.elements);
         gl.uniformMatrix4fv(u_ModelMatrix, false, this.matrix.elements);
 
         gl.uniform4f(u_FragColor, ...this._color_top);
