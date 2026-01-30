@@ -1,3 +1,6 @@
+
+///// WebGL Stuff /////
+
 var VSHADER_SOURCE = `
 uniform mat4 u_ModelMatrix;
 uniform mat4 u_GlobalRotationMatrix;
@@ -72,6 +75,8 @@ function setupGLSLVariables() {
     }
 }
 
+///// Main /////
+
 // Main Globals
 const MIN_FRAME_LENGTH = 16; // 16 for 60fps.
 let listOfShapes;
@@ -98,7 +103,7 @@ async function main() {
     globalRotationMatrix = new Matrix4();
 
     setupShapes();
-    renderAllShapes();
+    // renderAllShapes();
 
     canvas.onmousemove = function (ev) { handleMouseMove(ev); }
 
@@ -125,6 +130,8 @@ async function main() {
     }
 }
 
+///// Animal-Specific /////
+
 function setupShapes() {
     const cube = new Cube([0, 1, 1, 1]);
     // cube.matrix.rotate(-30, 1, 0, 0);
@@ -136,6 +143,8 @@ function setupShapes() {
 async function tick() {
     renderAllShapes();
 }
+
+///// HTML Interface Stuff /////
 
 // HTML Interface Globals
 let lastMouseX = 0;
@@ -182,6 +191,8 @@ function updateFpsDisplay(frameLengthMs) {
     let fpsdisplay = document.getElementById("fpsdisplay");
     fpsdisplay.innerHTML = `${fps.toFixed(1)}`;
 }
+
+///// Rendering /////
 
 function renderAllShapes() {
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
