@@ -159,10 +159,10 @@ function updateGlobalCameraMatrix() {
 
 ///// Animal-Specific /////
 
-const COLOR_FUR1 = [0.267, 0.192, 0.118, 1];
-const COLOR_NOSE = [0.801, 0.576, 0.354, 1];
-const COLOR_DEBUG1 = [1, 0, 1, 1];
-const COLOR_DEBUG2 = [0, 1, 1, 1];
+const COLOR_FUR1 = [0.416, 0.227, 0.161, 1];
+const COLOR_NOSE = [0.529, 0.294, 0.212, 1];
+const COLOR_EYE = [0.1, 0.1, 0.1, 1];
+const COLOR_HORN = [0.224, 0.196, 0.176, 1];
 
 let oxBody;
 let oxBackLeftLeg;
@@ -434,29 +434,98 @@ function setupComponents() {
         {
             oxBody.addChild(oxHead);
             oxHead.matrix.translate(0, 0.09, -0.48);
-            oxHead.matrix.rotate(-30, 1, 0, 0);
             {
                 const s = new Cube(COLOR_FUR1);
                 s.matrix.translate(0, 0, 0);
-                s.matrix.scale(0.11, 0.08, 0.08);
+                s.matrix.scale(0.1, 0.16, 0.06);
                 oxHead.addShape(s);
             }
             {
                 const s = new Cube(COLOR_FUR1);
-                s.matrix.translate(0, 0, -0.1);
-                s.matrix.scale(0.08, 0.06, 0.1);
+                s.matrix.translate(0, -0.02, -0.09);
+                s.matrix.scale(0.08, 0.12, 0.06);
                 oxHead.addShape(s);
             }
             {
                 const s = new Cube(COLOR_FUR1);
-                s.matrix.translate(0, 0, -0.14);
-                s.matrix.scale(0.06, 0.04, 0.14);
+                s.matrix.translate(0, -0.04, -0.15);
+                s.matrix.scale(0.06, 0.08, 0.06);
                 oxHead.addShape(s);
             }
             {
                 const s = new Cube(COLOR_NOSE);
-                s.matrix.translate(0, 0, -0.28);
-                s.matrix.scale(0.065, 0.045, 0.01);
+                s.matrix.translate(0, -0.06, -0.21);
+                s.matrix.scale(0.04, 0.04, 0.02);
+                oxHead.addShape(s);
+            }
+            {
+                const s = new Cube(COLOR_EYE);
+                s.matrix.translate(0.07, 0.05, -0.1);
+                s.matrix.scale(0.02, 0.02, 0.02);
+                oxHead.addShape(s);
+            }
+            {
+                const s = new Cube(COLOR_EYE);
+                s.matrix.translate(-0.07, 0.05, -0.1);
+                s.matrix.scale(0.02, 0.02, 0.02);
+                oxHead.addShape(s);
+            }
+            {
+                const s = new Cube(COLOR_HORN);
+                s.matrix.translate(0, 0.15, -0.035);
+                s.matrix.scale(0.09, 0.03, 0.03);
+                oxHead.addShape(s);
+            }
+            {
+                const s = new Cube(COLOR_HORN);
+                s.matrix.translate(0.08, 0.15, -0.035);
+                s.matrix.scale(0.05, 0.05, 0.05);
+                oxHead.addShape(s);
+            }
+            {
+                const s = new Cube(COLOR_HORN);
+                s.matrix.translate(0.1, 0.15, -0.035);
+                s.matrix.rotate(15, 0, 1, 0);
+                s.matrix.rotate(-10, 0, 0, 1);
+                s.matrix.translate(0.09, 0, 0);
+                s.matrix.scale(0.09, 0.025, 0.035);
+                oxHead.addShape(s);
+            }
+            {
+                const s = new Cube(COLOR_HORN);
+                s.matrix.translate(0.12, 0.13, -0.04);
+                s.matrix.rotate(15, 0, 1, 0);
+                s.matrix.translate(0.15, 0, 0);
+                s.matrix.rotate(-10, 0, 0, 1);
+                s.matrix.rotate(45, 0, 0, 1);
+                s.matrix.translate(0.07, 0, 0);
+                s.matrix.scale(0.09, 0.025, 0.035);
+                oxHead.addShape(s);
+            }
+            {
+                const s = new Cube(COLOR_HORN);
+                s.matrix.translate(-0.08, 0.15, -0.035);
+                s.matrix.scale(0.05, 0.05, 0.05);
+                oxHead.addShape(s);
+            }
+            {
+                const s = new Cube(COLOR_HORN);
+                s.matrix.translate(-0.1, 0.15, -0.035);
+                s.matrix.rotate(-15, 0, 1, 0);
+                s.matrix.rotate(10, 0, 0, 1);
+                s.matrix.translate(-0.09, 0, 0);
+                s.matrix.scale(0.09, 0.025, 0.035);
+                oxHead.addShape(s);
+            }
+            {
+                const s = new Cube(COLOR_HORN);
+                s.matrix.translate(-0.12, 0.13, -0.04);
+                s.matrix.rotate(-15, 0, 1, 0);
+                s.matrix.translate(-0.15, 0, 0);
+                s.matrix.rotate(10, 0, 0, 1);
+                s.matrix.rotate(-45, 0, 0, 1);
+                s.matrix.translate(-0.07, 0, 0);
+                s.matrix.scale(0.09, 0.025, 0.035);
                 oxHead.addShape(s);
             }
         }
