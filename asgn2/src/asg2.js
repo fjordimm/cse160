@@ -159,8 +159,8 @@ function updateGlobalCameraMatrix() {
 
 ///// Animal-Specific /////
 
-// const COLOR_FUR1 = [0.267, 0.192, 0.118, 1];
-const COLOR_FUR1 = [1, 1, 1, 1];
+const COLOR_FUR1 = [0.267, 0.192, 0.118, 1];
+const COLOR_NOSE = [0.801, 0.576, 0.354, 1];
 const COLOR_DEBUG1 = [1, 0, 1, 1];
 const COLOR_DEBUG2 = [0, 1, 1, 1];
 
@@ -205,6 +205,12 @@ function setupComponents() {
         const s = new CylinderHoriz(COLOR_FUR1, 30);
         s.matrix.translate(0, 0.015, 0.1);
         s.matrix.scale(0.18, 0.18, 0.5);
+        oxBody.addShape(s);
+    }
+    {
+        const s = new CylinderHoriz(COLOR_FUR1, 30);
+        s.matrix.translate(0, 0.03, -0.4);
+        s.matrix.scale(0.15, 0.15, 0.08);
         oxBody.addShape(s);
     }
     {
@@ -424,6 +430,36 @@ function setupComponents() {
                 }
             }
         }
+        // head
+        {
+            oxBody.addChild(oxHead);
+            oxHead.matrix.translate(0, 0.09, -0.48);
+            oxHead.matrix.rotate(-30, 1, 0, 0);
+            {
+                const s = new Cube(COLOR_FUR1);
+                s.matrix.translate(0, 0, 0);
+                s.matrix.scale(0.11, 0.08, 0.08);
+                oxHead.addShape(s);
+            }
+            {
+                const s = new Cube(COLOR_FUR1);
+                s.matrix.translate(0, 0, -0.1);
+                s.matrix.scale(0.08, 0.06, 0.1);
+                oxHead.addShape(s);
+            }
+            {
+                const s = new Cube(COLOR_FUR1);
+                s.matrix.translate(0, 0, -0.14);
+                s.matrix.scale(0.06, 0.04, 0.14);
+                oxHead.addShape(s);
+            }
+            {
+                const s = new Cube(COLOR_NOSE);
+                s.matrix.translate(0, 0, -0.28);
+                s.matrix.scale(0.065, 0.045, 0.01);
+                oxHead.addShape(s);
+            }
+        }
     }
 
     listOfComponents.push(oxBody);
@@ -460,6 +496,7 @@ function doAnimalMovementSliders(deltaTime, totalTimeElapsed) {
     oxFrontRightLegLower.animationMatrix.setRotate(-getSliderValue("slider-front-right-leg-lower"), 1, 0, 0);
     oxFrontRightLegLowerFoot.animationMatrix.setRotate(getSliderValue("slider-front-right-leg-lower-foot-y"), 0, 1, 0);
     oxFrontRightLegLowerFoot.animationMatrix.rotate(-getSliderValue("slider-front-right-leg-lower-foot-x"), 1, 0, 0);
+    oxHead.animationMatrix.setRotate(getSliderValue("slider-head-x"), 1, 0, 0);
 }
 
 function doAnimalMovementAnimation(deltaTime, totalTimeElapsed) {
