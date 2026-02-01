@@ -597,7 +597,7 @@ function doAnimalMovementAnimation(deltaTime, totalTimeElapsed) {
 function doAnimalMovementPoke(deltaTime, totalTimeElapsed) {
     pokeTimeElapsed += deltaTime;
 
-    // oxHead.animationMatrix.setScale(1 + 0.001 * pokeTimeElapsed, 1 + 0.001 * pokeTimeElapsed, 1 + 0.001 * pokeTimeElapsed);
+    let animationSin = Math.sin(Math.PI * animationTimeElapsed / ANIMATION_PERIOD);
 }
 
 ///// HTML Interface Stuff /////
@@ -732,7 +732,7 @@ class CylinderVert {
             for (let seg = 0; seg < segments; seg++) {
                 let shade = Math.cos(seg * segAngle);
                 shade = (shade + 1) / 2; // Changes range from [-1, 1] to [0, 1]
-                shade = 0.8 + shade * 0.06; // Changes range from [0, 1] to [0.8, 0.86]
+                shade = 0.7 + shade * 0.16; // Changes range from [0, 1] to [0.7, 0.86]
                 this._color_sides[seg] = [this._color[0] * shade, this._color[1] * shade, this._color[2] * shade, this._color[3]];
             }
         }
