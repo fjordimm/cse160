@@ -550,9 +550,8 @@ async function tick(deltaTime, totalTimeElapsed) {
     renderAllComponents();
 }
 
-const ANIMATION_PERIOD = 750; // In milliseconds
-
 function doAnimalMovementSliders(deltaTime, totalTimeElapsed) {
+    oxBody.animationMatrix.setIdentity();
     oxBackLeftLeg.animationMatrix.setRotate(-getSliderValue("slider-back-left-leg"), 1, 0, 0);
     oxBackLeftLegLower.animationMatrix.setRotate(-getSliderValue("slider-back-left-leg-lower"), 1, 0, 0);
     oxBackLeftLegLowerFoot.animationMatrix.setRotate(getSliderValue("slider-back-left-leg-lower-foot-y"), 0, 1, 0);
@@ -574,11 +573,14 @@ function doAnimalMovementSliders(deltaTime, totalTimeElapsed) {
     oxHead.animationMatrix.rotate(getSliderValue("slider-head-z"), 0, 0, 1);
 }
 
+const ANIMATION_PERIOD = 750; // In milliseconds
+
 function doAnimalMovementAnimation(deltaTime, totalTimeElapsed) {
     animationTimeElapsed += deltaTime;
 
     let animationSin = Math.sin(Math.PI * animationTimeElapsed / ANIMATION_PERIOD);
 
+    oxBody.animationMatrix.setIdentity();
     oxBackLeftLeg.animationMatrix.setRotate(30 * animationSin, 1, 0, 0);
     oxBackLeftLegLower.animationMatrix.setRotate(-15 - 15 * animationSin, 1, 0, 0);
     oxBackLeftLegLowerFoot.animationMatrix.setIdentity();
@@ -594,10 +596,44 @@ function doAnimalMovementAnimation(deltaTime, totalTimeElapsed) {
     oxHead.animationMatrix.setRotate(-5 * animationSin, 0, 0, 1);
 }
 
+const POKE_ANIMATION_PERIOD = 600; // In milliseconds
+
 function doAnimalMovementPoke(deltaTime, totalTimeElapsed) {
     pokeTimeElapsed += deltaTime;
 
-    let animationSin = Math.sin(Math.PI * animationTimeElapsed / ANIMATION_PERIOD);
+    let animationSin = Math.sin(Math.PI * pokeTimeElapsed / POKE_ANIMATION_PERIOD);
+
+    if (pokeTimeElapsed <= POKE_ANIMATION_PERIOD) {
+        oxBody.animationMatrix.setTranslate(0, -0.06 * animationSin, 0);
+        oxBackLeftLeg.animationMatrix.setRotate(45 * animationSin, 1, 0, 0);
+        oxBackLeftLegLower.animationMatrix.setRotate(-45 * animationSin, 1, 0, 0);
+        oxBackLeftLegLowerFoot.animationMatrix.setIdentity();
+        oxBackRightLeg.animationMatrix.setRotate(45 * animationSin, 1, 0, 0);
+        oxBackRightLegLower.animationMatrix.setRotate(-45 * animationSin, 1, 0, 0);
+        oxBackRightLegLowerFoot.animationMatrix.setIdentity();
+        oxFrontLeftLeg.animationMatrix.setRotate(45 * animationSin, 1, 0, 0);
+        oxFrontLeftLegLower.animationMatrix.setRotate(-45 * animationSin, 1, 0, 0);
+        oxFrontLeftLegLowerFoot.animationMatrix.setIdentity();
+        oxFrontRightLeg.animationMatrix.setRotate(45 * animationSin, 1, 0, 0);
+        oxFrontRightLegLower.animationMatrix.setRotate(-45 * animationSin, 1, 0, 0);
+        oxFrontRightLegLowerFoot.animationMatrix.setIdentity();
+        oxHead.animationMatrix.setIdentity();
+    } else {
+        oxBody.animationMatrix.setTranslate(0, 0.001 * (pokeTimeElapsed - POKE_ANIMATION_PERIOD), 0);
+        oxBackLeftLeg.animationMatrix.setIdentity();
+        oxBackLeftLegLower.animationMatrix.setIdentity();
+        oxBackLeftLegLowerFoot.animationMatrix.setIdentity();
+        oxBackRightLeg.animationMatrix.setIdentity();
+        oxBackRightLegLower.animationMatrix.setIdentity();
+        oxBackRightLegLowerFoot.animationMatrix.setIdentity();
+        oxFrontLeftLeg.animationMatrix.setIdentity();
+        oxFrontLeftLegLower.animationMatrix.setIdentity();
+        oxFrontLeftLegLowerFoot.animationMatrix.setIdentity();
+        oxFrontRightLeg.animationMatrix.setIdentity();
+        oxFrontRightLegLower.animationMatrix.setIdentity();
+        oxFrontRightLegLowerFoot.animationMatrix.setIdentity();
+        oxHead.animationMatrix.setIdentity();
+    }
 }
 
 ///// HTML Interface Stuff /////
