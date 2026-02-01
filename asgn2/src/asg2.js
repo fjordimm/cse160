@@ -160,9 +160,11 @@ function updateGlobalCameraMatrix() {
 ///// Animal-Specific /////
 
 const COLOR_FUR1 = [0.416, 0.227, 0.161, 1];
+const COLOR_FUR2 = [0.478, 0.29, 0.22, 1];
 const COLOR_NOSE = [0.529, 0.294, 0.212, 1];
 const COLOR_EYE = [0.1, 0.1, 0.1, 1];
 const COLOR_HORN = [0.224, 0.196, 0.176, 1];
+const COLOR_FOOT = [0.149, 0.133, 0.129, 1];
 
 let oxBody;
 let oxBackLeftLeg;
@@ -236,7 +238,7 @@ function setupComponents() {
                     oxBackLeftLeg.addChild(oxBackLeftLegLower);
                     oxBackLeftLegLower.matrix.translate(0, -0.3, 0);
                     {
-                        const s = new CylinderVert(COLOR_FUR1, 8);
+                        const s = new CylinderVert(COLOR_FUR2, 8);
                         s.matrix.translate(0, -0.07, 0);
                         s.matrix.scale(0.04, 0.1, 0.04);
                         oxBackLeftLegLower.addShape(s);
@@ -247,12 +249,12 @@ function setupComponents() {
                             oxBackLeftLegLower.addChild(oxBackLeftLegLowerFoot);
                             oxBackLeftLegLowerFoot.matrix.translate(0, -0.17, 0);
                             {
-                                const s = new Cube(COLOR_FUR1);
+                                const s = new Cube(COLOR_FOOT);
                                 s.matrix.scale(0.045, 0.02, 0.05);
                                 oxBackLeftLegLowerFoot.addShape(s);
                             }
                             {
-                                const s = new Cube(COLOR_FUR1);
+                                const s = new Cube(COLOR_FOOT);
                                 s.matrix.translate(0.015, 0, 0);
                                 s.matrix.rotate(-15, 0, 1, 0);
                                 s.matrix.translate(0, 0, -0.06);
@@ -260,7 +262,7 @@ function setupComponents() {
                                 oxBackLeftLegLowerFoot.addShape(s);
                             }
                             {
-                                const s = new Cube(COLOR_FUR1);
+                                const s = new Cube(COLOR_FOOT);
                                 s.matrix.translate(-0.015, 0, 0);
                                 s.matrix.rotate(15, 0, 1, 0);
                                 s.matrix.translate(0, 0, -0.06);
@@ -294,7 +296,7 @@ function setupComponents() {
                     oxBackRightLeg.addChild(oxBackRightLegLower);
                     oxBackRightLegLower.matrix.translate(0, -0.3, 0);
                     {
-                        const s = new CylinderVert(COLOR_FUR1, 8);
+                        const s = new CylinderVert(COLOR_FUR2, 8);
                         s.matrix.translate(0, -0.07, 0);
                         s.matrix.scale(0.04, 0.1, 0.04);
                         oxBackRightLegLower.addShape(s);
@@ -305,12 +307,12 @@ function setupComponents() {
                             oxBackRightLegLower.addChild(oxBackRightLegLowerFoot);
                             oxBackRightLegLowerFoot.matrix.translate(0, -0.17, 0);
                             {
-                                const s = new Cube(COLOR_FUR1);
+                                const s = new Cube(COLOR_FOOT);
                                 s.matrix.scale(0.045, 0.02, 0.05);
                                 oxBackRightLegLowerFoot.addShape(s);
                             }
                             {
-                                const s = new Cube(COLOR_FUR1);
+                                const s = new Cube(COLOR_FOOT);
                                 s.matrix.translate(0.015, 0, 0);
                                 s.matrix.rotate(-15, 0, 1, 0);
                                 s.matrix.translate(0, 0, -0.06);
@@ -318,7 +320,7 @@ function setupComponents() {
                                 oxBackRightLegLowerFoot.addShape(s);
                             }
                             {
-                                const s = new Cube(COLOR_FUR1);
+                                const s = new Cube(COLOR_FOOT);
                                 s.matrix.translate(-0.015, 0, 0);
                                 s.matrix.rotate(15, 0, 1, 0);
                                 s.matrix.translate(0, 0, -0.06);
@@ -345,7 +347,7 @@ function setupComponents() {
                 oxFrontLeftLeg.addChild(oxFrontLeftLegLower);
                 oxFrontLeftLegLower.matrix.translate(0, -0.2, 0);
                 {
-                    const s = new CylinderVert(COLOR_FUR1, 8);
+                    const s = new CylinderVert(COLOR_FUR2, 8);
                     s.matrix.translate(0, -0.07, 0);
                     s.matrix.scale(0.045, 0.1, 0.045);
                     oxFrontLeftLegLower.addShape(s);
@@ -356,12 +358,12 @@ function setupComponents() {
                         oxFrontLeftLegLower.addChild(oxFrontLeftLegLowerFoot);
                         oxFrontLeftLegLowerFoot.matrix.translate(0, -0.17, 0);
                         {
-                            const s = new Cube(COLOR_FUR1);
+                            const s = new Cube(COLOR_FOOT);
                             s.matrix.scale(0.045, 0.02, 0.05);
                             oxFrontLeftLegLowerFoot.addShape(s);
                         }
                         {
-                            const s = new Cube(COLOR_FUR1);
+                            const s = new Cube(COLOR_FOOT);
                             s.matrix.translate(0.015, 0, 0);
                             s.matrix.rotate(-15, 0, 1, 0);
                             s.matrix.translate(0, 0, -0.06);
@@ -369,7 +371,7 @@ function setupComponents() {
                             oxFrontLeftLegLowerFoot.addShape(s);
                         }
                         {
-                            const s = new Cube(COLOR_FUR1);
+                            const s = new Cube(COLOR_FOOT);
                             s.matrix.translate(-0.015, 0, 0);
                             s.matrix.rotate(15, 0, 1, 0);
                             s.matrix.translate(0, 0, -0.06);
@@ -395,7 +397,7 @@ function setupComponents() {
                 oxFrontRightLeg.addChild(oxFrontRightLegLower);
                 oxFrontRightLegLower.matrix.translate(0, -0.2, 0);
                 {
-                    const s = new CylinderVert(COLOR_FUR1, 8);
+                    const s = new CylinderVert(COLOR_FUR2, 8);
                     s.matrix.translate(0, -0.07, 0);
                     s.matrix.scale(0.045, 0.1, 0.045);
                     oxFrontRightLegLower.addShape(s);
@@ -406,12 +408,12 @@ function setupComponents() {
                         oxFrontRightLegLower.addChild(oxFrontRightLegLowerFoot);
                         oxFrontRightLegLowerFoot.matrix.translate(0, -0.17, 0);
                         {
-                            const s = new Cube(COLOR_FUR1);
+                            const s = new Cube(COLOR_FOOT);
                             s.matrix.scale(0.045, 0.02, 0.05);
                             oxFrontRightLegLowerFoot.addShape(s);
                         }
                         {
-                            const s = new Cube(COLOR_FUR1);
+                            const s = new Cube(COLOR_FOOT);
                             s.matrix.translate(0.015, 0, 0);
                             s.matrix.rotate(-15, 0, 1, 0);
                             s.matrix.translate(0, 0, -0.06);
@@ -419,7 +421,7 @@ function setupComponents() {
                             oxFrontRightLegLowerFoot.addShape(s);
                         }
                         {
-                            const s = new Cube(COLOR_FUR1);
+                            const s = new Cube(COLOR_FOOT);
                             s.matrix.translate(-0.015, 0, 0);
                             s.matrix.rotate(15, 0, 1, 0);
                             s.matrix.translate(0, 0, -0.06);
