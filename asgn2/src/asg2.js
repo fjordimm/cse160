@@ -118,7 +118,7 @@ async function main() {
     globalCameraMatrixZoom = new Matrix4();
     globalCameraMatrix = new Matrix4();
     frameCounter = 0;
-    animalMovement = "sliders";
+    animalMovement = "animation";
     animationTimeElapsed = 0;
     pokeTimeElapsed = 0;
 
@@ -548,6 +548,8 @@ async function tick(deltaTime, totalTimeElapsed) {
     renderAllComponents();
 }
 
+const ANIMATION_PERIOD = 750; // In milliseconds
+
 function doAnimalMovementSliders(deltaTime, totalTimeElapsed) {
     oxBackLeftLeg.animationMatrix.setRotate(-getSliderValue("slider-back-left-leg"), 1, 0, 0);
     oxBackLeftLegLower.animationMatrix.setRotate(-getSliderValue("slider-back-left-leg-lower"), 1, 0, 0);
@@ -573,7 +575,21 @@ function doAnimalMovementSliders(deltaTime, totalTimeElapsed) {
 function doAnimalMovementAnimation(deltaTime, totalTimeElapsed) {
     animationTimeElapsed += deltaTime;
 
-    // oxHead.animationMatrix.setRotate(-0.1 * animationTimeElapsed, 0, 1, 0);
+    let animationSin = Math.sin(Math.PI * animationTimeElapsed / ANIMATION_PERIOD);
+
+    oxBackLeftLeg.animationMatrix.setRotate(30 * animationSin, 1, 0, 0);
+    oxBackLeftLegLower.animationMatrix.setRotate(-15 - 15 * animationSin, 1, 0, 0);
+    oxBackLeftLegLowerFoot.animationMatrix.setIdentity();
+    oxBackRightLeg.animationMatrix.setRotate(-30 * animationSin, 1, 0, 0);
+    oxBackRightLegLower.animationMatrix.setRotate(-15 + 15 * animationSin, 1, 0, 0);
+    oxBackRightLegLowerFoot.animationMatrix.setIdentity();
+    oxFrontLeftLeg.animationMatrix.setRotate(-30 * animationSin, 1, 0, 0);
+    oxFrontLeftLegLower.animationMatrix.setRotate(-15 + 15 * animationSin, 1, 0, 0);
+    oxFrontLeftLegLowerFoot.animationMatrix.setIdentity();
+    oxFrontRightLeg.animationMatrix.setRotate(30 * animationSin, 1, 0, 0);
+    oxFrontRightLegLower.animationMatrix.setRotate(-15 - 15 * animationSin, 1, 0, 0);
+    oxFrontRightLegLowerFoot.animationMatrix.setIdentity();
+    oxHead.animationMatrix.setRotate(-5 * animationSin, 0, 0, 1);
 }
 
 function doAnimalMovementPoke(deltaTime, totalTimeElapsed) {
