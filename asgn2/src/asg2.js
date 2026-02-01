@@ -565,7 +565,9 @@ function doAnimalMovementSliders(deltaTime, totalTimeElapsed) {
     oxFrontRightLegLower.animationMatrix.setRotate(-getSliderValue("slider-front-right-leg-lower"), 1, 0, 0);
     oxFrontRightLegLowerFoot.animationMatrix.setRotate(getSliderValue("slider-front-right-leg-lower-foot-y"), 0, 1, 0);
     oxFrontRightLegLowerFoot.animationMatrix.rotate(-getSliderValue("slider-front-right-leg-lower-foot-x"), 1, 0, 0);
-    oxHead.animationMatrix.setRotate(getSliderValue("slider-head-x"), 1, 0, 0);
+    oxHead.animationMatrix.setRotate(getSliderValue("slider-head-y"), 0, 1, 0);
+    oxHead.animationMatrix.rotate(getSliderValue("slider-head-x"), 1, 0, 0);
+    oxHead.animationMatrix.rotate(getSliderValue("slider-head-z"), 0, 0, 1);
 }
 
 function doAnimalMovementAnimation(deltaTime, totalTimeElapsed) {
