@@ -1,91 +1,9 @@
-
-///// WebGL Stuff /////
-
-var VSHADER_SOURCE = `
-uniform mat4 u_ModelMatrix;
-uniform mat4 u_TransformMatrix;
-uniform mat4 u_GlobalCameraMatrix;
-attribute vec4 a_Position;
-void main() {
-    gl_Position = u_GlobalCameraMatrix * u_TransformMatrix * u_ModelMatrix * a_Position;
-}
-`;
-
-// Fragment shader program
-var FSHADER_SOURCE = `
-precision mediump float;
-uniform vec4 u_FragColor;
-void main() {
-    gl_FragColor = u_FragColor;
-}
-`;
-
-// WebGL Globals
-let canvas;
-let gl;
-let vertexBuffer;
-let u_FragColor;
-let u_ModelMatrix;
-let u_TransformMatrix;
-let u_GlobalCameraMatrix;
-let a_Position;
-
-function setupWebGL() {
-    canvas = document.getElementById('webgl');
-
-    gl = canvas.getContext("webgl", { preserveDrawingBuffer: true});
-    if (!gl) {
-        console.log('Failed to get the rendering context for WebGL');
-        return;
-    }
-
-    vertexBuffer = gl.createBuffer();
-    if (!vertexBuffer) {
-        console.log('Failed to create buffer object');
-        return;
-    }
-}
-
-function setupGLSLVariables() {
-    if (!initShaders(gl, VSHADER_SOURCE, FSHADER_SOURCE)) {
-        console.log('Failed to intialize shaders.');
-        return;
-    }
-
-    u_FragColor = gl.getUniformLocation(gl.program, 'u_FragColor');
-    if (!u_FragColor) {
-        console.log('Failed to get the storage location of u_FragColor');
-        return;
-    }
-
-    u_ModelMatrix = gl.getUniformLocation(gl.program, 'u_ModelMatrix');
-    if (!u_ModelMatrix) {
-        console.log('Failed to get the storage location of u_ModelMatrix');
-        return;
-    }
-
-    u_TransformMatrix = gl.getUniformLocation(gl.program, 'u_TransformMatrix');
-    if (!u_TransformMatrix) {
-        console.log('Failed to get the storage location of u_TransformMatrix');
-        return;
-    }
-
-    u_GlobalCameraMatrix = gl.getUniformLocation(gl.program, 'u_GlobalCameraMatrix');
-    if (!u_GlobalCameraMatrix) {
-        console.log('Failed to get the storage location of u_GlobalCameraMatrix');
-        return;
-    }
-
-    a_Position = gl.getAttribLocation(gl.program, 'a_Position');
-    if (a_Position < 0) {
-        console.log('Failed to get the storage location of a_Position');
-        return;
-    }
-}
+import GraphicsManager from "./GraphicsManager.js";
 
 ///// Main /////
 
 // Main Globals
+let graphicsManager;
 let listOfComponents;
 let globalCameraMatrixRotY;
 let globalCameraMatrixRotX;
@@ -100,17 +18,17 @@ const GLOBAL_ROTATION_SPEED = 150.0;
 const GLOBAL_SCROLL_SPEED = 15.0;
 const _IDENTITY_MATRIX = new Matrix4();
 
-async function main() {
-    setupWebGL();
-    setupGLSLVariables();
+export async function main() {
+    graphicsManager = new GraphicsManager();
+    graphicsManager.setup();
 
-    gl.enable(gl.DEPTH_TEST);
-    gl.enable(gl.CULL_FACE);
-    gl.cullFace(gl.BACK);
-    gl.frontFace(gl.CCW);
+    graphicsManager.gl.enable(graphicsManager.gl.DEPTH_TEST);
+    graphicsManager.gl.enable(graphicsManager.gl.CULL_FACE);
+    graphicsManager.gl.cullFace(graphicsManager.gl.BACK);
+    graphicsManager.gl.frontFace(graphicsManager.gl.CCW);
 
-    gl.clearColor(0.0, 0.0, 0.0, 1.0);
-    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    graphicsManager.gl.clearColor(0.0, 0.0, 0.0, 1.0);
+    graphicsManager.gl.clear(graphicsManager.gl.COLOR_BUFFER_BIT | graphicsManager.gl.DEPTH_BUFFER_BIT);
 
     listOfComponents = [];
     globalCameraMatrixRotY = new Matrix4();
@@ -125,8 +43,8 @@ async function main() {
     setupComponents();
     // renderAllComponents();
 
-    canvas.onmousemove = function (ev) { handleMouseMove(ev); };
-    canvas.onmousedown = function (ev) { handleMouseClick(ev); };
+    graphicsManager.canvas.onmousemove = function (ev) { handleMouseMove(ev); };
+    graphicsManager.canvas.onmousedown = function (ev) { handleMouseClick(ev); };
     window.addEventListener("wheel", function (ev) { handleScroll(ev); });
 
     countFramesAndUpdateDisplay();
@@ -149,6 +67,8 @@ async function main() {
         frameCounter++;
     }
 }
+
+window.main = main;
 
 function updateGlobalCameraMatrix() {
     globalCameraMatrix.setIdentity();
@@ -647,8 +567,8 @@ function convertCoordsEventToGL(ev) {
     let y = ev.clientY; // y coordinate of a mouse pointer
     let rect = ev.target.getBoundingClientRect();
 
-    x = ((x - rect.left) - canvas.width / 2) / (canvas.width / 2);
-    y = (canvas.height / 2 - (y - rect.top)) / (canvas.height / 2);
+    x = ((x - rect.left) - graphicsManager.canvas.width / 2) / (graphicsManager.canvas.width / 2);
+    y = (graphicsManager.canvas.height / 2 - (y - rect.top)) / (graphicsManager.canvas.height / 2);
 
     return [x, y];
 }
@@ -711,7 +631,7 @@ function handleStopAnimation() {
 ///// Rendering /////
 
 function renderAllComponents() {
-    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    graphicsManager.gl.clear(graphicsManager.gl.COLOR_BUFFER_BIT | graphicsManager.gl.DEPTH_BUFFER_BIT);
 
     for (let component of listOfComponents) {
         component.render(_IDENTITY_MATRIX);
@@ -733,25 +653,25 @@ class Cube {
     }
 
     render() {
-        gl.uniformMatrix4fv(u_GlobalCameraMatrix, false, globalCameraMatrix.elements);
-        gl.uniformMatrix4fv(u_ModelMatrix, false, this.matrix.elements);
+        graphicsManager.gl.uniformMatrix4fv(graphicsManager.u_GlobalCameraMatrix, false, globalCameraMatrix.elements);
+        graphicsManager.gl.uniformMatrix4fv(graphicsManager.u_ModelMatrix, false, this.matrix.elements);
 
-        gl.uniform4f(u_FragColor, ...this._color_top);
+        graphicsManager.gl.uniform4f(graphicsManager.u_FragColor, ...this._color_top);
         drawTriangle([-1, 1, -1, 1, 1, -1, -1, 1, 1]);
         drawTriangle([1, 1, 1, -1, 1, 1, 1, 1, -1]);
-        gl.uniform4f(u_FragColor, ...this._color_front);
+        graphicsManager.gl.uniform4f(graphicsManager.u_FragColor, ...this._color_front);
         drawTriangle([-1, -1, -1, 1, -1, -1, -1, 1, -1]);
         drawTriangle([1, 1, -1, -1, 1, -1, 1, -1, -1]);
-        gl.uniform4f(u_FragColor, ...this._color_right);
+        graphicsManager.gl.uniform4f(graphicsManager.u_FragColor, ...this._color_right);
         drawTriangle([1, -1, -1, 1, -1, 1, 1, 1, -1]);
         drawTriangle([1, 1, 1, 1, 1, -1, 1, -1, 1]);
-        gl.uniform4f(u_FragColor, ...this._color_back);
+        graphicsManager.gl.uniform4f(graphicsManager.u_FragColor, ...this._color_back);
         drawTriangle([1, -1, 1, -1, -1, 1, 1, 1, 1]);
         drawTriangle([-1, 1, 1, 1, 1, 1, -1, -1, 1]);
-        gl.uniform4f(u_FragColor, ...this._color_left);
+        graphicsManager.gl.uniform4f(graphicsManager.u_FragColor, ...this._color_left);
         drawTriangle([-1, -1, 1, -1, -1, -1, -1, 1, 1]);
         drawTriangle([-1, 1, -1, -1, 1, 1, -1, -1, -1]);
-        gl.uniform4f(u_FragColor, ...this._color_bottom);
+        graphicsManager.gl.uniform4f(graphicsManager.u_FragColor, ...this._color_bottom);
         drawTriangle([-1, -1, 1, 1, -1, 1, -1, -1, -1]);
         drawTriangle([1, -1, -1, -1, -1, -1, 1, -1, 1]);
     }
@@ -780,8 +700,8 @@ class CylinderVert {
     }
 
     render() {
-        gl.uniformMatrix4fv(u_GlobalCameraMatrix, false, globalCameraMatrix.elements);
-        gl.uniformMatrix4fv(u_ModelMatrix, false, this.matrix.elements);
+        graphicsManager.gl.uniformMatrix4fv(graphicsManager.u_GlobalCameraMatrix, false, globalCameraMatrix.elements);
+        graphicsManager.gl.uniformMatrix4fv(graphicsManager.u_ModelMatrix, false, this.matrix.elements);
 
         const segAngle = 2 * Math.PI / this._segments;
         for (let seg = 0; seg < this._segments; seg++) {
@@ -794,14 +714,14 @@ class CylinderVert {
             const x2 = Math.cos(angle2);
             const z2 = Math.sin(angle2);
 
-            gl.uniform4f(u_FragColor, ...this._color_top);
+            graphicsManager.gl.uniform4f(graphicsManager.u_FragColor, ...this._color_top);
             drawTriangle([
                 0,  1, 0,
                 x1, 1, z1,
                 x2, 1, z2
             ]);
 
-            gl.uniform4f(u_FragColor, ...this._color_sides[seg]);
+            graphicsManager.gl.uniform4f(graphicsManager.u_FragColor, ...this._color_sides[seg]);
             drawTriangle([
                 x1, -1, z1,
                 x2, -1, z2,
@@ -813,7 +733,7 @@ class CylinderVert {
                 x2, -1, z2
             ]);
 
-            gl.uniform4f(u_FragColor, ...this._color_bottom);
+            graphicsManager.gl.uniform4f(graphicsManager.u_FragColor, ...this._color_bottom);
             drawTriangle([
                 0,  -1, 0,
                 x2, -1, z2,
@@ -846,8 +766,8 @@ class CylinderHoriz {
     }
 
     render() {
-        gl.uniformMatrix4fv(u_GlobalCameraMatrix, false, globalCameraMatrix.elements);
-        gl.uniformMatrix4fv(u_ModelMatrix, false, this.matrix.elements);
+        graphicsManager.gl.uniformMatrix4fv(graphicsManager.u_GlobalCameraMatrix, false, globalCameraMatrix.elements);
+        graphicsManager.gl.uniformMatrix4fv(graphicsManager.u_ModelMatrix, false, this.matrix.elements);
 
         const segAngle = 2 * Math.PI / this._segments;
         for (let seg = 0; seg < this._segments; seg++) {
@@ -860,14 +780,14 @@ class CylinderHoriz {
             const x2 = Math.cos(angle2);
             const y2 = Math.sin(angle2);
 
-            gl.uniform4f(u_FragColor, ...this._color_front);
+            graphicsManager.gl.uniform4f(graphicsManager.u_FragColor, ...this._color_front);
             drawTriangle([
                 0,  0,  -1,
                 x1, y1, -1,
                 x2, y2, -1
             ]);
 
-            gl.uniform4f(u_FragColor, ...this._color_sides[seg]);
+            graphicsManager.gl.uniform4f(graphicsManager.u_FragColor, ...this._color_sides[seg]);
             drawTriangle([
                 x1, y1,  1,
                 x2, y2,  1,
@@ -879,7 +799,7 @@ class CylinderHoriz {
                 x2, y2,  1
             ]);
 
-            gl.uniform4f(u_FragColor, ...this._color_back);
+            graphicsManager.gl.uniform4f(graphicsManager.u_FragColor, ...this._color_back);
             drawTriangle([
                 0,  0,  1,
                 x2, y2, 1,
@@ -890,12 +810,12 @@ class CylinderHoriz {
 }
 
 function drawTriangle(vertices) {
-    gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.DYNAMIC_DRAW);
-    gl.vertexAttribPointer(a_Position, 3, gl.FLOAT, false, 0, 0);
-    gl.enableVertexAttribArray(a_Position);
+    graphicsManager.gl.bindBuffer(graphicsManager.gl.ARRAY_BUFFER, graphicsManager.vertexBuffer);
+    graphicsManager.gl.bufferData(graphicsManager.gl.ARRAY_BUFFER, new Float32Array(vertices), graphicsManager.gl.DYNAMIC_DRAW);
+    graphicsManager.gl.vertexAttribPointer(graphicsManager.a_Position, 3, graphicsManager.gl.FLOAT, false, 0, 0);
+    graphicsManager.gl.enableVertexAttribArray(graphicsManager.a_Position);
 
-    gl.drawArrays(gl.TRIANGLES, 0, 3);
+    graphicsManager.gl.drawArrays(graphicsManager.gl.TRIANGLES, 0, 3);
 }
 
 class Component {
@@ -919,7 +839,7 @@ class Component {
         finalMatrix.multiply(parentMatrix);
         finalMatrix.multiply(this.matrix);
         finalMatrix.multiply(this.animationMatrix);
-        gl.uniformMatrix4fv(u_TransformMatrix, false, finalMatrix.elements);
+        graphicsManager.gl.uniformMatrix4fv(graphicsManager.u_TransformMatrix, false, finalMatrix.elements);
         
         for (let shape of this._shapes) {
             shape.render();
