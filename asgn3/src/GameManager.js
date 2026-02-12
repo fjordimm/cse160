@@ -1,14 +1,17 @@
 import GraphicsManager from "./GraphicsManager.js";
+import Component from "./Component.js";
 import Cube from "./shapes/Cube.js";
 
 const MIN_FRAME_LENGTH = 16; // 16 for 60fps.
 const GLOBAL_ROTATION_SPEED = 150.0;
 const GLOBAL_SCROLL_SPEED = 15.0;
 
+const _IDENTITY_MATRIX = new Matrix4();
+
 export default class GameManager {
     constructor() {
         this._graphicsManager = null;
-        this._listOfShapes = null;
+        this._listOfComponents = null;
         this._frameCounter = 0;
         this._globalCameraMatrixRotY;
         this._globalCameraMatrixRotX;
@@ -30,7 +33,7 @@ export default class GameManager {
         this._graphicsManager.gl.clearColor(0.0, 0.0, 0.0, 1.0);
         this._graphicsManager.gl.clear(this._graphicsManager.gl.COLOR_BUFFER_BIT | this._graphicsManager.gl.DEPTH_BUFFER_BIT);
 
-        this._listOfShapes = [];
+        this._listOfComponents = [];
         this._frameCounter = 0;
         this._globalCameraMatrixRotY = new Matrix4();
         this._globalCameraMatrixRotX = new Matrix4();
@@ -40,8 +43,13 @@ export default class GameManager {
         this._lastMouseY = 0;
 
         // TODO: setup components
-        const cub = new Cube([1.0, 0.0, 0.0, 1.0]);
-        this._listOfShapes.push(cub);
+        const bob = new Component();
+        {
+            const s = new Cube([1.0, 0.0, 0.0, 1.0]);
+            s.matrix.scale(0.2, 0.2, 0.2);
+            bob.addShape(s);
+        }
+        this._listOfComponents.push(bob);
 
         this._graphicsManager.canvas.onmousemove = (ev) => { this._handleMouseMove(ev); };
 
@@ -68,16 +76,16 @@ export default class GameManager {
 
     async _tick(deltaTime, totalTimeElapsed) {
         // TODO: render all components
-        await this._renderAllShapes();
+        await this._renderAllComponents();
     }
 
-    async _renderAllShapes() {
+    async _renderAllComponents() {
         const gl = this._graphicsManager.gl;
 
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-        for (let shape of this._listOfShapes) {
-            shape.render(this._graphicsManager, this._globalCameraMatrix);
+        for (let component of this._listOfComponents) {
+            component.render(this._graphicsManager, this._globalCameraMatrix, _IDENTITY_MATRIX);
         }
     }
 
