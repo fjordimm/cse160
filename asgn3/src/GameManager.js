@@ -25,14 +25,6 @@ export default class GameManager {
         this._grm = new GraphicsManager();
         await this._grm.setup();
 
-        this._grm.gl.enable(this._grm.gl.DEPTH_TEST);
-        this._grm.gl.enable(this._grm.gl.CULL_FACE);
-        this._grm.gl.cullFace(this._grm.gl.BACK);
-        this._grm.gl.frontFace(this._grm.gl.CCW);
-
-        this._grm.gl.clearColor(0.0, 0.0, 0.0, 1.0);
-        this._grm.gl.clear(this._grm.gl.COLOR_BUFFER_BIT | this._grm.gl.DEPTH_BUFFER_BIT);
-
         this._listOfComponents = [];
         this._frameCounter = 0;
         this._globalCameraMatrixRotY = new Matrix4();
@@ -45,9 +37,8 @@ export default class GameManager {
         /////////////////////////////////////////////////////////
         const bob = new Component();
         {
-            const s = new Cube([1.0, 0.0, 0.0, 1.0]);
+            const s = new Cube([1.0, 0.0, 0.0, 1.0], "../res/images/debugtex.png", 0.75);
             s.matrix.scale(0.2, 0.2, 0.2);
-            s.setTexture(this._grm, "../res/images/debugtex.png");
             bob.addShape(s);
         }
         this._listOfComponents.push(bob);

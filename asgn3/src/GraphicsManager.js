@@ -12,6 +12,7 @@ export default class GraphicsManager {
         this.uvBuffer = null;
         this.u_FragColor = null;
         this.u_Texture = null;
+        this.u_TextureWeight = null;
         this.u_ModelMatrix = null;
         this.u_TransformMatrix = null;
         this.u_GlobalCameraMatrix = null;
@@ -42,7 +43,7 @@ export default class GraphicsManager {
             return;
         }
 
-        // Setup GLSL Variables
+        // GLSL Variables
 
         const vertexShaderSource = await loadFileText(VERTEX_SHADER_PATH);
         const fragmentShaderSource = await loadFileText(FRAGMENT_SHADER_PATH);
@@ -61,6 +62,12 @@ export default class GraphicsManager {
         this.u_Texture = this.gl.getUniformLocation(this.gl.program, 'u_Texture');
         if (!this.u_Texture) {
             console.log('Failed to get the storage location of u_Texture');
+            return;
+        }
+
+        this.u_TextureWeight = this.gl.getUniformLocation(this.gl.program, 'u_TextureWeight');
+        if (!this.u_TextureWeight) {
+            console.log('Failed to get the storage location of u_TextureWeight');
             return;
         }
 
@@ -93,5 +100,17 @@ export default class GraphicsManager {
             console.log('Failed to get the storage location of a_UV');
             return;
         }
+
+        // GL Settings
+
+        this.gl.enable(this.gl.DEPTH_TEST);
+        this.gl.enable(this.gl.CULL_FACE);
+        this.gl.cullFace(this.gl.BACK);
+        this.gl.frontFace(this.gl.CCW);
+
+        this.gl.pixelStorei(this.gl.UNPACK_FLIP_Y_WEBGL, true);
+
+        this.gl.clearColor(0.0, 0.0, 0.0, 1.0);
+        this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
     }
 }
