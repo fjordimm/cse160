@@ -5,6 +5,8 @@ import Cube from "./shapes/Cube.js";
 import { DefaultDict } from "./util.js";
 
 const MIN_FRAME_LENGTH = 16; // 16 for 60fps.
+const CAM_MOVEMENT_SPEED = 0.01;
+const CAM_ROTATION_SPEED = 0.1;
 
 const _IDENTITY_MATRIX = new Matrix4();
 
@@ -67,33 +69,43 @@ export default class GameManager {
     async _tick(deltaTime, totalTimeElapsed) {
         // this._listOfComponents[0].animationMatrix.rotate(deltaTime * 0.05, 0, 1, 0);
 
-        // Moving the camera
+        // Camera rotation
 
-        const moveVec = new Vector3();
+        let camHorizRotation = 0;
+
+        if (this._pressedKeys["KeyQ"]) {
+            camHorizRotation += 1;
+        }
+        if (this._pressedKeys["KeyE"]) {
+            camHorizRotation -= 1;
+        }
+
+        this._camera.rotate(camHorizRotation * deltaTime * CAM_ROTATION_SPEED);
+
+        // Camera movement
+
+        const camMoveVec = new Vector3();
 
         if (this._pressedKeys["KeyW"]) {
-            moveVec.elements[2] -= 1;
+            camMoveVec.elements[2] -= 1;
         }
         if (this._pressedKeys["KeyS"]) {
-            moveVec.elements[2] += 1;
+            camMoveVec.elements[2] += 1;
         }
         if (this._pressedKeys["KeyA"]) {
-            moveVec.elements[0] -= 1;
+            camMoveVec.elements[0] -= 1;
         }
         if (this._pressedKeys["KeyD"]) {
-            moveVec.elements[0] += 1;
+            camMoveVec.elements[0] += 1;
         }
 
-        // moveVec.normalize();
+        camMoveVec.normalize();
 
-        const speed = 0.05;
-        moveVec.elements[0] *= speed;
-        moveVec.elements[1] *= speed;
-        moveVec.elements[2] *= speed;
+        camMoveVec.elements[0] *= deltaTime * CAM_MOVEMENT_SPEED;
+        camMoveVec.elements[1] *= deltaTime * CAM_MOVEMENT_SPEED;
+        camMoveVec.elements[2] *= deltaTime * CAM_MOVEMENT_SPEED;
 
-        this._camera.move(moveVec);
-
-        this._camera.rotate(0.01);
+        this._camera.move(camMoveVec);
 
         // Rendering
 
