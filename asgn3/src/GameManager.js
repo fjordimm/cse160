@@ -40,7 +40,7 @@ export default class GameManager {
         const bob = new Component();
         {
             const s = new Cube([1.0, 0.0, 0.0, 1.0], "./res/images/debugtex.png", 0.75);
-            s.matrix.translate(0, -1, -3);
+            s.matrix.translate(0, 0, -3);
             bob.addShape(s);
         }
         {
