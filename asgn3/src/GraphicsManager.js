@@ -1,21 +1,8 @@
 
-var VSHADER_SOURCE = `
-uniform mat4 u_ModelMatrix;
-uniform mat4 u_TransformMatrix;
-uniform mat4 u_GlobalCameraMatrix;
-attribute vec4 a_Position;
-void main() {
-    gl_Position = u_GlobalCameraMatrix * u_TransformMatrix * u_ModelMatrix * a_Position;
-}
-`;
+import { loadFileText } from "./util.js";
 
-var FSHADER_SOURCE = `
-precision mediump float;
-uniform vec4 u_FragColor;
-void main() {
-    gl_FragColor = u_FragColor;
-}
-`;
+const VERTEX_SHADER_PATH = "./src/shaders/vertex_shader.glsl";
+const FRAGMENT_SHADER_PATH = "./src/shaders/fragment_shader.glsl";
 
 export default class GraphicsManager {
     constructor() {
@@ -29,7 +16,7 @@ export default class GraphicsManager {
         this.a_Position = null;
     }
 
-    setup() {
+    async setup() {
         // Setup WebGL
 
         this.canvas = document.getElementById('webgl');
@@ -48,7 +35,10 @@ export default class GraphicsManager {
 
         // Setup GLSL Variables
 
-        if (!initShaders(this.gl, VSHADER_SOURCE, FSHADER_SOURCE)) {
+        const vertexShaderSource = await loadFileText(VERTEX_SHADER_PATH);
+        const fragmentShaderSource = await loadFileText(FRAGMENT_SHADER_PATH);
+
+        if (!initShaders(this.gl, vertexShaderSource, fragmentShaderSource)) {
             console.log('Failed to intialize shaders.');
             return;
         }

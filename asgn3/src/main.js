@@ -20,7 +20,7 @@ const _IDENTITY_MATRIX = new Matrix4();
 
 export async function main() {
     graphicsManager = new GraphicsManager();
-    graphicsManager.setup();
+    await graphicsManager.setup();
 
     graphicsManager.gl.enable(graphicsManager.gl.DEPTH_TEST);
     graphicsManager.gl.enable(graphicsManager.gl.CULL_FACE);
