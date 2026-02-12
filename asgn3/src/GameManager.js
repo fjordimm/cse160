@@ -100,27 +100,31 @@ export default class GameManager {
             camHorizRotation -= 1;
         }
 
-        this._camera.rotate(camHorizRotation * deltaTime * CAM_ROTATION_SPEED);
+        this._camera.rotateHoriz(camHorizRotation * deltaTime * CAM_ROTATION_SPEED);
 
         // Camera movement
 
-        let camMoveX = 0;
-        let camMoveZ = 0;
+        const camMoveVec = new Vector3();
 
         if (this._pressedKeys["KeyA"]) {
-            camMoveX -= 1;
+            camMoveVec.elements[0] -= 1;
         }
         if (this._pressedKeys["KeyD"]) {
-            camMoveX += 1;
+            camMoveVec.elements[0] += 1;
         }
         if (this._pressedKeys["KeyW"]) {
-            camMoveZ -= 1;
+            camMoveVec.elements[2] -= 1;
         }
         if (this._pressedKeys["KeyS"]) {
-            camMoveZ += 1;
+            camMoveVec.elements[2] += 1;
         }
 
-        this._camera.moveForwards(camMoveX, camMoveZ, deltaTime * CAM_MOVEMENT_SPEED);
+        camMoveVec.normalize();
+        camMoveVec.elements[0] *= deltaTime * CAM_MOVEMENT_SPEED;
+        camMoveVec.elements[1] *= deltaTime * CAM_MOVEMENT_SPEED;
+        camMoveVec.elements[2] *= deltaTime * CAM_MOVEMENT_SPEED;
+
+        this._camera.moveForwards(camMoveVec);
 
         // Rendering
 
@@ -147,6 +151,7 @@ export default class GameManager {
     }
 
     _onCursorMove(x, y) {
-        this._camera.rotate(-x * CAM_CURSOR_SENSITIVITY);
+        this._camera.rotateVert(-y * CAM_CURSOR_SENSITIVITY);
+        this._camera.rotateHoriz(-x * CAM_CURSOR_SENSITIVITY);
     }
 }

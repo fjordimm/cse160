@@ -1,19 +1,30 @@
+const FORWARD_VEC = new Vector3([0, 0, -1]);
 const UP_VEC = new Vector3([0, 1, 0]);
 
 export default class Camera {
     constructor(fov, canvasWidth, canvasHeight, nearPlane, farPlane) {
-        this._eye = new Vector3([0, 0, 0]);
-        this._at = new Vector3([0, 0, -1]);
-
         this._projectionMatrix = new Matrix4();
-        this._projectionMatrix.setPerspective(60, canvasWidth / canvasHeight, nearPlane, farPlane);
+        this._projectionMatrix.setPerspective(fov, canvasWidth / canvasHeight, nearPlane, farPlane);
+
+        this._pos = new Vector3([0, 0, 0]);
+        this._rotationVert = 0;
+        this._rotationHoriz = 0;
 
         this._viewMatrix = new Matrix4();
         this._updateViewMatrix();
     }
 
     _updateViewMatrix() {
-        this._viewMatrix.setLookAt(...this._eye.elements, ...this._at.elements, ...UP_VEC.elements);
+        const rotationMatrix = new Matrix4();
+        rotationMatrix.rotate(this._rotationHoriz, 0, 1, 0);
+        rotationMatrix.rotate(this._rotationVert, 1, 0, 0);
+        const atVec = rotationMatrix.multiplyVector3(FORWARD_VEC);
+        
+        atVec.elements[0] += this._pos.elements[0];
+        atVec.elements[1] += this._pos.elements[1];
+        atVec.elements[2] += this._pos.elements[2];
+
+        this._viewMatrix.setLookAt(...this._pos.elements, ...atVec.elements, ...UP_VEC.elements);
     }
 
     getViewMatrix() {
@@ -24,58 +35,37 @@ export default class Camera {
         return this._projectionMatrix;
     }
 
-    rotate(degrees) {
-        const forwardVec = new Vector3();
-        forwardVec.elements[0] = this._at.elements[0] - this._eye.elements[0];
-        forwardVec.elements[1] = this._at.elements[1] - this._eye.elements[1];
-        forwardVec.elements[2] = this._at.elements[2] - this._eye.elements[2];
+    rotateVert(degrees) {
+        this._rotationVert += degrees;
+        if (this._rotationVert < -89) { this._rotationVert = -89; }
+        if (this._rotationVert > 89) { this._rotationVert = 89; }
+        this._updateViewMatrix();
+    }
 
-        const rotationMatrix = new Matrix4();
-        rotationMatrix.setRotate(degrees, ...UP_VEC.elements);
-
-        const rotatedForwardVec = rotationMatrix.multiplyVector3(forwardVec);
-
-        this._at.elements[0] = this._eye.elements[0] + rotatedForwardVec.elements[0];
-        this._at.elements[1] = this._eye.elements[1] + rotatedForwardVec.elements[1];
-        this._at.elements[2] = this._eye.elements[2] + rotatedForwardVec.elements[2];
-
+    rotateHoriz(degrees) {
+        this._rotationHoriz += degrees;
         this._updateViewMatrix();
     }
 
     move(vector) {
-        this._eye.elements[0] += vector.elements[0];
-        this._eye.elements[1] += vector.elements[1];
-        this._eye.elements[2] += vector.elements[2];
-
-        this._at.elements[0] += vector.elements[0];
-        this._at.elements[1] += vector.elements[1];
-        this._at.elements[2] += vector.elements[2];
-
+        this._pos.elements[0] += vector.elements[0];
+        this._pos.elements[1] += vector.elements[1];
+        this._pos.elements[2] += vector.elements[2];
         this._updateViewMatrix();
     }
 
-    moveForwards(movementX, movementZ, distance) {
-        if (movementX === 0 && movementZ === 0) {
+    moveForwards(movementVec) {
+        if (movementVec[0] === 0 && movementVec[1] === 0 && movementVec[2] === 0) {
             return;
         } else {
-            const forwardVec = new Vector3();
-            forwardVec.elements[0] = this._at.elements[0] - this._eye.elements[0];
-            forwardVec.elements[1] = this._at.elements[1] - this._eye.elements[1];
-            forwardVec.elements[2] = this._at.elements[2] - this._eye.elements[2];
+            const rotationMatrix = new Matrix4();
+            rotationMatrix.rotate(this._rotationHoriz, 0, 1, 0);
+            rotationMatrix.rotate(this._rotationVert, 1, 0, 0);
+            const rotatedMovementVec = rotationMatrix.multiplyVector3(movementVec);
 
-            const rotateTowardsMovement = new Matrix4();
-            rotateTowardsMovement.setLookAt(0, 0, 0, -movementX, 0, movementZ, ...UP_VEC.elements);
-
-            const rotatedForwardVec = rotateTowardsMovement.multiplyVector3(forwardVec);
-
-            this._eye.elements[0] += rotatedForwardVec.elements[0] * distance;
-            this._eye.elements[1] += rotatedForwardVec.elements[1] * distance;
-            this._eye.elements[2] += rotatedForwardVec.elements[2] * distance;
-
-            this._at.elements[0] += rotatedForwardVec.elements[0] * distance;
-            this._at.elements[1] += rotatedForwardVec.elements[1] * distance;
-            this._at.elements[2] += rotatedForwardVec.elements[2] * distance;
-
+            this._pos.elements[0] += rotatedMovementVec.elements[0];
+            this._pos.elements[1] += rotatedMovementVec.elements[1];
+            this._pos.elements[2] += rotatedMovementVec.elements[2];
             this._updateViewMatrix();
         }
     }
