@@ -1,1 +1,2 @@
 - Asked Claude how to use JavaScript modules.
+- Used Claude to help with locking the pointer.

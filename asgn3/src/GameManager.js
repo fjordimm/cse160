@@ -3,10 +3,12 @@ import Camera from "./Camera.js";
 import Component from "./Component.js";
 import Cube from "./shapes/Cube.js";
 import { DefaultDict } from "./util.js";
+import CursorManager from "./CursorManager.js";
 
 const MIN_FRAME_LENGTH = 16; // 16 for 60fps.
 const CAM_MOVEMENT_SPEED = 0.01;
 const CAM_ROTATION_SPEED = 0.1;
+const CAM_CURSOR_SENSITIVITY = 0.5;
 
 const _IDENTITY_MATRIX = new Matrix4();
 
@@ -15,6 +17,7 @@ export default class GameManager {
         this._grm = null; // GraphicsManager
         this._camera = null;
         this._pressedKeys = null;
+        this._cursorManager = null;
         this._listOfComponents = null;
         this._frameCounter = 0;
         this._lastMouseX = 0;
@@ -27,6 +30,7 @@ export default class GameManager {
 
         this._camera = new Camera(60, this._grm.canvas.width, this._grm.canvas.height, 0.1, 1000);
         this._pressedKeys = new DefaultDict(false);
+        this._cursorManager = new CursorManager();
         this._listOfComponents = [];
         this._frameCounter = 0;
         this._lastMouseX = 0;
@@ -60,6 +64,8 @@ export default class GameManager {
 
         window.onkeydown = (ev) => { this._pressedKeys[ev.code] = true; };
         window.onkeyup = (ev) => { this._pressedKeys[ev.code] = false; };
+        this._cursorManager.setupPointerLock(this._grm.canvas, document);
+        this._cursorManager.setOnMove((x, y) => { this._onCursorMove(x, y); });
 
         this._countFramesAndUpdateDisplay();
 
@@ -83,8 +89,6 @@ export default class GameManager {
     }
 
     async _tick(deltaTime, totalTimeElapsed) {
-        // this._listOfComponents[0].animationMatrix.rotate(deltaTime * 0.05, 0, 1, 0);
-
         // Camera rotation
 
         let camHorizRotation = 0;
@@ -140,5 +144,9 @@ export default class GameManager {
             await new Promise(r => setTimeout(r, 1000));
             document.getElementById("fpsdisplay").innerHTML = `${this._frameCounter}`;
         }
+    }
+
+    _onCursorMove(x, y) {
+        this._camera.rotate(-x * CAM_CURSOR_SENSITIVITY);
     }
 }
