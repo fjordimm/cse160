@@ -54,13 +54,13 @@ export default class Camera {
         this._updateViewMatrix();
     }
 
-    moveForwards(movementVec) {
+    moveForwards(movementVec, useVertRotation) {
         if (movementVec[0] === 0 && movementVec[1] === 0 && movementVec[2] === 0) {
             return;
         } else {
             const rotationMatrix = new Matrix4();
             rotationMatrix.rotate(this._rotationHoriz, 0, 1, 0);
-            rotationMatrix.rotate(this._rotationVert, 1, 0, 0);
+            if (useVertRotation) { rotationMatrix.rotate(this._rotationVert, 1, 0, 0); }
             const rotatedMovementVec = rotationMatrix.multiplyVector3(movementVec);
 
             this._pos.elements[0] += rotatedMovementVec.elements[0];

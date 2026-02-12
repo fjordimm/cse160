@@ -124,7 +124,7 @@ export default class GameManager {
         camMoveVec.elements[1] *= deltaTime * CAM_MOVEMENT_SPEED;
         camMoveVec.elements[2] *= deltaTime * CAM_MOVEMENT_SPEED;
 
-        this._camera.moveForwards(camMoveVec);
+        this._camera.moveForwards(camMoveVec, false);
 
         // Rendering
 
