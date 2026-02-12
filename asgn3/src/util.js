@@ -11,3 +11,11 @@ export async function loadFileText(path) {
         console.log(`Couldn't load file: Error: ${err}`);
     }
 }
+
+export class DefaultDict {
+    constructor(defaultVal) {
+        return new Proxy({}, {
+            get: (target, name) => name in target ? target[name] : defaultVal
+        });
+    }
+}

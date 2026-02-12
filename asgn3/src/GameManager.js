@@ -2,6 +2,7 @@ import GraphicsManager from "./GraphicsManager.js";
 import Camera from "./Camera.js";
 import Component from "./Component.js";
 import Cube from "./shapes/Cube.js";
+import { DefaultDict } from "./util.js";
 
 const MIN_FRAME_LENGTH = 16; // 16 for 60fps.
 
@@ -11,6 +12,7 @@ export default class GameManager {
     constructor() {
         this._grm = null; // GraphicsManager
         this._camera = null;
+        this._pressedKeys = null;
         this._listOfComponents = null;
         this._frameCounter = 0;
         this._lastMouseX = 0;
@@ -21,8 +23,8 @@ export default class GameManager {
         this._grm = new GraphicsManager();
         await this._grm.setup();
 
-        this._camera = new Camera(60, 400, 400, 0.1, 1000);
-        // TODO: no magic number for 400 400
+        this._camera = new Camera(60, this._grm.canvas.width, this._grm.canvas.height, 0.1, 1000);
+        this._pressedKeys = new DefaultDict(false);
         this._listOfComponents = [];
         this._frameCounter = 0;
         this._lastMouseX = 0;
@@ -32,20 +34,14 @@ export default class GameManager {
         const bob = new Component();
         {
             const s = new Cube([1.0, 0.0, 0.0, 1.0], "./res/images/debugtex.png", 0.75);
-            s.matrix.scale(0.2, 0.2, 0.2);
             bob.addShape(s);
         }
-        // {
-        //     const s = new Cube([1.0, 0.0, 0.0, 1.0], "./res/images/grass.png", 0.75);
-        //     s.matrix.translate(0.5, 0, -1);
-        //     s.matrix.scale(0.2, 0.2, 0.2);
-        //     bob.addShape(s);
-        // }
-        bob.matrix.translate(0, -0.5, -2);
+        bob.matrix.translate(0, -1, -5);
         this._listOfComponents.push(bob);
         /////////////////////////////////////////////////////////
 
-        this._grm.canvas.onmousemove = (ev) => { this._handleMouseMove(ev); };
+        window.onkeydown = (ev) => { this._pressedKeys[ev.code] = true; };
+        window.onkeyup = (ev) => { this._pressedKeys[ev.code] = false; };
 
         this._countFramesAndUpdateDisplay();
 
@@ -69,11 +65,35 @@ export default class GameManager {
     }
 
     async _tick(deltaTime, totalTimeElapsed) {
-        // this._camera._eye.elements[0] += 0.01;
-        // this._camera._at.elements[0] += 0.01;
-        // this._camera._updateViewMatrix();
+        // this._listOfComponents[0].animationMatrix.rotate(deltaTime * 0.05, 0, 1, 0);
 
-        this._listOfComponents[0].animationMatrix.rotate(deltaTime * 0.05, 0, 1, 0);
+        // Moving the camera
+
+        const moveVec = new Vector3();
+
+        if (this._pressedKeys["KeyW"]) {
+            moveVec.elements[2] -= 1;
+        }
+        if (this._pressedKeys["KeyS"]) {
+            moveVec.elements[2] += 1;
+        }
+        if (this._pressedKeys["KeyA"]) {
+            moveVec.elements[0] -= 1;
+        }
+        if (this._pressedKeys["KeyD"]) {
+            moveVec.elements[0] += 1;
+        }
+
+        // moveVec.normalize();
+
+        const speed = 0.05;
+        moveVec.elements[0] *= speed;
+        moveVec.elements[1] *= speed;
+        moveVec.elements[2] *= speed;
+
+        this._camera.move(moveVec);
+
+        // Rendering
 
         await this._renderAllComponents();
     }
@@ -87,21 +107,6 @@ export default class GameManager {
         for (let component of this._listOfComponents) {
             component.render(this._grm, _IDENTITY_MATRIX);
         }
-    }
-
-    _handleMouseMove(ev) {
-        // let [x, y] = this._convertCoordsEventToGL(ev);
-        // if (ev.buttons === 1) {
-        //     let dx = x - this._lastMouseX;
-        //     let dy = y - this._lastMouseY;
-
-        //     this._globalCameraMatrixRotX.rotate(GLOBAL_ROTATION_SPEED * dy, 1, 0, 0);
-        //     this._globalCameraMatrixRotY.rotate(-GLOBAL_ROTATION_SPEED * dx, 0, 1, 0);
-        //     this._updateGlobalCameraMatrix();
-        // }
-
-        // this._lastMouseX = x;
-        // this._lastMouseY = y;
     }
 
     async _countFramesAndUpdateDisplay() {

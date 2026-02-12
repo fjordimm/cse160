@@ -58,22 +58,22 @@ export default class Cube {
         const uvTR = [1, 1, 0, 1, 1, 0];
 
         grm.gl.uniform4f(grm.u_FragColor, ...this._color_top);
-        drawTriangle(grm, [-1, 1, 1, 1, 1, 1, -1, 1, -1], uvBL);
-        drawTriangle(grm, [1, 1, -1, -1, 1, -1, 1, 1, 1], uvTR);
+        drawTriangle(grm, [-0.5, 0.5, 0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5], uvBL);
+        drawTriangle(grm, [0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, 0.5, 0.5], uvTR);
         grm.gl.uniform4f(grm.u_FragColor, ...this._color_front);
-        drawTriangle(grm, [-1, -1, 1, 1, -1, 1, -1, 1, 1], uvBL);
-        drawTriangle(grm, [1, 1, 1, -1, 1, 1, 1, -1, 1], uvTR);
+        drawTriangle(grm, [-0.5, -0.5, 0.5, 0.5, -0.5, 0.5, -0.5, 0.5, 0.5], uvBL);
+        drawTriangle(grm, [0.5, 0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5], uvTR);
         grm.gl.uniform4f(grm.u_FragColor, ...this._color_right);
-        drawTriangle(grm, [1, -1, 1, 1, -1, -1, 1, 1, 1], uvBL);
-        drawTriangle(grm, [1, 1, -1, 1, 1, 1, 1, -1, -1], uvTR);
+        drawTriangle(grm, [0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, 0.5], uvBL);
+        drawTriangle(grm, [0.5, 0.5, -0.5, 0.5, 0.5, 0.5, 0.5, -0.5, -0.5], uvTR);
         grm.gl.uniform4f(grm.u_FragColor, ...this._color_back);
-        drawTriangle(grm, [1, -1, -1, -1, -1, -1, 1, 1, -1], uvBL);
-        drawTriangle(grm, [-1, 1, -1, 1, 1, -1, -1, -1, -1], uvTR);
+        drawTriangle(grm, [0.5, -0.5, -0.5, -0.5, -0.5, -0.5, 0.5, 0.5, -0.5], uvBL);
+        drawTriangle(grm, [-0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, -0.5, -0.5], uvTR);
         grm.gl.uniform4f(grm.u_FragColor, ...this._color_left);
-        drawTriangle(grm, [-1, -1, -1, -1, -1, 1, -1, 1, -1], uvBL);
-        drawTriangle(grm, [-1, 1, 1, -1, 1, -1, -1, -1, 1], uvTR);
+        drawTriangle(grm, [-0.5, -0.5, -0.5, -0.5, -0.5, 0.5, -0.5, 0.5, -0.5], uvBL);
+        drawTriangle(grm, [-0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5], uvTR);
         grm.gl.uniform4f(grm.u_FragColor, ...this._color_bottom);
-        drawTriangle(grm, [-1, -1, -1, 1, -1, -1, -1, -1, 1], uvBL);
-        drawTriangle(grm, [1, -1, 1, -1, -1, 1, 1, -1, -1], uvTR);
+        drawTriangle(grm, [-0.5, -0.5, -0.5, 0.5, -0.5, -0.5, -0.5, -0.5, 0.5], uvBL);
+        drawTriangle(grm, [0.5, -0.5, 0.5, -0.5, -0.5, 0.5, 0.5, -0.5, -0.5], uvTR);
     }
 }
