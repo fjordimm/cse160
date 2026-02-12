@@ -60,6 +60,14 @@ export default class GameManager {
         }
         // bob.matrix.translate(0, -1, -5);
         this._listOfComponents.push(bob);
+
+        const sky = new Component();
+        {
+            const s = new Cube([0, 0, 1, 1], "./res/images/sky.jpg", 1.0);
+            sky.addShape(s);
+        }
+        sky.matrix.scale(100, 100, 100);
+        this._listOfComponents.push(sky);
         /////////////////////////////////////////////////////////
 
         window.onkeydown = (ev) => { this._pressedKeys[ev.code] = true; };
