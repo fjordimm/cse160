@@ -28,8 +28,7 @@ export default class Cube {
         this._color_bottom = [this._color[0] * 0.5, this._color[1] * 0.5, this._color[2] * 0.5, this._color[3]];
     }
 
-    render(grm, cameraMatrix) {
-        grm.gl.uniformMatrix4fv(grm.u_GlobalCameraMatrix, false, cameraMatrix.elements);
+    render(grm) {
         grm.gl.uniformMatrix4fv(grm.u_ModelMatrix, false, this.matrix.elements);
 
         if (this._textureImgReady) {

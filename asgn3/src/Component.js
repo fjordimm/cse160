@@ -14,7 +14,7 @@ export default class Component {
         this._children.push(child);
     }
 
-    render(grm, cameraMatrix, parentMatrix) {
+    render(grm, parentMatrix) {
         const finalMatrix = new Matrix4();
         finalMatrix.multiply(parentMatrix);
         finalMatrix.multiply(this.matrix);
@@ -22,11 +22,11 @@ export default class Component {
         grm.gl.uniformMatrix4fv(grm.u_TransformMatrix, false, finalMatrix.elements);
         
         for (let shape of this._shapes) {
-            shape.render(grm, cameraMatrix);
+            shape.render(grm);
         }
 
         for (let child of this._children) {
-            child.render(grm, cameraMatrix, finalMatrix);
+            child.render(grm, finalMatrix);
         }
     }
 }

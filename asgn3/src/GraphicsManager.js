@@ -15,7 +15,8 @@ export default class GraphicsManager {
         this.u_TextureWeight = null;
         this.u_ModelMatrix = null;
         this.u_TransformMatrix = null;
-        this.u_GlobalCameraMatrix = null;
+        this.u_ViewMatrix = null;
+        this.u_ProjectionMatrix = null;
         this.a_Position = null;
         this.a_UV = null;
     }
@@ -83,9 +84,15 @@ export default class GraphicsManager {
             return;
         }
 
-        this.u_GlobalCameraMatrix = this.gl.getUniformLocation(this.gl.program, 'u_GlobalCameraMatrix');
-        if (!this.u_GlobalCameraMatrix) {
-            console.log('Failed to get the storage location of u_GlobalCameraMatrix');
+        this.u_ViewMatrix = this.gl.getUniformLocation(this.gl.program, 'u_ViewMatrix');
+        if (!this.u_ViewMatrix) {
+            console.log('Failed to get the storage location of u_ViewMatrix');
+            return;
+        }
+
+        this.u_ProjectionMatrix = this.gl.getUniformLocation(this.gl.program, 'u_ProjectionMatrix');
+        if (!this.u_ProjectionMatrix) {
+            console.log('Failed to get the storage location of u_ProjectionMatrix');
             return;
         }
 
