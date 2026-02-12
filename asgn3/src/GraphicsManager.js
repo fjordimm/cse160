@@ -1,8 +1,8 @@
 
 import { loadFileText } from "./util.js";
 
-const VERTEX_SHADER_PATH = "./src/shaders/vertex_shader.glsl";
-const FRAGMENT_SHADER_PATH = "./src/shaders/fragment_shader.glsl";
+const VERTEX_SHADER_PATH = "./shaders/vertex_shader.glsl";
+const FRAGMENT_SHADER_PATH = "./shaders/fragment_shader.glsl";
 
 export default class GraphicsManager {
     constructor() {
