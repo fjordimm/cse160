@@ -24,16 +24,14 @@ export default class GameManager {
     async start() {
         this._grm = new GraphicsManager();
         await this._grm.setup();
+        
+        this._grm.gl.enable(this._grm.gl.DEPTH_TEST);
+        this._grm.gl.enable(this._grm.gl.CULL_FACE);
+        this._grm.gl.cullFace(this._grm.gl.BACK);
+        this._grm.gl.frontFace(this._grm.gl.CCW);
 
-        const gl = this._grm.gl;
-
-        gl.enable(gl.DEPTH_TEST);
-        gl.enable(gl.CULL_FACE);
-        gl.cullFace(gl.BACK);
-        gl.frontFace(gl.CCW);
-
-        gl.clearColor(0.0, 0.0, 0.0, 1.0);
-        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+        this._grm.gl.clearColor(0.0, 0.0, 0.0, 1.0);
+        this._grm.gl.clear(this._grm.gl.COLOR_BUFFER_BIT | this._grm.gl.DEPTH_BUFFER_BIT);
 
         this._listOfComponents = [];
         this._frameCounter = 0;
