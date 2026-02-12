@@ -63,7 +63,8 @@ export default class GameManager {
 
         const sky = new Component();
         {
-            const s = new Cube([0, 0, 1, 1], "./res/images/sky.jpg", 1.0);
+            // const s = new Cube([0, 0, 1, 1], "./res/images/sky.jpg", 1.0);
+            const s = new Cube([0, 0, 1, 1], "./res/images/sky.png", 1.0);
             sky.addShape(s);
         }
         sky.matrix.scale(100, 100, 100);
