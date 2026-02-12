@@ -36,9 +36,25 @@ export default class GameManager {
         const bob = new Component();
         {
             const s = new Cube([1.0, 0.0, 0.0, 1.0], "./res/images/debugtex.png", 0.75);
+            s.matrix.translate(0, -1, -3);
             bob.addShape(s);
         }
-        bob.matrix.translate(0, -1, -5);
+        {
+            const s = new Cube([1.0, 0.0, 0.0, 1.0], "./res/images/debugtex.png", 0.75);
+            s.matrix.translate(0, -1, 3);
+            bob.addShape(s);
+        }
+        {
+            const s = new Cube([1.0, 0.0, 0.0, 1.0], "./res/images/debugtex.png", 0.75);
+            s.matrix.translate(-3, -1, 0);
+            bob.addShape(s);
+        }
+        {
+            const s = new Cube([1.0, 0.0, 0.0, 1.0], "./res/images/debugtex.png", 0.75);
+            s.matrix.translate(3, -1, 0);
+            bob.addShape(s);
+        }
+        // bob.matrix.translate(0, -1, -5);
         this._listOfComponents.push(bob);
         /////////////////////////////////////////////////////////
 
@@ -84,28 +100,23 @@ export default class GameManager {
 
         // Camera movement
 
-        const camMoveVec = new Vector3();
+        let camMoveX = 0;
+        let camMoveZ = 0;
 
-        if (this._pressedKeys["KeyW"]) {
-            camMoveVec.elements[2] -= 1;
-        }
-        if (this._pressedKeys["KeyS"]) {
-            camMoveVec.elements[2] += 1;
-        }
         if (this._pressedKeys["KeyA"]) {
-            camMoveVec.elements[0] -= 1;
+            camMoveX -= 1;
         }
         if (this._pressedKeys["KeyD"]) {
-            camMoveVec.elements[0] += 1;
+            camMoveX += 1;
+        }
+        if (this._pressedKeys["KeyW"]) {
+            camMoveZ -= 1;
+        }
+        if (this._pressedKeys["KeyS"]) {
+            camMoveZ += 1;
         }
 
-        camMoveVec.normalize();
-
-        camMoveVec.elements[0] *= deltaTime * CAM_MOVEMENT_SPEED;
-        camMoveVec.elements[1] *= deltaTime * CAM_MOVEMENT_SPEED;
-        camMoveVec.elements[2] *= deltaTime * CAM_MOVEMENT_SPEED;
-
-        this._camera.moveForwards(camMoveVec);
+        this._camera.moveForwards(camMoveX, camMoveZ, deltaTime * CAM_MOVEMENT_SPEED);
 
         // Rendering
 
