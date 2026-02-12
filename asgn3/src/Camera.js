@@ -6,7 +6,7 @@ export default class Camera {
         this._at = new Vector3([0, 0, -1]);
 
         this._projectionMatrix = new Matrix4();
-        this._projectionMatrix.setPerspective(fov, canvasWidth / canvasHeight, nearPlane, farPlane);
+        this._projectionMatrix.setPerspective(60, canvasWidth / canvasHeight, nearPlane, farPlane);
         
         this._viewMatrix = new Matrix4();
         this._updateViewMatrix();

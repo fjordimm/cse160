@@ -32,16 +32,16 @@ export default class GameManager {
         const bob = new Component();
         {
             const s = new Cube([1.0, 0.0, 0.0, 1.0], "./res/images/debugtex.png", 0.75);
-            s.matrix.translate(0, 0, -3);
             s.matrix.scale(0.2, 0.2, 0.2);
             bob.addShape(s);
         }
-        {
-            const s = new Cube([1.0, 0.0, 0.0, 1.0], "./res/images/grass.png", 0.75);
-            s.matrix.translate(0.5, 0, -3);
-            s.matrix.scale(0.2, 0.2, 0.2);
-            bob.addShape(s);
-        }
+        // {
+        //     const s = new Cube([1.0, 0.0, 0.0, 1.0], "./res/images/grass.png", 0.75);
+        //     s.matrix.translate(0.5, 0, -1);
+        //     s.matrix.scale(0.2, 0.2, 0.2);
+        //     bob.addShape(s);
+        // }
+        bob.matrix.translate(0, -0.5, -2);
         this._listOfComponents.push(bob);
         /////////////////////////////////////////////////////////
 
@@ -69,9 +69,11 @@ export default class GameManager {
     }
 
     async _tick(deltaTime, totalTimeElapsed) {
-        this._camera._eye.elements[0] += 0.01;
-        this._camera._at.elements[0] += 0.01;
-        this._camera._updateViewMatrix();
+        // this._camera._eye.elements[0] += 0.01;
+        // this._camera._at.elements[0] += 0.01;
+        // this._camera._updateViewMatrix();
+
+        this._listOfComponents[0].animationMatrix.rotate(deltaTime * 0.05, 0, 1, 0);
 
         await this._renderAllComponents();
     }
