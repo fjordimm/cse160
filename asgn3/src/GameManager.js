@@ -41,6 +41,12 @@ export default class GameManager {
             s.matrix.scale(0.2, 0.2, 0.2);
             bob.addShape(s);
         }
+        {
+            const s = new Cube([1.0, 0.0, 0.0, 1.0], "../res/images/grass.png", 0.75);
+            s.matrix.translate(0.5, 0, 0);
+            s.matrix.scale(0.2, 0.2, 0.2);
+            bob.addShape(s);
+        }
         this._listOfComponents.push(bob);
         /////////////////////////////////////////////////////////
 
