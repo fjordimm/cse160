@@ -9,11 +9,14 @@ export default class GraphicsManager {
         this.canvas = null;
         this.gl = null;
         this.vertexBuffer = null;
+        this.uvBuffer = null;
         this.u_FragColor = null;
+        this.u_Texture = null;
         this.u_ModelMatrix = null;
         this.u_TransformMatrix = null;
         this.u_GlobalCameraMatrix = null;
         this.a_Position = null;
+        this.a_UV = null;
     }
 
     async setup() {
@@ -33,6 +36,12 @@ export default class GraphicsManager {
             return;
         }
 
+        this.uvBuffer = this.gl.createBuffer();
+        if (!this.uvBuffer) {
+            console.log('Failed to create buffer object');
+            return;
+        }
+
         // Setup GLSL Variables
 
         const vertexShaderSource = await loadFileText(VERTEX_SHADER_PATH);
@@ -46,6 +55,12 @@ export default class GraphicsManager {
         this.u_FragColor = this.gl.getUniformLocation(this.gl.program, 'u_FragColor');
         if (!this.u_FragColor) {
             console.log('Failed to get the storage location of u_FragColor');
+            return;
+        }
+
+        this.u_Texture = this.gl.getUniformLocation(this.gl.program, 'u_Texture');
+        if (!this.u_Texture) {
+            console.log('Failed to get the storage location of u_Texture');
             return;
         }
 
@@ -70,6 +85,12 @@ export default class GraphicsManager {
         this.a_Position = this.gl.getAttribLocation(this.gl.program, 'a_Position');
         if (this.a_Position < 0) {
             console.log('Failed to get the storage location of a_Position');
+            return;
+        }
+
+        this.a_UV = this.gl.getAttribLocation(this.gl.program, 'a_UV');
+        if (this.a_UV < 0) {
+            console.log('Failed to get the storage location of a_UV');
             return;
         }
     }

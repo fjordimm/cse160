@@ -24,7 +24,7 @@ export default class GameManager {
     async start() {
         this._grm = new GraphicsManager();
         await this._grm.setup();
-        
+
         this._grm.gl.enable(this._grm.gl.DEPTH_TEST);
         this._grm.gl.enable(this._grm.gl.CULL_FACE);
         this._grm.gl.cullFace(this._grm.gl.BACK);
@@ -42,13 +42,16 @@ export default class GameManager {
         this._lastMouseX = 0;
         this._lastMouseY = 0;
 
+        /////////////////////////////////////////////////////////
         const bob = new Component();
         {
             const s = new Cube([1.0, 0.0, 0.0, 1.0]);
             s.matrix.scale(0.2, 0.2, 0.2);
+            s.setTexture(this._grm, "../res/images/debugtex.png");
             bob.addShape(s);
         }
         this._listOfComponents.push(bob);
+        /////////////////////////////////////////////////////////
 
         this._grm.canvas.onmousemove = (ev) => { this._handleMouseMove(ev); };
 
