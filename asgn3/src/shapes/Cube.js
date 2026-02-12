@@ -15,29 +15,27 @@ export default class Cube {
         this.matrix = new Matrix4();
     }
 
-    render(graphicsManager, cameraMatrix) {
-        const gl = graphicsManager.gl;
+    render(grm, cameraMatrix) {
+        grm.gl.uniformMatrix4fv(grm.u_GlobalCameraMatrix, false, cameraMatrix.elements);
+        grm.gl.uniformMatrix4fv(grm.u_ModelMatrix, false, this.matrix.elements);
 
-        gl.uniformMatrix4fv(graphicsManager.u_GlobalCameraMatrix, false, cameraMatrix.elements);
-        gl.uniformMatrix4fv(graphicsManager.u_ModelMatrix, false, this.matrix.elements);
-
-        gl.uniform4f(graphicsManager.u_FragColor, ...this._color_top);
-        drawTriangle(graphicsManager, [-1, 1, -1, 1, 1, -1, -1, 1, 1]);
-        drawTriangle(graphicsManager, [1, 1, 1, -1, 1, 1, 1, 1, -1]);
-        gl.uniform4f(graphicsManager.u_FragColor, ...this._color_front);
-        drawTriangle(graphicsManager, [-1, -1, -1, 1, -1, -1, -1, 1, -1]);
-        drawTriangle(graphicsManager, [1, 1, -1, -1, 1, -1, 1, -1, -1]);
-        gl.uniform4f(graphicsManager.u_FragColor, ...this._color_right);
-        drawTriangle(graphicsManager, [1, -1, -1, 1, -1, 1, 1, 1, -1]);
-        drawTriangle(graphicsManager, [1, 1, 1, 1, 1, -1, 1, -1, 1]);
-        gl.uniform4f(graphicsManager.u_FragColor, ...this._color_back);
-        drawTriangle(graphicsManager, [1, -1, 1, -1, -1, 1, 1, 1, 1]);
-        drawTriangle(graphicsManager, [-1, 1, 1, 1, 1, 1, -1, -1, 1]);
-        gl.uniform4f(graphicsManager.u_FragColor, ...this._color_left);
-        drawTriangle(graphicsManager, [-1, -1, 1, -1, -1, -1, -1, 1, 1]);
-        drawTriangle(graphicsManager, [-1, 1, -1, -1, 1, 1, -1, -1, -1]);
-        gl.uniform4f(graphicsManager.u_FragColor, ...this._color_bottom);
-        drawTriangle(graphicsManager, [-1, -1, 1, 1, -1, 1, -1, -1, -1]);
-        drawTriangle(graphicsManager, [1, -1, -1, -1, -1, -1, 1, -1, 1]);
+        grm.gl.uniform4f(grm.u_FragColor, ...this._color_top);
+        drawTriangle(grm, [-1, 1, -1, 1, 1, -1, -1, 1, 1]);
+        drawTriangle(grm, [1, 1, 1, -1, 1, 1, 1, 1, -1]);
+        grm.gl.uniform4f(grm.u_FragColor, ...this._color_front);
+        drawTriangle(grm, [-1, -1, -1, 1, -1, -1, -1, 1, -1]);
+        drawTriangle(grm, [1, 1, -1, -1, 1, -1, 1, -1, -1]);
+        grm.gl.uniform4f(grm.u_FragColor, ...this._color_right);
+        drawTriangle(grm, [1, -1, -1, 1, -1, 1, 1, 1, -1]);
+        drawTriangle(grm, [1, 1, 1, 1, 1, -1, 1, -1, 1]);
+        grm.gl.uniform4f(grm.u_FragColor, ...this._color_back);
+        drawTriangle(grm, [1, -1, 1, -1, -1, 1, 1, 1, 1]);
+        drawTriangle(grm, [-1, 1, 1, 1, 1, 1, -1, -1, 1]);
+        grm.gl.uniform4f(grm.u_FragColor, ...this._color_left);
+        drawTriangle(grm, [-1, -1, 1, -1, -1, -1, -1, 1, 1]);
+        drawTriangle(grm, [-1, 1, -1, -1, 1, 1, -1, -1, -1]);
+        grm.gl.uniform4f(grm.u_FragColor, ...this._color_bottom);
+        drawTriangle(grm, [-1, -1, 1, 1, -1, 1, -1, -1, -1]);
+        drawTriangle(grm, [1, -1, -1, -1, -1, -1, 1, -1, 1]);
     }
 }

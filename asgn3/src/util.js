@@ -12,13 +12,11 @@ export async function loadFileText(path) {
     }
 }
 
-export function drawTriangle(graphicsManager, vertices) {
-    const gl = graphicsManager.gl;
+export function drawTriangle(grm, vertices) {
+    grm.gl.bindBuffer(grm.gl.ARRAY_BUFFER, grm.vertexBuffer);
+    grm.gl.bufferData(grm.gl.ARRAY_BUFFER, new Float32Array(vertices), grm.gl.DYNAMIC_DRAW);
+    grm.gl.vertexAttribPointer(grm.a_Position, 3, grm.gl.FLOAT, false, 0, 0);
+    grm.gl.enableVertexAttribArray(grm.a_Position);
 
-    gl.bindBuffer(gl.ARRAY_BUFFER, graphicsManager.vertexBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.DYNAMIC_DRAW);
-    gl.vertexAttribPointer(graphicsManager.a_Position, 3, gl.FLOAT, false, 0, 0);
-    gl.enableVertexAttribArray(graphicsManager.a_Position);
-
-    gl.drawArrays(gl.TRIANGLES, 0, 3);
+    grm.gl.drawArrays(grm.gl.TRIANGLES, 0, 3);
 }

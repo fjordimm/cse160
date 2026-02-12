@@ -10,7 +10,7 @@ const _IDENTITY_MATRIX = new Matrix4();
 
 export default class GameManager {
     constructor() {
-        this._graphicsManager = null;
+        this._grm = null; // GraphicsManager
         this._listOfComponents = null;
         this._frameCounter = 0;
         this._globalCameraMatrixRotY;
@@ -22,16 +22,18 @@ export default class GameManager {
     }
 
     async start() {
-        this._graphicsManager = new GraphicsManager();
-        await this._graphicsManager.setup();
+        this._grm = new GraphicsManager();
+        await this._grm.setup();
 
-        this._graphicsManager.gl.enable(this._graphicsManager.gl.DEPTH_TEST);
-        this._graphicsManager.gl.enable(this._graphicsManager.gl.CULL_FACE);
-        this._graphicsManager.gl.cullFace(this._graphicsManager.gl.BACK);
-        this._graphicsManager.gl.frontFace(this._graphicsManager.gl.CCW);
+        const gl = this._grm.gl;
 
-        this._graphicsManager.gl.clearColor(0.0, 0.0, 0.0, 1.0);
-        this._graphicsManager.gl.clear(this._graphicsManager.gl.COLOR_BUFFER_BIT | this._graphicsManager.gl.DEPTH_BUFFER_BIT);
+        gl.enable(gl.DEPTH_TEST);
+        gl.enable(gl.CULL_FACE);
+        gl.cullFace(gl.BACK);
+        gl.frontFace(gl.CCW);
+
+        gl.clearColor(0.0, 0.0, 0.0, 1.0);
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
         this._listOfComponents = [];
         this._frameCounter = 0;
@@ -42,7 +44,6 @@ export default class GameManager {
         this._lastMouseX = 0;
         this._lastMouseY = 0;
 
-        // TODO: setup components
         const bob = new Component();
         {
             const s = new Cube([1.0, 0.0, 0.0, 1.0]);
@@ -51,7 +52,7 @@ export default class GameManager {
         }
         this._listOfComponents.push(bob);
 
-        this._graphicsManager.canvas.onmousemove = (ev) => { this._handleMouseMove(ev); };
+        this._grm.canvas.onmousemove = (ev) => { this._handleMouseMove(ev); };
 
         this._countFramesAndUpdateDisplay();
 
@@ -75,25 +76,16 @@ export default class GameManager {
     }
 
     async _tick(deltaTime, totalTimeElapsed) {
-        // TODO: render all components
         await this._renderAllComponents();
     }
 
     async _renderAllComponents() {
-        const gl = this._graphicsManager.gl;
+        const gl = this._grm.gl;
 
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
         for (let component of this._listOfComponents) {
-            component.render(this._graphicsManager, this._globalCameraMatrix, _IDENTITY_MATRIX);
-        }
-    }
-
-    async _countFramesAndUpdateDisplay() {
-        while (true) {
-            this._frameCounter = 0;
-            await new Promise(r => setTimeout(r, 1000));
-            document.getElementById("fpsdisplay").innerHTML = `${this._frameCounter}`;
+            component.render(this._grm, this._globalCameraMatrix, _IDENTITY_MATRIX);
         }
     }
 
@@ -124,9 +116,17 @@ export default class GameManager {
         let y = ev.clientY;
         let rect = ev.target.getBoundingClientRect();
 
-        x = ((x - rect.left) - this._graphicsManager.canvas.width / 2) / (this._graphicsManager.canvas.width / 2);
-        y = (this._graphicsManager.canvas.height / 2 - (y - rect.top)) / (this._graphicsManager.canvas.height / 2);
+        x = ((x - rect.left) - this._grm.canvas.width / 2) / (this._grm.canvas.width / 2);
+        y = (this._grm.canvas.height / 2 - (y - rect.top)) / (this._grm.canvas.height / 2);
 
         return [x, y];
+    }
+
+    async _countFramesAndUpdateDisplay() {
+        while (true) {
+            this._frameCounter = 0;
+            await new Promise(r => setTimeout(r, 1000));
+            document.getElementById("fpsdisplay").innerHTML = `${this._frameCounter}`;
+        }
     }
 }

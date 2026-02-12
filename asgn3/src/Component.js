@@ -14,21 +14,19 @@ export default class Component {
         this._children.push(child);
     }
 
-    render(graphicsManager, cameraMatrix, parentMatrix) {
-        const gl = graphicsManager.gl;
-
+    render(grm, cameraMatrix, parentMatrix) {
         const finalMatrix = new Matrix4();
         finalMatrix.multiply(parentMatrix);
         finalMatrix.multiply(this.matrix);
         finalMatrix.multiply(this.animationMatrix);
-        gl.uniformMatrix4fv(graphicsManager.u_TransformMatrix, false, finalMatrix.elements);
+        grm.gl.uniformMatrix4fv(grm.u_TransformMatrix, false, finalMatrix.elements);
         
         for (let shape of this._shapes) {
-            shape.render(graphicsManager, cameraMatrix);
+            shape.render(grm, cameraMatrix);
         }
 
         for (let child of this._children) {
-            child.render(graphicsManager, cameraMatrix, finalMatrix);
+            child.render(grm, cameraMatrix, finalMatrix);
         }
     }
 }
