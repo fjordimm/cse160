@@ -24,6 +24,22 @@ export default class Camera {
         return this._projectionMatrix;
     }
 
+    rotate(degrees) {
+        const forwardVec = new Vector3();
+        forwardVec.elements[0] = this._at.elements[0] - this._eye.elements[0];
+        forwardVec.elements[1] = this._at.elements[1] - this._eye.elements[1];
+        forwardVec.elements[2] = this._at.elements[2] - this._eye.elements[2];
+
+        const rotationMatrix = new Matrix4();
+        rotationMatrix.setRotate(degrees, ...UP_VEC.elements);
+
+        const rotatedForwardVec = rotationMatrix.multiplyVector3(forwardVec);
+
+        this._at.elements[0] = this._eye.elements[0] + rotatedForwardVec.elements[0];
+        this._at.elements[1] = this._eye.elements[1] + rotatedForwardVec.elements[1];
+        this._at.elements[2] = this._eye.elements[2] + rotatedForwardVec.elements[2];
+    }
+
     move(vector) {
         this._eye.elements[0] += vector.elements[0];
         this._eye.elements[1] += vector.elements[1];

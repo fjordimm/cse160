@@ -93,6 +93,8 @@ export default class GameManager {
 
         this._camera.move(moveVec);
 
+        this._camera.rotate(0.01);
+
         // Rendering
 
         await this._renderAllComponents();
