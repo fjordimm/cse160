@@ -80,9 +80,7 @@ export default class GameManager {
     }
 
     async _renderAllComponents() {
-        const gl = this._grm.gl;
-
-        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+        this._grm.gl.clear(this._grm.gl.COLOR_BUFFER_BIT | this._grm.gl.DEPTH_BUFFER_BIT);
 
         for (let component of this._listOfComponents) {
             component.render(this._grm, this._globalCameraMatrix, _IDENTITY_MATRIX);
