@@ -1,8 +1,7 @@
-import GameManager from "./GameManager.js";
+import { startGame } from "./game.js";
 
 export async function main() {
-    const gm = new GameManager();
-    gm.start();
+    startGame();
 }
 
 window.main = main;

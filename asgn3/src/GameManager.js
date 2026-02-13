@@ -22,6 +22,24 @@ export default class GameManager {
         this._frameCounter = 0;
         this._lastMouseX = 0;
         this._lastMouseY = 0;
+        this._onInit = null;
+        this._onTick = null;
+    }
+
+    getPressedKeys() {
+        return this._pressedKeys;
+    }
+
+    listOfComponents() {
+        return this._listOfComponents;
+    }
+
+    setOnInit(f) {
+        this._onInit = f;
+    }
+
+    setOnTick(f) {
+        this._onTick = f;
     }
 
     async start() {
@@ -36,37 +54,16 @@ export default class GameManager {
         this._lastMouseX = 0;
         this._lastMouseY = 0;
 
-        /////////////////////////////////////////////////////////
-        const sky = new Component();
-        {
-            const s = new Cube([0, 0, 1, 1], "./res/images/sky.png", 1.0);
-            sky.addShape(s);
-        }
-        sky.matrix.scale(100, 100, 100);
-        this._listOfComponents.push(sky);
-
-        const n = 30;
-        const radius = 10;
-        for (let i = 0; i < n; i++) {
-            const xPos = radius * Math.cos((i / n) * 2 * Math.PI);
-            const zPos = radius * Math.sin((i / n) * 2 * Math.PI);
-
-            const thing = new Component();
-            {
-                const s = new Cube([1.0, 0.0, 0.0, 1.0], "./res/images/debugtex.png", 0.75);
-                thing.addShape(s);
-            }
-            thing.matrix.translate(xPos, -1, zPos);
-            this._listOfComponents.push(thing);
-        }
-        /////////////////////////////////////////////////////////
-
         window.onkeydown = (ev) => { this._pressedKeys[ev.code] = true; };
         window.onkeyup = (ev) => { this._pressedKeys[ev.code] = false; };
         this._cursorManager.setupPointerLock(this._grm.canvas, document);
         this._cursorManager.setOnMove((x, y) => { this._onCursorMove(x, y); });
 
         this._countFramesAndUpdateDisplay();
+
+        if (this._onInit) {
+            this._onInit();
+        }
 
         let startTime = Date.now();
         let previousTime = Date.now();
@@ -88,6 +85,10 @@ export default class GameManager {
     }
 
     async _tick(deltaTime, totalTimeElapsed) {
+        if (this._onTick) {
+            this._onTick(deltaTime, totalTimeElapsed);
+        }
+
         // Camera rotation
 
         let camHorizRotation = 0;
