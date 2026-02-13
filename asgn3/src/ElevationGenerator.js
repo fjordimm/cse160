@@ -11,6 +11,6 @@ export default class ElevationGenerator {
         y += 0.5 * (Math.sin(x * 2 + 2.94) + Math.sin(z * 2 + 1.83));
         y += 0.25 * (Math.sin(x * 4 + 0.15) + Math.sin(z * 4 + 3.11));
 
-        return 0.8 * y;
+        return 2.3 * y;
     }
 }

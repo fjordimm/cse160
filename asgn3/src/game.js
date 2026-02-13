@@ -4,6 +4,9 @@ import Cube from "./shapes/Cube.js";
 import TerrainChunk from "./shapes/TerrainChunk.js";
 import ElevationGenerator from "./ElevationGenerator.js";
 
+const TERRAIN_SIZE = 16;
+const TERRAIN_SCALE = 1.0;
+
 export function startGame() {
     const game = new Game();
     game.start();
@@ -13,6 +16,7 @@ export class Game {
     constructor() {
         this._gm = null;
         this._elevationGenerator = new ElevationGenerator();
+        this._terrainChunks = {};
 
         this._skyComp = null;
         this._terrainComp = null;
@@ -26,6 +30,8 @@ export class Game {
     }
 
     _init() {
+        this._gm.camera.move(new Vector3([0, 5, 0]));
+
         this._skyComp = new Component();
         {
             const s = new Cube([0, 0, 1, 1], "./res/images/sky.png", 1.0);
@@ -43,16 +49,31 @@ export class Game {
 
         this._terrainComp = new Component();
         {
-            const s = new TerrainChunk([0, 0.5, 0, 1], 32, this._elevationGenerator);
+            const s = new TerrainChunk([0, 0.5, 0, 1], TERRAIN_SIZE, TERRAIN_SCALE, this._elevationGenerator);
             this._terrainComp.addShape(s);
         }
-        this._terrainComp.matrix.translate(0, -5, 0);
         this._gm.listOfComponents.push(this._terrainComp);
     }
 
     _tick(deltaTime, totalTimeElapsed) {
         const camPos = this._gm.camera.getPosition();
 
+        // Move sky so it's always centered at the camera so it looks like it doesn't move
         this._skyComp.animationMatrix.setTranslate(...camPos);
+
+        this._updateTerrainChunks(camPos[0], camPos[2]);
     }
+
+    _updateTerrainChunks(camX, camZ) {
+        // const [keyX, keyZ] = coordsToTerrainDictKey(camX, camZ);
+
+        // const realX = keyX * TERRAIN_SIZE * TERRAIN_SCALE;
+        // const realZ = keyZ * TERRAIN_SIZE * TERRAIN_SCALE;
+
+        // this._terrainComp.matrix.setTranslate(realX, -10, realZ);
+    }
+}
+
+function coordsToTerrainDictKey(x, z) {
+    return [Math.floor(x / (TERRAIN_SIZE * TERRAIN_SCALE)), Math.floor(z / (TERRAIN_SIZE * TERRAIN_SCALE))];
 }

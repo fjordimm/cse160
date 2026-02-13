@@ -39,7 +39,6 @@ export default class GameManager {
         await this.grm.setup();
 
         this.camera = new Camera(60, this.grm.canvas.width, this.grm.canvas.height, 0.1, 1000);
-        this.camera.move(new Vector3([0, 1, 0]));
         this.pressedKeys = new DefaultDict(false);
         this.cursorManager = new CursorManager();
         this.listOfComponents = [];
