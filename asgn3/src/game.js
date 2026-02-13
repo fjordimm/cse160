@@ -48,7 +48,7 @@ export class Game {
 
         const terrain = new Component();
         {
-            const s = new TerrainChunk([0, 0.5, 0, 1], 16, this._elevationGenerator);
+            const s = new TerrainChunk([0, 0.5, 0, 1], 32, this._elevationGenerator);
             terrain.addShape(s);
         }
         terrain.matrix.translate(0, -5, 0);
