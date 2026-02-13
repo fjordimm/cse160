@@ -16,9 +16,9 @@ export default class Component {
 
     render(grm, parentMatrix) {
         const finalMatrix = new Matrix4();
-        finalMatrix.multiply(parentMatrix);
-        finalMatrix.multiply(this.matrix);
         finalMatrix.multiply(this.animationMatrix);
+        finalMatrix.multiply(this.matrix);
+        finalMatrix.multiply(parentMatrix);
         grm.gl.uniformMatrix4fv(grm.u_TransformMatrix, false, finalMatrix.elements);
         
         for (let shape of this._shapes) {
