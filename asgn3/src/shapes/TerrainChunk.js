@@ -13,8 +13,6 @@ export default class TerrainChunk {
             }
         }
         this._elevations = elevations;
-
-        console.log(elevations);
     }
 
     render(grm) {

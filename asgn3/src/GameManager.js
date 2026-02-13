@@ -102,7 +102,7 @@ export default class GameManager {
 
         this._camera.rotateHoriz(camHorizRotation * deltaTime * CAM_ROTATION_SPEED);
 
-        // Camera movement
+        // Camera x/z movement
 
         const camMoveVec = new Vector3();
 
@@ -125,6 +125,19 @@ export default class GameManager {
         camMoveVec.elements[2] *= deltaTime * CAM_MOVEMENT_SPEED;
 
         this._camera.moveForwards(camMoveVec, false);
+
+        // Camera y movement
+
+        let camMoveY = 0;
+
+        if (this._pressedKeys["Space"]) {
+            camMoveY += 1;
+        }
+        if (this._pressedKeys["ShiftLeft"] || this._pressedKeys["ShiftRight"]) {
+            camMoveY -= 1;
+        }
+
+        this._camera.move(new Vector3([0, camMoveY * deltaTime * CAM_MOVEMENT_SPEED, 0]));
 
         // Rendering
 
