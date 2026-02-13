@@ -21,7 +21,6 @@ export class Game {
     }
 
     _init() {
-        /////////////////////////////////////////////////////////
         const sky = new Component();
         {
             const s = new Cube([0, 0, 1, 1], "./res/images/sky.png", 1.0);
@@ -44,7 +43,6 @@ export class Game {
             thing.matrix.translate(xPos, -1, zPos);
             this._gm.listOfComponents().push(thing);
         }
-        /////////////////////////////////////////////////////////
     }
 
     _tick(deltaTime, totalTimeElapsed) {
