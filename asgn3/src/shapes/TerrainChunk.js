@@ -1,7 +1,7 @@
 import drawTriangle from "../drawTriangle.js";
 
 export default class TerrainChunk {
-    constructor(color, size, scale, elevationGenerator) {
+    constructor(color, size, scale, offX, offZ, elevationGenerator) {
         this.matrix = new Matrix4();
         this.isVisible = true;
         this._color = color;
@@ -11,7 +11,7 @@ export default class TerrainChunk {
         for (let x = 0; x < size + 1; x++) {
             elevations.push([]);
             for (let z = 0; z < size + 1; z++) {
-                elevations[x].push(elevationGenerator.at(x * this._scale, z * this._scale));
+                elevations[x].push(elevationGenerator.at(x * this._scale + offX, z * this._scale + offZ));
             }
         }
         this._elevations = elevations;
@@ -51,7 +51,9 @@ export default class TerrainChunk {
                         crossZ /= crossMagnitude;
 
                         const newColor = [...this._color];
+                        newColor[0] *= 0.5 * (crossY + 1);
                         newColor[1] *= 0.5 * (crossY + 1);
+                        newColor[2] *= 0.5 * (crossY + 1);
 
                         grm.gl.uniform4f(grm.u_FragColor, ...newColor);
                     }

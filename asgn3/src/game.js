@@ -48,10 +48,14 @@ export class Game {
         this._gm.listOfComponents.push(origin);
 
         this._terrainComp = new Component();
-        {
-            const s = new TerrainChunk([0, 0.5, 0, 1], TERRAIN_SIZE, TERRAIN_SCALE, this._elevationGenerator);
-            this._terrainComp.addShape(s);
-        }
+        // {
+        //     const s = makeTerrainChunk(0, 0, this._elevationGenerator);
+        //     this._terrainComp.addShape(s);
+        // }
+        // {
+        //     const s = makeTerrainChunk(1, 0, this._elevationGenerator);
+        //     this._terrainComp.addShape(s);
+        // }
         this._gm.listOfComponents.push(this._terrainComp);
     }
 
@@ -65,15 +69,33 @@ export class Game {
     }
 
     _updateTerrainChunks(camX, camZ) {
-        // const [keyX, keyZ] = coordsToTerrainDictKey(camX, camZ);
+        const [keyX, keyZ] = coordsToTerrainDictKey(camX, camZ);
 
-        // const realX = keyX * TERRAIN_SIZE * TERRAIN_SCALE;
-        // const realZ = keyZ * TERRAIN_SIZE * TERRAIN_SCALE;
+        for (const [key, val] of Object.entries(this._terrainChunks)) {
+            val.isVisible = false;
+        }
 
-        // this._terrainComp.matrix.setTranslate(realX, -10, realZ);
+        if (!this._terrainChunks[[keyX, keyZ]]) {
+            const s = makeTerrainChunk(keyX, keyZ, this._elevationGenerator);
+            this._terrainComp.addShape(s);
+            this._terrainChunks[[keyX, keyZ]] = s;
+        } else {
+            this._terrainChunks[[keyX, keyZ]].isVisible = true;
+        }
     }
 }
 
 function coordsToTerrainDictKey(x, z) {
     return [Math.floor(x / (TERRAIN_SIZE * TERRAIN_SCALE)), Math.floor(z / (TERRAIN_SIZE * TERRAIN_SCALE))];
+}
+
+const TERRAIN_COLOR = [0, 0.5, 0, 1];
+
+function makeTerrainChunk(keyX, keyZ, elevationGenerator) {
+    const realX = keyX * TERRAIN_SIZE * TERRAIN_SCALE;
+    const realZ = keyZ * TERRAIN_SIZE * TERRAIN_SCALE;
+
+    const s = new TerrainChunk(TERRAIN_COLOR, TERRAIN_SIZE, TERRAIN_SCALE, realX, realZ, elevationGenerator);
+    s.matrix.translate(realX, 0, realZ);
+    return s;
 }
