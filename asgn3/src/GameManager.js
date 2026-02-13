@@ -37,38 +37,28 @@ export default class GameManager {
         this._lastMouseY = 0;
 
         /////////////////////////////////////////////////////////
-        const bob = new Component();
-        {
-            const s = new Cube([1.0, 0.0, 0.0, 1.0], "./res/images/debugtex.png", 0.75);
-            s.matrix.translate(0, 0, -3);
-            bob.addShape(s);
-        }
-        {
-            const s = new Cube([1.0, 0.0, 0.0, 1.0], "./res/images/debugtex.png", 0.75);
-            s.matrix.translate(0, -1, 3);
-            bob.addShape(s);
-        }
-        {
-            const s = new Cube([1.0, 0.0, 0.0, 1.0], "./res/images/debugtex.png", 0.75);
-            s.matrix.translate(-3, -1, 0);
-            bob.addShape(s);
-        }
-        {
-            const s = new Cube([1.0, 0.0, 0.0, 1.0], "./res/images/debugtex.png", 0.75);
-            s.matrix.translate(3, -1, 0);
-            bob.addShape(s);
-        }
-        // bob.matrix.translate(0, -1, -5);
-        this._listOfComponents.push(bob);
-
         const sky = new Component();
         {
-            // const s = new Cube([0, 0, 1, 1], "./res/images/sky.jpg", 1.0);
             const s = new Cube([0, 0, 1, 1], "./res/images/sky.png", 1.0);
             sky.addShape(s);
         }
         sky.matrix.scale(100, 100, 100);
         this._listOfComponents.push(sky);
+
+        const n = 30;
+        const radius = 10;
+        for (let i = 0; i < n; i++) {
+            const xPos = radius * Math.cos((i / n) * 2 * Math.PI);
+            const zPos = radius * Math.sin((i / n) * 2 * Math.PI);
+
+            const thing = new Component();
+            {
+                const s = new Cube([1.0, 0.0, 0.0, 1.0], "./res/images/debugtex.png", 0.75);
+                thing.addShape(s);
+            }
+            thing.matrix.translate(xPos, -1, zPos);
+            this._listOfComponents.push(thing);
+        }
         /////////////////////////////////////////////////////////
 
         window.onkeydown = (ev) => { this._pressedKeys[ev.code] = true; };
