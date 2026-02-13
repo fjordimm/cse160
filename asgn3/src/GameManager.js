@@ -47,6 +47,7 @@ export default class GameManager {
         await this._grm.setup();
 
         this._camera = new Camera(60, this._grm.canvas.width, this._grm.canvas.height, 0.1, 1000);
+        this._camera.move(new Vector3([0, 1, 0]));
         this._pressedKeys = new DefaultDict(false);
         this._cursorManager = new CursorManager();
         this._listOfComponents = [];
@@ -86,7 +87,7 @@ export default class GameManager {
 
     async _tick(deltaTime, totalTimeElapsed) {
         if (this._onTick) {
-            this._onTick(deltaTime, totalTimeElapsed);
+            this._onTick(deltaTime, totalTimeElapsed, this._camera);
         }
 
         // Camera rotation

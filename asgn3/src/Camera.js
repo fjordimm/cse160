@@ -35,6 +35,10 @@ export default class Camera {
         return this._projectionMatrix;
     }
 
+    getPosition() {
+        return [...this._pos.elements];
+    }
+
     rotateVert(degrees) {
         this._rotationVert += degrees;
         if (this._rotationVert < -89) { this._rotationVert = -89; }
