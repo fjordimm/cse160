@@ -2,6 +2,13 @@ export default class ElevationGenerator {
     constructor() {}
 
     at(x, z) {
-        return 3 * Math.sin(x * 0.1);
+        x /= 2;
+        z /= 2;
+
+        let y = 0;
+
+        y += Math.sin(x) + Math.cos(z);
+
+        return 0.8 * y;
     }
 }

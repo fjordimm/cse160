@@ -23,33 +23,24 @@ export default class TerrainChunk {
 
         const trashUvCoords = [0, 0];
 
-        for (let x = 0; x < this._elevations.length; x++) {
-            for (let z = 0; z < this._elevations[0].length; z++) {
-                const y = this._elevations[x][z];
+        for (let x = 0; x < this._elevations.length - 1; x++) {
+            for (let z = 0; z < this._elevations[0].length - 1; z++) {
+                const yBL = this._elevations[x][z];
+                const yBR = this._elevations[x + 1][z];
+                const yTL = this._elevations[x][z + 1];
+                const yTR = this._elevations[x + 1][z + 1];
 
                 drawTriangle(grm, [
-                    x,     y, z,
-                    x + 1, y, z,
-                    x,     y, z + 1
+                    x, yBL, z,
+                    x + 1, yBR, z,
+                    x, yTL, z + 1
                 ], trashUvCoords);
                 drawTriangle(grm, [
-                    x + 1, y, z + 1,
-                    x,     y, z + 1,
-                    x + 1, y, z
+                    x + 1, yTR, z + 1,
+                    x, yTL, z + 1,
+                    x + 1, yBR, z
                 ], trashUvCoords);
             }
         }
-        // drawTriangle(grm, [-0.5, 0.5, 0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5], trashUvCoords);
-        // drawTriangle(grm, [0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, 0.5, 0.5], trashUvCoords);
-        // drawTriangle(grm, [-0.5, -0.5, 0.5, 0.5, -0.5, 0.5, -0.5, 0.5, 0.5], trashUvCoords);
-        // drawTriangle(grm, [0.5, 0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5], trashUvCoords);
-        // drawTriangle(grm, [0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, 0.5], trashUvCoords);
-        // drawTriangle(grm, [0.5, 0.5, -0.5, 0.5, 0.5, 0.5, 0.5, -0.5, -0.5], trashUvCoords);
-        // drawTriangle(grm, [0.5, -0.5, -0.5, -0.5, -0.5, -0.5, 0.5, 0.5, -0.5], trashUvCoords);
-        // drawTriangle(grm, [-0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, -0.5, -0.5], trashUvCoords);
-        // drawTriangle(grm, [-0.5, -0.5, -0.5, -0.5, -0.5, 0.5, -0.5, 0.5, -0.5], trashUvCoords);
-        // drawTriangle(grm, [-0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5], trashUvCoords);
-        // drawTriangle(grm, [-0.5, -0.5, -0.5, 0.5, -0.5, -0.5, -0.5, -0.5, 0.5], trashUvCoords);
-        // drawTriangle(grm, [0.5, -0.5, 0.5, -0.5, -0.5, 0.5, 0.5, -0.5, -0.5], trashUvCoords);
     }
 }
