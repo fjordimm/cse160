@@ -10,28 +10,20 @@ const CAM_MOVEMENT_SPEED = 0.01;
 const CAM_ROTATION_SPEED = 0.1;
 const CAM_CURSOR_SENSITIVITY = 0.5;
 
-const _IDENTITY_MATRIX = new Matrix4();
+const IDENTITY_MATRIX = new Matrix4();
 
 export default class GameManager {
     constructor() {
-        this._grm = null; // GraphicsManager
-        this._camera = null;
-        this._pressedKeys = null;
-        this._cursorManager = null;
-        this._listOfComponents = null;
+        this.grm = null; // GraphicsManager
+        this.camera = null;
+        this.pressedKeys = null;
+        this.cursorManager = null;
+        this.listOfComponents = null;
         this._frameCounter = 0;
         this._lastMouseX = 0;
         this._lastMouseY = 0;
         this._onInit = null;
         this._onTick = null;
-    }
-
-    getPressedKeys() {
-        return this._pressedKeys;
-    }
-
-    listOfComponents() {
-        return this._listOfComponents;
     }
 
     setOnInit(f) {
@@ -43,22 +35,22 @@ export default class GameManager {
     }
 
     async start() {
-        this._grm = new GraphicsManager();
-        await this._grm.setup();
+        this.grm = new GraphicsManager();
+        await this.grm.setup();
 
-        this._camera = new Camera(60, this._grm.canvas.width, this._grm.canvas.height, 0.1, 1000);
-        this._camera.move(new Vector3([0, 1, 0]));
-        this._pressedKeys = new DefaultDict(false);
-        this._cursorManager = new CursorManager();
-        this._listOfComponents = [];
+        this.camera = new Camera(60, this.grm.canvas.width, this.grm.canvas.height, 0.1, 1000);
+        this.camera.move(new Vector3([0, 1, 0]));
+        this.pressedKeys = new DefaultDict(false);
+        this.cursorManager = new CursorManager();
+        this.listOfComponents = [];
         this._frameCounter = 0;
         this._lastMouseX = 0;
         this._lastMouseY = 0;
 
-        window.onkeydown = (ev) => { this._pressedKeys[ev.code] = true; };
-        window.onkeyup = (ev) => { this._pressedKeys[ev.code] = false; };
-        this._cursorManager.setupPointerLock(this._grm.canvas, document);
-        this._cursorManager.setOnMove((x, y) => { this._onCursorMove(x, y); });
+        window.onkeydown = (ev) => { this.pressedKeys[ev.code] = true; };
+        window.onkeyup = (ev) => { this.pressedKeys[ev.code] = false; };
+        this.cursorManager.setupPointerLock(this.grm.canvas, document);
+        this.cursorManager.setOnMove((x, y) => { this._onCursorMove(x, y); });
 
         this._countFramesAndUpdateDisplay();
 
@@ -87,36 +79,36 @@ export default class GameManager {
 
     async _tick(deltaTime, totalTimeElapsed) {
         if (this._onTick) {
-            this._onTick(deltaTime, totalTimeElapsed, this._camera);
+            this._onTick(deltaTime, totalTimeElapsed);
         }
 
         // Camera rotation
 
         let camHorizRotation = 0;
 
-        if (this._pressedKeys["KeyQ"]) {
+        if (this.pressedKeys["KeyQ"]) {
             camHorizRotation += 1;
         }
-        if (this._pressedKeys["KeyE"]) {
+        if (this.pressedKeys["KeyE"]) {
             camHorizRotation -= 1;
         }
 
-        this._camera.rotateHoriz(camHorizRotation * deltaTime * CAM_ROTATION_SPEED);
+        this.camera.rotateHoriz(camHorizRotation * deltaTime * CAM_ROTATION_SPEED);
 
         // Camera x/z movement
 
         const camMoveVec = new Vector3();
 
-        if (this._pressedKeys["KeyA"]) {
+        if (this.pressedKeys["KeyA"]) {
             camMoveVec.elements[0] -= 1;
         }
-        if (this._pressedKeys["KeyD"]) {
+        if (this.pressedKeys["KeyD"]) {
             camMoveVec.elements[0] += 1;
         }
-        if (this._pressedKeys["KeyW"]) {
+        if (this.pressedKeys["KeyW"]) {
             camMoveVec.elements[2] -= 1;
         }
-        if (this._pressedKeys["KeyS"]) {
+        if (this.pressedKeys["KeyS"]) {
             camMoveVec.elements[2] += 1;
         }
 
@@ -125,20 +117,20 @@ export default class GameManager {
         camMoveVec.elements[1] *= deltaTime * CAM_MOVEMENT_SPEED;
         camMoveVec.elements[2] *= deltaTime * CAM_MOVEMENT_SPEED;
 
-        this._camera.moveForwards(camMoveVec, false);
+        this.camera.moveForwards(camMoveVec, false);
 
         // Camera y movement
 
         let camMoveY = 0;
 
-        if (this._pressedKeys["Space"]) {
+        if (this.pressedKeys["Space"]) {
             camMoveY += 1;
         }
-        if (this._pressedKeys["ShiftLeft"] || this._pressedKeys["ShiftRight"]) {
+        if (this.pressedKeys["ShiftLeft"] || this.pressedKeys["ShiftRight"]) {
             camMoveY -= 1;
         }
 
-        this._camera.move(new Vector3([0, camMoveY * deltaTime * CAM_MOVEMENT_SPEED, 0]));
+        this.camera.move(new Vector3([0, camMoveY * deltaTime * CAM_MOVEMENT_SPEED, 0]));
 
         // Rendering
 
@@ -146,13 +138,13 @@ export default class GameManager {
     }
 
     async _renderAllComponents() {
-        this._grm.gl.clear(this._grm.gl.COLOR_BUFFER_BIT | this._grm.gl.DEPTH_BUFFER_BIT);
+        this.grm.gl.clear(this.grm.gl.COLOR_BUFFER_BIT | this.grm.gl.DEPTH_BUFFER_BIT);
 
-        this._grm.gl.uniformMatrix4fv(this._grm.u_ViewMatrix, false, this._camera.getViewMatrix().elements);
-        this._grm.gl.uniformMatrix4fv(this._grm.u_ProjectionMatrix, false, this._camera.getProjectionMatrix().elements);
+        this.grm.gl.uniformMatrix4fv(this.grm.u_ViewMatrix, false, this.camera.getViewMatrix().elements);
+        this.grm.gl.uniformMatrix4fv(this.grm.u_ProjectionMatrix, false, this.camera.getProjectionMatrix().elements);
 
-        for (let component of this._listOfComponents) {
-            component.render(this._grm, _IDENTITY_MATRIX);
+        for (let component of this.listOfComponents) {
+            component.render(this.grm, IDENTITY_MATRIX);
         }
     }
 
@@ -165,7 +157,7 @@ export default class GameManager {
     }
 
     _onCursorMove(x, y) {
-        this._camera.rotateVert(-y * CAM_CURSOR_SENSITIVITY);
-        this._camera.rotateHoriz(-x * CAM_CURSOR_SENSITIVITY);
+        this.camera.rotateVert(-y * CAM_CURSOR_SENSITIVITY);
+        this.camera.rotateHoriz(-x * CAM_CURSOR_SENSITIVITY);
     }
 }

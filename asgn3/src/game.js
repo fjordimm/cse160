@@ -14,8 +14,8 @@ export class Game {
         this._gm = null;
         this._elevationGenerator = new ElevationGenerator();
 
-        this._sky = null;
-        this._terrain = null;
+        this._skyComp = null;
+        this._terrainComp = null;
     }
 
     start() {
@@ -26,47 +26,33 @@ export class Game {
     }
 
     _init() {
-        this._sky = new Component();
+        this._skyComp = new Component();
         {
             const s = new Cube([0, 0, 1, 1], "./res/images/sky.png", 1.0);
-            this._sky.matrix.scale(999, 999, 999);
-            this._sky.addShape(s);
+            this._skyComp.matrix.scale(999, 999, 999);
+            this._skyComp.addShape(s);
         }
-        this._gm.listOfComponents().push(this._sky);
+        this._gm.listOfComponents.push(this._skyComp);
 
-        // const n = 30;
-        // const radius = 10;
-        // for (let i = 0; i < n; i++) {
-        //     const xPos = radius * Math.cos((i / n) * 2 * Math.PI);
-        //     const zPos = radius * Math.sin((i / n) * 2 * Math.PI);
-
-        //     const thing = new Component();
-        //     {
-        //         const s = new Cube([1.0, 0.0, 0.0, 1.0], "./res/images/debugtex.png", 0.75);
-        //         thing.addShape(s);
-        //     }
-        //     thing.matrix.translate(xPos, -1, zPos);
-        //     this._gm.listOfComponents().push(thing);
-        // }
         const origin = new Component();
         {
             const s = new Cube([1.0, 0.0, 0.0, 1.0], "./res/images/debugtex.png", 1);
             origin.addShape(s);
         }
-        this._gm.listOfComponents().push(origin);
+        this._gm.listOfComponents.push(origin);
 
-        this._terrain = new Component();
+        this._terrainComp = new Component();
         {
             const s = new TerrainChunk([0, 0.5, 0, 1], 32, this._elevationGenerator);
-            this._terrain.addShape(s);
+            this._terrainComp.addShape(s);
         }
-        this._terrain.matrix.translate(0, -5, 0);
-        this._gm.listOfComponents().push(this._terrain);
+        this._terrainComp.matrix.translate(0, -5, 0);
+        this._gm.listOfComponents.push(this._terrainComp);
     }
 
-    _tick(deltaTime, totalTimeElapsed, camera) {
-        const camPos = camera.getPosition();
+    _tick(deltaTime, totalTimeElapsed) {
+        const camPos = this._gm.camera.getPosition();
 
-        this._sky.animationMatrix.setTranslate(...camPos);
+        this._skyComp.animationMatrix.setTranslate(...camPos);
     }
 }
