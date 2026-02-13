@@ -3,9 +3,11 @@ import Component from "./Component.js";
 import Cube from "./shapes/Cube.js";
 import TerrainChunk from "./shapes/TerrainChunk.js";
 import ElevationGenerator from "./ElevationGenerator.js";
+import { LambdaDefaultDict, DefaultDict } from "./util.js";
 
 const TERRAIN_SIZE = 16;
 const TERRAIN_SCALE = 1.0;
+const RENDER_DIST = 2; // in chunks
 
 export function startGame() {
     const game = new Game();
@@ -71,16 +73,30 @@ export class Game {
     _updateTerrainChunks(camX, camZ) {
         const [keyX, keyZ] = coordsToTerrainDictKey(camX, camZ);
 
-        for (const [key, val] of Object.entries(this._terrainChunks)) {
-            val.isVisible = false;
+        // for (const [chunkKey, chunk] of Object.entries(this._terrainChunks)) {
+        //     // console.log(chunkKey);
+        //     const [chunkKeyX, chunkKeyZ] = chunkKey.split(",").map(Number);
+        //     console.log([chunkKeyX, chunkKeyZ]);
+        // }
+
+        for (const [chunkKey, chunk] of Object.entries(this._terrainChunks)) {
+            const [chunkKeyX, chunkKeyZ] = chunkKey.split(",").map(Number);
+            const dKeyX = Math.abs(chunkKeyX - keyX);
+            const dKeyZ = Math.abs(chunkKeyZ - keyZ);
+
+            console.log(`(${chunkKeyX}, ${chunkKeyZ}) has distance (${dKeyX}, ${dKeyZ}).`);
+
+            if (Math.max(dKeyX, dKeyZ) <= RENDER_DIST) {
+                chunk.isVisible = true;
+            } else {
+                chunk.isVisible = false;
+            }
         }
 
         if (!this._terrainChunks[[keyX, keyZ]]) {
             const s = makeTerrainChunk(keyX, keyZ, this._elevationGenerator);
             this._terrainComp.addShape(s);
             this._terrainChunks[[keyX, keyZ]] = s;
-        } else {
-            this._terrainChunks[[keyX, keyZ]].isVisible = true;
         }
     }
 }

@@ -19,3 +19,11 @@ export class DefaultDict {
         });
     }
 }
+
+export class LambdaDefaultDict {
+    constructor(defaultFunc) {
+        return new Proxy({}, {
+            get: (target, name) => name in target ? target[name] : defaultFunc()
+        });
+    }
+}
