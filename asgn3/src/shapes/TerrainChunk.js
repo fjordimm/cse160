@@ -33,30 +33,8 @@ export default class TerrainChunk {
                     const yTL = this._elevations[x][z + 1];
                     const yTR = this._elevations[x + 1][z + 1];
 
-                    // Calculate normal vector and use its y component for shading
-                    {
-                        const rightX = this._scale;
-                        const rightY = yBR - yBL;
-                        const rightZ = 0;
-                        const forwardsX = 0;
-                        const forwardsY = yTL - yBL;
-                        const forwardsZ = this._scale;
-
-                        let crossX = rightY * forwardsZ - rightZ * forwardsY;
-                        let crossY = rightX * forwardsZ - rightZ * forwardsX;
-                        let crossZ = rightX * forwardsY - rightY * forwardsX;
-                        const crossMagnitude = Math.sqrt(crossX * crossX + crossY * crossY + crossZ * crossZ);
-                        crossX /= crossMagnitude;
-                        crossY /= crossMagnitude;
-                        crossZ /= crossMagnitude;
-
-                        const newColor = [...this._color];
-                        newColor[0] *= 0.5 * (crossY + 1);
-                        newColor[1] *= 0.5 * (crossY + 1);
-                        newColor[2] *= 0.5 * (crossY + 1);
-
-                        grm.gl.uniform4f(grm.u_FragColor, ...newColor);
-                    }
+                    const colorMult = (yBL + 30) / 30;
+                    grm.gl.uniform4f(grm.u_FragColor, colorMult * this._color[0], colorMult * this._color[1], colorMult * this._color[2], this._color[3]);
 
                     drawTriangle(grm, [
                         (x) * this._scale,     yBL, (z) * this._scale,

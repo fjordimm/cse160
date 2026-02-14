@@ -91,9 +91,7 @@ export class Game {
             for (const [chunkKeyZ, chunk] of Object.entries(__chunk)) {
                 const dKeyX = Math.abs(chunkKeyX - keyX);
                 const dKeyZ = Math.abs(chunkKeyZ - keyZ);
-
-                console.log(`(${chunkKeyX}, ${chunkKeyZ}) has distance (${dKeyX}, ${dKeyZ}).`);
-
+                
                 if (Math.max(dKeyX, dKeyZ) <= RENDER_DIST) {
                     chunk.isVisible = true;
                 } else {
