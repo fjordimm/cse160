@@ -1,16 +1,30 @@
+const FREQ_FACTOR = 2;
+const AMP_FACTOR = 0.5;
+
 export default class ElevationGenerator {
     constructor() {}
 
     at(x, z) {
-        x /= 4;
-        z /= 4;
+        x /= 30;
+        z /= 30;
 
         let y = 0;
 
-        y += (Math.sin(x + 3.12) + Math.sin(z + 0.93));
-        y += 0.5 * (Math.sin(x * 2 + 2.94) + Math.sin(z * 2 + 1.83));
-        y += 0.25 * (Math.sin(x * 4 + 0.15) + Math.sin(z * 4 + 3.11));
+        let freqFactor = 1;
+        let ampFactor = 1;
+        let randXOffset = 0.7;
+        let randZOffset = 1.3;
+        for (let i = 0; i < 5; i++) {
+            y += ampFactor * (Math.sin(x * freqFactor + randXOffset) + Math.cos(z * freqFactor + randZOffset));
 
-        return 0.8 * y;
+            freqFactor *= FREQ_FACTOR;
+            ampFactor *= AMP_FACTOR;
+            randXOffset *= 1.5;
+            randZOffset *= 1.5;
+        }
+
+        y = Math.exp(0.6 * y);
+
+        return 7.0 * y;
     }
 }

@@ -6,7 +6,7 @@ import ElevationGenerator from "./ElevationGenerator.js";
 import { PermLambdaDefaultDict, DefaultDict } from "./util.js";
 
 const TERRAIN_SIZE = 16;
-const TERRAIN_SCALE = 1.0;
+const TERRAIN_SCALE = 5.0;
 const RENDER_DIST = 1; // in chunks
 
 export function startGame() {
@@ -91,7 +91,7 @@ export class Game {
             for (const [chunkKeyZ, chunk] of Object.entries(__chunk)) {
                 const dKeyX = Math.abs(chunkKeyX - keyX);
                 const dKeyZ = Math.abs(chunkKeyZ - keyZ);
-                
+
                 if (Math.max(dKeyX, dKeyZ) <= RENDER_DIST) {
                     chunk.isVisible = true;
                 } else {
