@@ -1,2 +1,3 @@
 - Asked Claude how to use JavaScript modules.
 - Used Claude to help with locking the pointer.
+- My DefaultDict was inspired by https://stackoverflow.com/questions/19127650/defaultdict-equivalent-in-javascript.

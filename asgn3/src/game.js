@@ -3,11 +3,11 @@ import Component from "./Component.js";
 import Cube from "./shapes/Cube.js";
 import TerrainChunk from "./shapes/TerrainChunk.js";
 import ElevationGenerator from "./ElevationGenerator.js";
-import { LambdaDefaultDict, DefaultDict } from "./util.js";
+import { PermLambdaDefaultDict, DefaultDict } from "./util.js";
 
 const TERRAIN_SIZE = 16;
 const TERRAIN_SCALE = 1.0;
-const RENDER_DIST = 2; // in chunks
+const RENDER_DIST = 1; // in chunks
 
 export function startGame() {
     const game = new Game();
@@ -18,7 +18,7 @@ export class Game {
     constructor() {
         this._gm = null;
         this._elevationGenerator = new ElevationGenerator();
-        this._terrainChunks = {};
+        this._terrainChunks = new PermLambdaDefaultDict(() => new DefaultDict(null));;
 
         this._skyComp = null;
         this._terrainComp = null;
@@ -72,31 +72,26 @@ export class Game {
 
     _updateTerrainChunks(camX, camZ) {
         const [keyX, keyZ] = coordsToTerrainDictKey(camX, camZ);
+        
+        for (const [chunkKeyX, __chunk] of Object.entries(this._terrainChunks)) {
+            for (const [chunkKeyZ, chunk] of Object.entries(__chunk)) {
+                const dKeyX = Math.abs(chunkKeyX - keyX);
+                const dKeyZ = Math.abs(chunkKeyZ - keyZ);
 
-        // for (const [chunkKey, chunk] of Object.entries(this._terrainChunks)) {
-        //     // console.log(chunkKey);
-        //     const [chunkKeyX, chunkKeyZ] = chunkKey.split(",").map(Number);
-        //     console.log([chunkKeyX, chunkKeyZ]);
-        // }
+                console.log(`(${chunkKeyX}, ${chunkKeyZ}) has distance (${dKeyX}, ${dKeyZ}).`);
 
-        for (const [chunkKey, chunk] of Object.entries(this._terrainChunks)) {
-            const [chunkKeyX, chunkKeyZ] = chunkKey.split(",").map(Number);
-            const dKeyX = Math.abs(chunkKeyX - keyX);
-            const dKeyZ = Math.abs(chunkKeyZ - keyZ);
-
-            console.log(`(${chunkKeyX}, ${chunkKeyZ}) has distance (${dKeyX}, ${dKeyZ}).`);
-
-            if (Math.max(dKeyX, dKeyZ) <= RENDER_DIST) {
-                chunk.isVisible = true;
-            } else {
-                chunk.isVisible = false;
+                if (Math.max(dKeyX, dKeyZ) <= RENDER_DIST) {
+                    chunk.isVisible = true;
+                } else {
+                    chunk.isVisible = false;
+                }
             }
         }
 
-        if (!this._terrainChunks[[keyX, keyZ]]) {
+        if (this._terrainChunks[keyX][keyZ] === null) {
             const s = makeTerrainChunk(keyX, keyZ, this._elevationGenerator);
             this._terrainComp.addShape(s);
-            this._terrainChunks[[keyX, keyZ]] = s;
+            this._terrainChunks[keyX][keyZ] = s;
         }
     }
 }

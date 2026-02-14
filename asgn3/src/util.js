@@ -27,3 +27,17 @@ export class LambdaDefaultDict {
         });
     }
 }
+
+export class PermLambdaDefaultDict {
+    constructor(defaultFunc) {
+        return new Proxy({}, {
+            get: (target, name) => {
+                if (!(name in target)) {
+                    target[name] = defaultFunc();
+                }
+
+                return target[name];
+            }
+        });
+    }
+}
