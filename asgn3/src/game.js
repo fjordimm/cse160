@@ -72,7 +72,21 @@ export class Game {
 
     _updateTerrainChunks(camX, camZ) {
         const [keyX, keyZ] = coordsToTerrainDictKey(camX, camZ);
-        
+
+        // Generate chunks (if not already generated) in a RENDER_DIST x RENDER_DIST square around the camera
+
+        for (let x = keyX - RENDER_DIST; x <= keyX + RENDER_DIST; x++) {
+            for (let z = keyZ - RENDER_DIST; z <= keyZ + RENDER_DIST; z++) {
+                if (this._terrainChunks[x][z] === null) {
+                    const s = makeTerrainChunk(x, z, this._elevationGenerator);
+                    this._terrainComp.addShape(s);
+                    this._terrainChunks[x][z] = s;
+                }
+            }
+        }
+
+        // Update which chunks should be visible
+
         for (const [chunkKeyX, __chunk] of Object.entries(this._terrainChunks)) {
             for (const [chunkKeyZ, chunk] of Object.entries(__chunk)) {
                 const dKeyX = Math.abs(chunkKeyX - keyX);
@@ -86,12 +100,6 @@ export class Game {
                     chunk.isVisible = false;
                 }
             }
-        }
-
-        if (this._terrainChunks[keyX][keyZ] === null) {
-            const s = makeTerrainChunk(keyX, keyZ, this._elevationGenerator);
-            this._terrainComp.addShape(s);
-            this._terrainChunks[keyX][keyZ] = s;
         }
     }
 }
