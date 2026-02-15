@@ -20,8 +20,6 @@ export default class GameManager {
         this.cursorManager = null;
         this.listOfComponents = null;
         this._frameCounter = 0;
-        this._lastMouseX = 0;
-        this._lastMouseY = 0;
         this._onInit = null;
         this._onTick = null;
     }
@@ -43,8 +41,6 @@ export default class GameManager {
         this.cursorManager = new CursorManager();
         this.listOfComponents = [];
         this._frameCounter = 0;
-        this._lastMouseX = 0;
-        this._lastMouseY = 0;
 
         window.onkeydown = (ev) => { this.pressedKeys[ev.code] = true; };
         window.onkeyup = (ev) => { this.pressedKeys[ev.code] = false; };
@@ -77,6 +73,10 @@ export default class GameManager {
     }
 
     async _tick(deltaTime, totalTimeElapsed) {
+        for (let i = 0; i < 300; i++) {
+            console.log(`${i * i / i * i / i * i}`);
+        }
+
         if (this._onTick) {
             this._onTick(deltaTime, totalTimeElapsed);
         }
