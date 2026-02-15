@@ -5,9 +5,9 @@ import TerrainChunk from "./shapes/TerrainChunk.js";
 import ElevationGenerator from "./ElevationGenerator.js";
 import { PermLambdaDefaultDict, DefaultDict } from "./util.js";
 
-const TERRAIN_SIZE = 16;
+const TERRAIN_SIZE = 8;
 const TERRAIN_SCALE = 5.0;
-const RENDER_DIST = 1; // in chunks
+const RENDER_DIST = 3; // in chunks
 
 export function startGame() {
     const game = new Game();

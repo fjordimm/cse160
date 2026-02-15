@@ -37,9 +37,7 @@ export default class TerrainChunk {
                     const yBR = this._elevations[x + 1][z];
                     const yTL = this._elevations[x][z + 1];
                     const yTR = this._elevations[x + 1][z + 1];
-
-                    // const colorMult = (yBL + 30) / 30;
-                    // grm.gl.uniform4f(grm.u_FragColor, colorMult * this._color[0], colorMult * this._color[1], colorMult * this._color[2], this._color[3]);
+                    
                     grm.gl.uniform4f(grm.u_FragColor, ...this._colors[x][z]);
 
                     drawTriangle(grm, [
