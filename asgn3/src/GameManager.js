@@ -19,7 +19,6 @@ export default class GameManager {
         this.pressedKeys = null;
         this.cursorManager = null;
         this.listOfComponents = null;
-        this._frameCounter = 0;
         this._onInit = null;
         this._onTick = null;
     }
@@ -40,14 +39,11 @@ export default class GameManager {
         this.pressedKeys = new DefaultDict(false);
         this.cursorManager = new CursorManager();
         this.listOfComponents = [];
-        this._frameCounter = 0;
 
         window.onkeydown = (ev) => { this.pressedKeys[ev.code] = true; };
         window.onkeyup = (ev) => { this.pressedKeys[ev.code] = false; };
         this.cursorManager.setupPointerLock(this.grm.canvas, document);
         this.cursorManager.setOnMove((x, y) => { this._onCursorMove(x, y); });
-
-        this._countFramesAndUpdateDisplay();
 
         if (this._onInit) {
             this._onInit();
@@ -68,15 +64,11 @@ export default class GameManager {
             previousDeltaTime = Date.now() - previousTime;
             previousTime = Date.now();
 
-            this._frameCounter++;
+            document.getElementById("fpsdisplay").innerHTML = (1000 / previousDeltaTime).toFixed(1);
         }
     }
 
     async _tick(deltaTime, totalTimeElapsed) {
-        for (let i = 0; i < 300; i++) {
-            console.log(`${i * i / i * i / i * i}`);
-        }
-
         if (this._onTick) {
             this._onTick(deltaTime, totalTimeElapsed);
         }
@@ -144,14 +136,6 @@ export default class GameManager {
 
         for (let component of this.listOfComponents) {
             component.render(this.grm, IDENTITY_MATRIX);
-        }
-    }
-
-    async _countFramesAndUpdateDisplay() {
-        while (true) {
-            this._frameCounter = 0;
-            await new Promise(r => setTimeout(r, 1000));
-            document.getElementById("fpsdisplay").innerHTML = `${this._frameCounter}`;
         }
     }
 
