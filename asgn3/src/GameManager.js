@@ -6,7 +6,7 @@ import { DefaultDict } from "./util.js";
 import CursorManager from "./CursorManager.js";
 
 const MIN_FRAME_LENGTH = 16; // 16 for 60fps.
-const CAM_MOVEMENT_SPEED = 0.01;
+const CAM_MOVEMENT_SPEED = 0.1;
 const CAM_ROTATION_SPEED = 0.1;
 const CAM_CURSOR_SENSITIVITY = 0.5;
 

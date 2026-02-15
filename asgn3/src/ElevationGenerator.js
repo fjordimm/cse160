@@ -1,10 +1,18 @@
+import { sigmoid } from "./util.js";
+
 const FREQ_FACTOR = 2;
 const AMP_FACTOR = 0.5;
+
+const GRASS_COLOR = [0, 0.5, 0, 1];
+const SNOW_COLOR = [0.91, 0.92, 0.93, 1];
 
 export default class ElevationGenerator {
     constructor() {}
 
     at(x, z) {
+        x -= 98450;
+        z -= 232838;
+
         x /= 30;
         z /= 30;
 
@@ -26,5 +34,19 @@ export default class ElevationGenerator {
         y = Math.exp(0.6 * y);
 
         return 7.0 * y;
+    }
+
+    colorAt(y) {
+        const snowWeight = sigmoid(y - 25);
+        const grassWeight = 1 - snowWeight;
+
+        const shadingWeight = (y + 30) / 75;
+
+        return [
+            shadingWeight * (GRASS_COLOR[0] * grassWeight + SNOW_COLOR[0] * snowWeight),
+            shadingWeight * (GRASS_COLOR[1] * grassWeight + SNOW_COLOR[1] * snowWeight),
+            shadingWeight * (GRASS_COLOR[2] * grassWeight + SNOW_COLOR[2] * snowWeight),
+            1
+        ];
     }
 }
