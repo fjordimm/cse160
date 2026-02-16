@@ -1,6 +1,7 @@
 import drawTriangle from "../drawTriangle.js";
 
 const TRASH_UV_COORDS = new Float32Array([0, 0]);
+const _reusableTriArray = new Float32Array([0, 0, 0, 0, 0, 0, 0, 0, 0]);
 
 export default class TerrainChunk {
     constructor(color, size, scale, offX, offZ, elevationGenerator) {
@@ -40,16 +41,26 @@ export default class TerrainChunk {
                     
                     grm.gl.uniform4f(grm.u_FragColor, ...this._colors[x][z]);
 
-                    drawTriangle(grm, [
-                        (x) * this._scale,     yBL, (z) * this._scale,
-                        (x + 1) * this._scale, yBR, (z) * this._scale,
-                        (x) * this._scale,     yTL, (z + 1) * this._scale
-                    ], TRASH_UV_COORDS);
-                    drawTriangle(grm, [
-                        (x + 1) * this._scale, yTR, (z + 1) * this._scale,
-                        (x) * this._scale,     yTL, (z + 1) * this._scale,
-                        (x + 1) * this._scale, yBR, (z) * this._scale
-                    ], TRASH_UV_COORDS);
+                    _reusableTriArray[0] = (x) * this._scale;
+                    _reusableTriArray[1] = yBL;
+                    _reusableTriArray[2] = (z) * this._scale;
+                    _reusableTriArray[3] = (x + 1) * this._scale;
+                    _reusableTriArray[4] = yBR;
+                    _reusableTriArray[5] = (z) * this._scale;
+                    _reusableTriArray[6] = (x) * this._scale;
+                    _reusableTriArray[7] = yTL;
+                    _reusableTriArray[8] = (z + 1) * this._scale;
+                    drawTriangle(grm, _reusableTriArray, TRASH_UV_COORDS);
+                    _reusableTriArray[0] = (x + 1) * this._scale;
+                    _reusableTriArray[1] = yTR;
+                    _reusableTriArray[2] = (z + 1) * this._scale;
+                    _reusableTriArray[3] = (x) * this._scale;
+                    _reusableTriArray[4] = yTL;
+                    _reusableTriArray[5] = (z + 1) * this._scale;
+                    _reusableTriArray[6] = (x + 1) * this._scale;
+                    _reusableTriArray[7] = yBR;
+                    _reusableTriArray[8] = (z) * this._scale;
+                    drawTriangle(grm, _reusableTriArray, TRASH_UV_COORDS);
                 }
             }
         }

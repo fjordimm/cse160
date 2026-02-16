@@ -7,7 +7,7 @@ import { PermLambdaDefaultDict, DefaultDict } from "./util.js";
 
 const TERRAIN_SIZE = 8;
 const TERRAIN_SCALE = 5.0;
-const RENDER_DIST = 3; // in chunks
+const RENDER_DIST = 1; // in chunks
 
 const INITIAL_WALL_LAYOUT = [
     [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4],
@@ -84,36 +84,34 @@ export class Game {
         }
         this._gm.listOfComponents.push(origin);
 
-        // this._terrainComp = new Component();
-        // this._gm.listOfComponents.push(this._terrainComp);
+        this._terrainComp = new Component();
+        this._gm.listOfComponents.push(this._terrainComp);
 
         const erm = new Component();
         this._gm.listOfComponents.push(erm);
 
-        this._walls = [];
-        for (let c = 0; c < 32; c++) {
-            this._walls.push([]);
-            for (let r = 0; r < 32; r++) {
-                // this._walls[c].push(INITIAL_WALL_LAYOUT[c][r]);
+        // this._walls = [];
+        // for (let c = 0; c < 32; c++) {
+        //     this._walls.push([]);
+        //     for (let r = 0; r < 32; r++) {
+        //         this._walls[c].push([]);
+        //         for (let i = 1; i <= 4; i++) {
+        //             const wall = new Component();
+        //             {
+        //                 const s = new Cube(WALL_COLOR, "./res/images/debugtex.png", 1);
+        //                 wall.addShape(s);
+        //             }
+        //             wall.matrix.translate(c, i - 1, r);
+        //             this._gm.listOfComponents.push(wall);
 
-                this._walls[c].push([]);
-                for (let i = 1; i <= 4; i++) {
-                    const wall = new Component();
-                    {
-                        const s = new Cube(WALL_COLOR, "./res/images/debugtex.png", 1);
-                        wall.addShape(s);
-                    }
-                    wall.matrix.translate(c, i - 1, r);
-                    this._gm.listOfComponents.push(wall);
+        //             if (i > INITIAL_WALL_LAYOUT[c][r]) {
+        //                 wall.isVisible = false;
+        //             }
 
-                    if (i > INITIAL_WALL_LAYOUT[c][r]) {
-                        wall.isVisible = false;
-                    }
-
-                    this._walls[c][r].push(wall);
-                }
-            }
-        }
+        //             this._walls[c][r].push(wall);
+        //         }
+        //     }
+        // }
     }
 
     _tick(deltaTime, totalTimeElapsed) {
@@ -122,7 +120,7 @@ export class Game {
         // Move sky so it's always centered at the camera so it looks like it doesn't move
         this._skyComp.animationMatrix.setTranslate(...camPos);
 
-        // this._updateTerrainChunks(camPos[0], camPos[2]);
+        this._updateTerrainChunks(camPos[0], camPos[2]);
         
         // Move camera to be along the terrain
         // this._gm.camera.setY(2 + this._elevationGenerator.at(camPos[0], camPos[2]));
@@ -164,13 +162,13 @@ function coordsToTerrainDictKey(x, z) {
     return [Math.floor(x / (TERRAIN_SIZE * TERRAIN_SCALE)), Math.floor(z / (TERRAIN_SIZE * TERRAIN_SCALE))];
 }
 
-const TERRAIN_COLOR = [0, 0.5, 0, 1];
+const TERRAIN_FALLBACK_COLOR = [0, 0.5, 0, 1];
 
 function makeTerrainChunk(keyX, keyZ, elevationGenerator) {
     const realX = keyX * TERRAIN_SIZE * TERRAIN_SCALE;
     const realZ = keyZ * TERRAIN_SIZE * TERRAIN_SCALE;
 
-    const s = new TerrainChunk(TERRAIN_COLOR, TERRAIN_SIZE, TERRAIN_SCALE, realX, realZ, elevationGenerator);
+    const s = new TerrainChunk(TERRAIN_FALLBACK_COLOR, TERRAIN_SIZE, TERRAIN_SCALE, realX, realZ, elevationGenerator);
     s.matrix.translate(realX, 0, realZ);
     return s;
 }
