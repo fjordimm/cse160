@@ -1,5 +1,20 @@
 import drawTriangle from "../drawTriangle.js";
 
+const UV_BL = new Float32Array([0, 0, 1, 0, 0, 1]);
+const UV_TR = new Float32Array([1, 1, 0, 1, 1, 0]);
+const TRI_ARRAY_01 = new Float32Array([-0.5, 0.5, 0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5]);
+const TRI_ARRAY_02 = new Float32Array([0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, 0.5, 0.5]);
+const TRI_ARRAY_03 = new Float32Array([-0.5, -0.5, 0.5, 0.5, -0.5, 0.5, -0.5, 0.5, 0.5]);
+const TRI_ARRAY_04 = new Float32Array([0.5, 0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5]);
+const TRI_ARRAY_05 = new Float32Array([0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, 0.5]);
+const TRI_ARRAY_06 = new Float32Array([0.5, 0.5, -0.5, 0.5, 0.5, 0.5, 0.5, -0.5, -0.5]);
+const TRI_ARRAY_07 = new Float32Array([0.5, -0.5, -0.5, -0.5, -0.5, -0.5, 0.5, 0.5, -0.5]);
+const TRI_ARRAY_08 = new Float32Array([-0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, -0.5, -0.5]);
+const TRI_ARRAY_09 = new Float32Array([-0.5, -0.5, -0.5, -0.5, -0.5, 0.5, -0.5, 0.5, -0.5]);
+const TRI_ARRAY_10 = new Float32Array([-0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5]);
+const TRI_ARRAY_11 = new Float32Array([-0.5, -0.5, -0.5, 0.5, -0.5, -0.5, -0.5, -0.5, 0.5]);
+const TRI_ARRAY_12 = new Float32Array([0.5, -0.5, 0.5, -0.5, -0.5, 0.5, 0.5, -0.5, -0.5]);
+
 export default class Cube {
     constructor(color, texturePath, textureWeight) {
         this.matrix = new Matrix4();
@@ -54,26 +69,23 @@ export default class Cube {
             grm.gl.uniform1f(grm.u_TextureWeight, 0.0);
         }
 
-        const uvBL = [0, 0, 1, 0, 0, 1];
-        const uvTR = [1, 1, 0, 1, 1, 0];
-
         grm.gl.uniform4f(grm.u_FragColor, ...this._color_top);
-        drawTriangle(grm, [-0.5, 0.5, 0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5], uvBL);
-        drawTriangle(grm, [0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, 0.5, 0.5], uvTR);
+        drawTriangle(grm, TRI_ARRAY_01, UV_BL);
+        drawTriangle(grm, TRI_ARRAY_02, UV_TR);
         grm.gl.uniform4f(grm.u_FragColor, ...this._color_front);
-        drawTriangle(grm, [-0.5, -0.5, 0.5, 0.5, -0.5, 0.5, -0.5, 0.5, 0.5], uvBL);
-        drawTriangle(grm, [0.5, 0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5], uvTR);
+        drawTriangle(grm, TRI_ARRAY_03, UV_BL);
+        drawTriangle(grm, TRI_ARRAY_04, UV_TR);
         grm.gl.uniform4f(grm.u_FragColor, ...this._color_right);
-        drawTriangle(grm, [0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, 0.5], uvBL);
-        drawTriangle(grm, [0.5, 0.5, -0.5, 0.5, 0.5, 0.5, 0.5, -0.5, -0.5], uvTR);
+        drawTriangle(grm, TRI_ARRAY_05, UV_BL);
+        drawTriangle(grm, TRI_ARRAY_06, UV_TR);
         grm.gl.uniform4f(grm.u_FragColor, ...this._color_back);
-        drawTriangle(grm, [0.5, -0.5, -0.5, -0.5, -0.5, -0.5, 0.5, 0.5, -0.5], uvBL);
-        drawTriangle(grm, [-0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, -0.5, -0.5], uvTR);
+        drawTriangle(grm, TRI_ARRAY_07, UV_BL);
+        drawTriangle(grm, TRI_ARRAY_08, UV_TR);
         grm.gl.uniform4f(grm.u_FragColor, ...this._color_left);
-        drawTriangle(grm, [-0.5, -0.5, -0.5, -0.5, -0.5, 0.5, -0.5, 0.5, -0.5], uvBL);
-        drawTriangle(grm, [-0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5], uvTR);
+        drawTriangle(grm, TRI_ARRAY_09, UV_BL);
+        drawTriangle(grm, TRI_ARRAY_10, UV_TR);
         grm.gl.uniform4f(grm.u_FragColor, ...this._color_bottom);
-        drawTriangle(grm, [-0.5, -0.5, -0.5, 0.5, -0.5, -0.5, -0.5, -0.5, 0.5], uvBL);
-        drawTriangle(grm, [0.5, -0.5, 0.5, -0.5, -0.5, 0.5, 0.5, -0.5, -0.5], uvTR);
+        drawTriangle(grm, TRI_ARRAY_11, UV_BL);
+        drawTriangle(grm, TRI_ARRAY_12, UV_TR);
     }
 }

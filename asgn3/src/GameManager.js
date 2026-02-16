@@ -6,9 +6,10 @@ import { DefaultDict } from "./util.js";
 import CursorManager from "./CursorManager.js";
 
 const MIN_FRAME_LENGTH = 16; // 16 for 60fps.
-const CAM_MOVEMENT_SPEED = 0.1;
+const CAM_MOVEMENT_SPEED = 0.01;
 const CAM_ROTATION_SPEED = 0.1;
 const CAM_CURSOR_SENSITIVITY = 0.5;
+const ALLOW_VERTICAL_MOVEMENT = true;
 
 const IDENTITY_MATRIX = new Matrix4();
 
@@ -112,16 +113,18 @@ export default class GameManager {
 
         // Camera y movement
 
-        let camMoveY = 0;
+        if (ALLOW_VERTICAL_MOVEMENT) {
+            let camMoveY = 0;
 
-        if (this.pressedKeys["Space"]) {
-            camMoveY += 1;
-        }
-        if (this.pressedKeys["ShiftLeft"] || this.pressedKeys["ShiftRight"]) {
-            camMoveY -= 1;
-        }
+            if (this.pressedKeys["Space"]) {
+                camMoveY += 1;
+            }
+            if (this.pressedKeys["ShiftLeft"] || this.pressedKeys["ShiftRight"]) {
+                camMoveY -= 1;
+            }
 
-        this.camera.move(new Vector3([0, camMoveY * deltaTime * CAM_MOVEMENT_SPEED, 0]));
+            this.camera.move(new Vector3([0, camMoveY * deltaTime * CAM_MOVEMENT_SPEED, 0]));
+        }
 
         // Rendering
 

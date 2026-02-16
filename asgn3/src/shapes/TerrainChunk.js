@@ -1,5 +1,7 @@
 import drawTriangle from "../drawTriangle.js";
 
+const TRASH_UV_COORDS = new Float32Array([0, 0]);
+
 export default class TerrainChunk {
     constructor(color, size, scale, offX, offZ, elevationGenerator) {
         this.matrix = new Matrix4();
@@ -29,8 +31,6 @@ export default class TerrainChunk {
             grm.gl.uniform1f(grm.u_TextureWeight, 0.0);
             grm.gl.uniform4f(grm.u_FragColor, ...this._color);
 
-            const trashUvCoords = [0, 0];
-
             for (let x = 0; x < this._elevations.length - 1; x++) {
                 for (let z = 0; z < this._elevations[0].length - 1; z++) {
                     const yBL = this._elevations[x][z];
@@ -44,12 +44,12 @@ export default class TerrainChunk {
                         (x) * this._scale,     yBL, (z) * this._scale,
                         (x + 1) * this._scale, yBR, (z) * this._scale,
                         (x) * this._scale,     yTL, (z + 1) * this._scale
-                    ], trashUvCoords);
+                    ], TRASH_UV_COORDS);
                     drawTriangle(grm, [
                         (x + 1) * this._scale, yTR, (z + 1) * this._scale,
                         (x) * this._scale,     yTL, (z + 1) * this._scale,
                         (x + 1) * this._scale, yBR, (z) * this._scale
-                    ], trashUvCoords);
+                    ], TRASH_UV_COORDS);
                 }
             }
         }

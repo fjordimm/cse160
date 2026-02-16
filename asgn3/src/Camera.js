@@ -1,6 +1,8 @@
 const FORWARD_VEC = new Vector3([0, 0, -1]);
 const UP_VEC = new Vector3([0, 1, 0]);
 
+const _reusableRotationMatrix = new Matrix4();
+
 export default class Camera {
     constructor(fov, canvasWidth, canvasHeight, nearPlane, farPlane) {
         this._projectionMatrix = new Matrix4();
@@ -15,10 +17,10 @@ export default class Camera {
     }
 
     _updateViewMatrix() {
-        const rotationMatrix = new Matrix4();
-        rotationMatrix.rotate(this._rotationHoriz, 0, 1, 0);
-        rotationMatrix.rotate(this._rotationVert, 1, 0, 0);
-        const atVec = rotationMatrix.multiplyVector3(FORWARD_VEC);
+        _reusableRotationMatrix.setIdentity();
+        _reusableRotationMatrix.rotate(this._rotationHoriz, 0, 1, 0);
+        _reusableRotationMatrix.rotate(this._rotationVert, 1, 0, 0);
+        const atVec = _reusableRotationMatrix.multiplyVector3(FORWARD_VEC);
         
         atVec.elements[0] += this._pos.elements[0];
         atVec.elements[1] += this._pos.elements[1];
@@ -58,14 +60,29 @@ export default class Camera {
         this._updateViewMatrix();
     }
 
+    setX(val) {
+        this._pos.elements[0] = val;
+        this._updateViewMatrix();
+    }
+
+    setY(val) {
+        this._pos.elements[1] = val;
+        this._updateViewMatrix();
+    }
+
+    setZ(val) {
+        this._pos.elements[2] = val;
+        this._updateViewMatrix();
+    }
+
     moveForwards(movementVec, useVertRotation) {
         if (movementVec[0] === 0 && movementVec[1] === 0 && movementVec[2] === 0) {
             return;
         } else {
-            const rotationMatrix = new Matrix4();
-            rotationMatrix.rotate(this._rotationHoriz, 0, 1, 0);
-            if (useVertRotation) { rotationMatrix.rotate(this._rotationVert, 1, 0, 0); }
-            const rotatedMovementVec = rotationMatrix.multiplyVector3(movementVec);
+            _reusableRotationMatrix.setIdentity();
+            _reusableRotationMatrix.rotate(this._rotationHoriz, 0, 1, 0);
+            if (useVertRotation) { _reusableRotationMatrix.rotate(this._rotationVert, 1, 0, 0); }
+            const rotatedMovementVec = _reusableRotationMatrix.multiplyVector3(movementVec);
 
             this._pos.elements[0] += rotatedMovementVec.elements[0];
             this._pos.elements[1] += rotatedMovementVec.elements[1];
