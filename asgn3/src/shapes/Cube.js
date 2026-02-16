@@ -18,6 +18,7 @@ const TRI_ARRAY_12 = new Float32Array([0.5, -0.5, 0.5, -0.5, -0.5, 0.5, 0.5, -0.
 export default class Cube {
     constructor(color, texturePath, textureWeight) {
         this.matrix = new Matrix4();
+        this.isVisible = true;
         this._color = color;
         this._gltexture = null;
         this._textureImg = null;
@@ -44,48 +45,50 @@ export default class Cube {
     }
 
     render(grm) {
-        grm.gl.uniformMatrix4fv(grm.u_ModelMatrix, false, this.matrix.elements);
+        if (this.isVisible) {
+            grm.gl.uniformMatrix4fv(grm.u_ModelMatrix, false, this.matrix.elements);
 
-        if (this._textureImgReady) {
-            if (this._gltexture === null) {
-                this._gltexture = grm.gl.createTexture();
+            if (this._textureImgReady) {
+                if (this._gltexture === null) {
+                    this._gltexture = grm.gl.createTexture();
+                }
+
+                grm.gl.activeTexture(grm.gl.TEXTURE0);
+                grm.gl.bindTexture(grm.gl.TEXTURE_2D, this._gltexture);
+                grm.gl.texParameteri(grm.gl.TEXTURE_2D, grm.gl.TEXTURE_MIN_FILTER, grm.gl.LINEAR);
+                grm.gl.texImage2D(
+                    grm.gl.TEXTURE_2D,
+                    0,
+                    grm.gl.RGBA,
+                    grm.gl.RGBA,
+                    grm.gl.UNSIGNED_BYTE,
+                    this._textureImg
+                );
+                grm.gl.uniform1i(grm.u_Texture, 0);
+
+                grm.gl.uniform1f(grm.u_TextureWeight, this._textureWeight);
+            } else {
+                grm.gl.uniform1f(grm.u_TextureWeight, 0.0);
             }
 
-            grm.gl.activeTexture(grm.gl.TEXTURE0);
-            grm.gl.bindTexture(grm.gl.TEXTURE_2D, this._gltexture);
-            grm.gl.texParameteri(grm.gl.TEXTURE_2D, grm.gl.TEXTURE_MIN_FILTER, grm.gl.LINEAR);
-            grm.gl.texImage2D(
-                grm.gl.TEXTURE_2D,
-                0,
-                grm.gl.RGBA,
-                grm.gl.RGBA,
-                grm.gl.UNSIGNED_BYTE,
-                this._textureImg
-            );
-            grm.gl.uniform1i(grm.u_Texture, 0);
-
-            grm.gl.uniform1f(grm.u_TextureWeight, this._textureWeight);
-        } else {
-            grm.gl.uniform1f(grm.u_TextureWeight, 0.0);
+            grm.gl.uniform4f(grm.u_FragColor, ...this._color_top);
+            drawTriangle(grm, TRI_ARRAY_01, UV_BL);
+            drawTriangle(grm, TRI_ARRAY_02, UV_TR);
+            grm.gl.uniform4f(grm.u_FragColor, ...this._color_front);
+            drawTriangle(grm, TRI_ARRAY_03, UV_BL);
+            drawTriangle(grm, TRI_ARRAY_04, UV_TR);
+            grm.gl.uniform4f(grm.u_FragColor, ...this._color_right);
+            drawTriangle(grm, TRI_ARRAY_05, UV_BL);
+            drawTriangle(grm, TRI_ARRAY_06, UV_TR);
+            grm.gl.uniform4f(grm.u_FragColor, ...this._color_back);
+            drawTriangle(grm, TRI_ARRAY_07, UV_BL);
+            drawTriangle(grm, TRI_ARRAY_08, UV_TR);
+            grm.gl.uniform4f(grm.u_FragColor, ...this._color_left);
+            drawTriangle(grm, TRI_ARRAY_09, UV_BL);
+            drawTriangle(grm, TRI_ARRAY_10, UV_TR);
+            grm.gl.uniform4f(grm.u_FragColor, ...this._color_bottom);
+            drawTriangle(grm, TRI_ARRAY_11, UV_BL);
+            drawTriangle(grm, TRI_ARRAY_12, UV_TR);
         }
-
-        grm.gl.uniform4f(grm.u_FragColor, ...this._color_top);
-        drawTriangle(grm, TRI_ARRAY_01, UV_BL);
-        drawTriangle(grm, TRI_ARRAY_02, UV_TR);
-        grm.gl.uniform4f(grm.u_FragColor, ...this._color_front);
-        drawTriangle(grm, TRI_ARRAY_03, UV_BL);
-        drawTriangle(grm, TRI_ARRAY_04, UV_TR);
-        grm.gl.uniform4f(grm.u_FragColor, ...this._color_right);
-        drawTriangle(grm, TRI_ARRAY_05, UV_BL);
-        drawTriangle(grm, TRI_ARRAY_06, UV_TR);
-        grm.gl.uniform4f(grm.u_FragColor, ...this._color_back);
-        drawTriangle(grm, TRI_ARRAY_07, UV_BL);
-        drawTriangle(grm, TRI_ARRAY_08, UV_TR);
-        grm.gl.uniform4f(grm.u_FragColor, ...this._color_left);
-        drawTriangle(grm, TRI_ARRAY_09, UV_BL);
-        drawTriangle(grm, TRI_ARRAY_10, UV_TR);
-        grm.gl.uniform4f(grm.u_FragColor, ...this._color_bottom);
-        drawTriangle(grm, TRI_ARRAY_11, UV_BL);
-        drawTriangle(grm, TRI_ARRAY_12, UV_TR);
     }
 }

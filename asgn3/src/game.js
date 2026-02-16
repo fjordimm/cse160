@@ -87,18 +87,31 @@ export class Game {
         // this._terrainComp = new Component();
         // this._gm.listOfComponents.push(this._terrainComp);
 
-        this._walls = [];
-        for (let c = 0; c < 24; c++) {
-            for (let r = 0; r < 24; r++) {
-                this._walls = INITIAL_WALL_LAYOUT[c][r];
+        const erm = new Component();
+        this._gm.listOfComponents.push(erm);
 
-                const wall = new Component();
-                {
-                    const s = new Cube(WALL_COLOR, null, 0);
-                    wall.addShape(s);
+        this._walls = [];
+        for (let c = 0; c < 32; c++) {
+            this._walls.push([]);
+            for (let r = 0; r < 32; r++) {
+                // this._walls[c].push(INITIAL_WALL_LAYOUT[c][r]);
+
+                this._walls[c].push([]);
+                for (let i = 1; i <= 4; i++) {
+                    const wall = new Component();
+                    {
+                        const s = new Cube(WALL_COLOR, "./res/images/debugtex.png", 1);
+                        wall.addShape(s);
+                    }
+                    wall.matrix.translate(c, i - 1, r);
+                    this._gm.listOfComponents.push(wall);
+
+                    if (i > INITIAL_WALL_LAYOUT[c][r]) {
+                        wall.isVisible = false;
+                    }
+
+                    this._walls[c][r].push(wall);
                 }
-                wall.matrix.translate(c, 0, r);
-                this._gm.listOfComponents.push(wall);
             }
         }
     }

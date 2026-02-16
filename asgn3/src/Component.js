@@ -4,6 +4,7 @@ export default class Component {
     constructor() {
         this.matrix = new Matrix4();
         this.animationMatrix = new Matrix4();
+        this.isVisible = true;
         this._shapes = [];
         this._children = [];
     }
@@ -17,18 +18,20 @@ export default class Component {
     }
 
     render(grm, parentMatrix) {
-        _reusableFinalMatrix.setIdentity();
-        // _reusableFinalMatrix.multiply(this.animationMatrix);
-        _reusableFinalMatrix.multiply(this.matrix);
-        // _reusableFinalMatrix.multiply(parentMatrix);
-        grm.gl.uniformMatrix4fv(grm.u_TransformMatrix, false, _reusableFinalMatrix.elements);
-        
-        for (let shape of this._shapes) {
-            shape.render(grm);
-        }
+        if (this.isVisible) {
+            _reusableFinalMatrix.setIdentity();
+            // _reusableFinalMatrix.multiply(this.animationMatrix);
+            _reusableFinalMatrix.multiply(this.matrix);
+            // _reusableFinalMatrix.multiply(parentMatrix);
+            grm.gl.uniformMatrix4fv(grm.u_TransformMatrix, false, _reusableFinalMatrix.elements);
+            
+            for (let shape of this._shapes) {
+                shape.render(grm);
+            }
 
-        for (let child of this._children) {
-            child.render(grm, _reusableFinalMatrix);
+            for (let child of this._children) {
+                child.render(grm, _reusableFinalMatrix);
+            }
         }
     }
 }
