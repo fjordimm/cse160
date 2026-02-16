@@ -29,4 +29,24 @@ export default class CursorManager {
     setOnMove(f) {
         this._onMove = f;
     }
+
+    setOnLeftClick(canvas, f) {
+        canvas.addEventListener("click", (ev) => {
+            if (this._pointerLocked) {
+                if (ev.which === 1) {
+                    f();
+                }
+            }
+        });
+    }
+
+    setOnRightClick(canvas, f) {
+        canvas.addEventListener("click", (ev) => {
+            if (this._pointerLocked) {
+                if (ev.which === 3) {
+                    f();
+                }
+            }
+        });
+    }
 }

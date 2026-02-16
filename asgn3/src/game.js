@@ -69,6 +69,9 @@ export class Game {
     }
 
     _init() {
+        this._gm.cursorManager.setOnLeftClick(this._gm.grm.canvas, () => { console.log("left"); });
+        this._gm.cursorManager.setOnRightClick(this._gm.grm.canvas, () => { console.log("right"); });
+
         this._skyComp = new Component();
         {
             const s = new Cube([0, 0, 1, 1], "./res/images/sky.png", 1.0);
@@ -90,28 +93,31 @@ export class Game {
         const erm = new Component();
         this._gm.listOfComponents.push(erm);
 
-        // this._walls = [];
-        // for (let c = 0; c < 32; c++) {
-        //     this._walls.push([]);
-        //     for (let r = 0; r < 32; r++) {
-        //         this._walls[c].push([]);
-        //         for (let i = 1; i <= 4; i++) {
-        //             const wall = new Component();
-        //             {
-        //                 const s = new Cube(WALL_COLOR, "./res/images/debugtex.png", 1);
-        //                 wall.addShape(s);
-        //             }
-        //             wall.matrix.translate(c, i - 1, r);
-        //             this._gm.listOfComponents.push(wall);
+        this._walls = [];
+        for (let c = 0; c < 32; c++) {
+            this._walls.push([]);
+            for (let r = 0; r < 32; r++) {
+                this._walls[c].push([]);
+                for (let i = 1; i <= 4; i++) {
+                    const wall = new Component();
+                    {
+                        const s = new Cube(WALL_COLOR, "./res/images/debugtex.png", 1);
+                        wall.addShape(s);
+                    }
+                    wall.matrix.translate(c, this._elevationGenerator.at(c, r) + i - 0.5, r);
+                    this._gm.listOfComponents.push(wall);
 
-        //             if (i > INITIAL_WALL_LAYOUT[c][r]) {
-        //                 wall.isVisible = false;
-        //             }
+                    if (i > INITIAL_WALL_LAYOUT[c][r]) {
+                        wall.isVisible = false;
+                    }
 
-        //             this._walls[c][r].push(wall);
-        //         }
-        //     }
-        // }
+                    this._walls[c][r].push(wall);
+                }
+            }
+        }
+
+        this._gm.camera.setX(16);
+        this._gm.camera.setZ(16);
     }
 
     _tick(deltaTime, totalTimeElapsed) {
@@ -123,7 +129,7 @@ export class Game {
         this._updateTerrainChunks(camPos[0], camPos[2]);
         
         // Move camera to be along the terrain
-        // this._gm.camera.setY(2 + this._elevationGenerator.at(camPos[0], camPos[2]));
+        this._gm.camera.setY(2 + this._elevationGenerator.at(camPos[0], camPos[2]));
     }
 
     _updateTerrainChunks(camX, camZ) {

@@ -6,7 +6,6 @@ export async function main() {
 
 window.main = main;
 
-// TODO: optimize drawTriangle.js by not creating a new Float32Array every time.
 // TODO: optimize by not creating multiple textures if it's shared
-// TODO: optimize Camera.js
 // TODO: maybe implement fog
+// TODO: game idea: catch all the oxes in the big square in the middle.
