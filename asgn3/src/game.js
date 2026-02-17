@@ -9,6 +9,8 @@ const TERRAIN_SIZE = 8;
 const TERRAIN_SCALE = 5.0;
 const RENDER_DIST = 1; // in chunks
 
+const BLOCK_REACH_RANGE = 3;
+
 const INITIAL_WALL_LAYOUT = [
     [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4],
     [4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4],
@@ -69,8 +71,8 @@ export class Game {
     }
 
     _init() {
-        this._gm.cursorManager.setOnLeftClick(this._gm.grm.canvas, () => { console.log("left"); });
-        this._gm.cursorManager.setOnRightClick(this._gm.grm.canvas, () => { console.log("right"); });
+        this._gm.cursorManager.setOnLeftClick(this._gm.grm.canvas, () => { this._deleteBlock(); });
+        this._gm.cursorManager.setOnRightClick(this._gm.grm.canvas, () => { this._addBlock(); });
 
         this._skyComp = new Component();
         {
@@ -159,6 +161,68 @@ export class Game {
                 } else {
                     chunk.isVisible = false;
                 }
+            }
+        }
+    }
+
+    _deleteBlock() {
+        const camForwards = this._gm.camera.getForwards();
+        const camAt = this._gm.camera.getPosition();
+        camAt[0] += BLOCK_REACH_RANGE * camForwards[0];
+        camAt[1] += BLOCK_REACH_RANGE * camForwards[1];
+        camAt[2] += BLOCK_REACH_RANGE * camForwards[2];
+
+        const camAtX = Math.round(camAt[0]);
+        const camAtZ = Math.round(camAt[2]);
+
+        if (camAtX >= 0 && camAtX < 32 && camAtZ >= 0 && camAtZ < 32) {
+            if (this._walls[camAtX][camAtZ][3].isVisible) {
+                this._walls[camAtX][camAtZ][3].isVisible = false;
+            } else {
+                if (this._walls[camAtX][camAtZ][2].isVisible) {
+                    this._walls[camAtX][camAtZ][2].isVisible = false;
+                } else {
+                    if (this._walls[camAtX][camAtZ][1].isVisible) {
+                        this._walls[camAtX][camAtZ][1].isVisible = false;
+                    } else {
+                        if (this._walls[camAtX][camAtZ][0].isVisible) {
+                            this._walls[camAtX][camAtZ][0].isVisible = false;
+                        } else {
+                            // nothing more to do
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    _addBlock() {
+        const camForwards = this._gm.camera.getForwards();
+        const camAt = this._gm.camera.getPosition();
+        camAt[0] += BLOCK_REACH_RANGE * camForwards[0];
+        camAt[1] += BLOCK_REACH_RANGE * camForwards[1];
+        camAt[2] += BLOCK_REACH_RANGE * camForwards[2];
+
+        const camAtX = Math.round(camAt[0]);
+        const camAtZ = Math.round(camAt[2]);
+
+        if (camAtX >= 0 && camAtX < 32 && camAtZ >= 0 && camAtZ < 32) {
+            if (this._walls[camAtX][camAtZ][0].isVisible) {
+                if (this._walls[camAtX][camAtZ][1].isVisible) {
+                    if (this._walls[camAtX][camAtZ][2].isVisible) {
+                        if (this._walls[camAtX][camAtZ][3].isVisible) {
+                            // nothing more to do
+                        } else {
+                            this._walls[camAtX][camAtZ][3].isVisible = true;
+                        }
+                    } else {
+                        this._walls[camAtX][camAtZ][2].isVisible = true;
+                    }
+                } else {
+                    this._walls[camAtX][camAtZ][1].isVisible = true;
+                }
+            } else {
+                this._walls[camAtX][camAtZ][0].isVisible = true;
             }
         }
     }

@@ -41,6 +41,15 @@ export default class Camera {
         return [...this._pos.elements];
     }
 
+    getForwards() {
+        _reusableRotationMatrix.setIdentity();
+        _reusableRotationMatrix.rotate(this._rotationHoriz, 0, 1, 0);
+        _reusableRotationMatrix.rotate(this._rotationVert, 1, 0, 0);
+        const forwardsVec = _reusableRotationMatrix.multiplyVector3(FORWARD_VEC);
+
+        return [...forwardsVec.elements];
+    }
+
     rotateVert(degrees) {
         this._rotationVert += degrees;
         if (this._rotationVert < -89) { this._rotationVert = -89; }
