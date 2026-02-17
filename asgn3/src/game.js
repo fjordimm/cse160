@@ -5,6 +5,7 @@ import TerrainChunk from "./shapes/TerrainChunk.js";
 import ElevationGenerator from "./ElevationGenerator.js";
 import { PermLambdaDefaultDict, DefaultDict } from "./util.js";
 import CylinderVert from "./shapes/CylinderVert.js";
+import CylinderHoriz from "./shapes/CylinderHoriz.js";
 
 const TERRAIN_SIZE = 8;
 const TERRAIN_SCALE = 5.0;
@@ -77,7 +78,7 @@ export class Game {
 
         const test = new Component();
         {
-            const s = new CylinderVert([1, 0, 0, 1], 8);
+            const s = new CylinderHoriz([1, 0, 0, 1], 8);
             test.addShape(s);
         }
         test.matrix.translate(16, 10, 16);
