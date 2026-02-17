@@ -10,8 +10,8 @@ export default class ElevationGenerator {
     constructor() {}
 
     at(x, z) {
-        x -= 98450;
-        z -= 232838;
+        x -= 98549;
+        z -= 232983;
 
         x /= 30;
         z /= 30;

@@ -16,9 +16,8 @@ export default class TerrainChunk {
             elevations.push([]);
             colors.push([]);
             for (let z = 0; z < size + 1; z++) {
-                const y = elevationGenerator.at(x * this._scale + offX, z * this._scale + offZ);
-                elevations[x].push(y);
-                colors[x].push(elevationGenerator.colorAt(y));
+                elevations[x].push(elevationGenerator.at(x * this._scale + offX, z * this._scale + offZ));
+                colors[x].push(elevationGenerator.colorAt(elevationGenerator.at((x + 0.5) * this._scale + offX, (z + 0.5) * this._scale + offZ)));
             }
         }
         this._elevations = elevations;
