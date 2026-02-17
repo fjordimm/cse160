@@ -55,6 +55,7 @@ export default class Cube {
 
                 grm.gl.activeTexture(grm.gl.TEXTURE0);
                 grm.gl.bindTexture(grm.gl.TEXTURE_2D, this._gltexture);
+                grm.gl.texParameteri(grm.gl.TEXTURE_2D, grm.gl.TEXTURE_MAG_FILTER, grm.gl.NEAREST);
                 grm.gl.texParameteri(grm.gl.TEXTURE_2D, grm.gl.TEXTURE_MIN_FILTER, grm.gl.LINEAR);
                 grm.gl.texImage2D(
                     grm.gl.TEXTURE_2D,
