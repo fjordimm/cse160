@@ -12,6 +12,8 @@ const RENDER_DIST = 1; // in chunks
 
 const BLOCK_REACH_RANGE = 2;
 
+const OX_SPEED = 0.003;
+
 const INITIAL_WALL_LAYOUT = [
     [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
     [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
@@ -65,6 +67,7 @@ export class Game {
         this._ox = null;
         this._oxX = 0;
         this._oxZ = 0;
+        this._hasDied = false;
     }
 
     start() {
@@ -117,12 +120,15 @@ export class Game {
 
         this._gm.camera.setX(16);
         this._gm.camera.setZ(16);
+        this._gm.camera.rotateHoriz(180);
 
         this._ox = makeOx();
         this._gm.listOfComponents.push(this._ox);
         this._ox.matrix.scale(2, 2, 2);
         this._oxX = 16;
-        this._oxZ = 32;
+        this._oxZ = 40;
+
+        this._hasDied = false;
     }
 
     _tick(deltaTime, totalTimeElapsed) {
@@ -136,12 +142,31 @@ export class Game {
         // Move camera to be along the terrain
         this._gm.camera.setY(2 + this._elevationGenerator.at(camPos[0], camPos[2]));
 
-        // Move the ox to be along the terrain
-        const xDiff = (camPos[0] - this._oxX);
-        const zDiff = (camPos[2] - this._oxZ);
-        const angleToLookAtPlayer = Math.atan(xDiff / zDiff) + (zDiff > 0 ? Math.PI : 0);
-        this._ox.animationMatrix.setTranslate(this._oxX, 1 + this._elevationGenerator.at(this._oxX, this._oxZ), this._oxZ);
-        this._ox.animationMatrix.rotate(angleToLookAtPlayer * 180 / Math.PI, 0, 1, 0);
+        if (!this._hasDied) {
+            // Move the ox towards the player
+            const xDiff = (camPos[0] - this._oxX);
+            const zDiff = (camPos[2] - this._oxZ);
+            const distance = Math.sqrt(xDiff * xDiff + zDiff * zDiff);
+            this._oxX += (xDiff / distance) * OX_SPEED * deltaTime;
+            this._oxZ += (zDiff / distance) * OX_SPEED * deltaTime;
+
+            // Prevent the ox from moving through blocks
+            if (this._isAnyBlockAt(this._oxX, this._oxZ)) {
+                this._oxX -= 0.005 * (xDiff / distance) * deltaTime;
+                this._oxZ -= 0.005 * (zDiff / distance) * deltaTime;
+            }
+
+            // Position the ox correctly
+            const angleToLookAtPlayer = (180 / Math.PI) * (Math.atan(xDiff / zDiff) + (zDiff > 0 ? Math.PI : 0));
+            this._ox.animationMatrix.setTranslate(this._oxX, 1 + this._elevationGenerator.at(this._oxX, this._oxZ), this._oxZ);
+            this._ox.animationMatrix.rotate(angleToLookAtPlayer, 0, 1, 0);
+
+            // Death sequence
+            if (distance < 2) {
+                alert("You Died!");
+                this._hasDied = true;
+            }
+        }
     }
 
     _updateTerrainChunks(camX, camZ) {
@@ -234,6 +259,17 @@ export class Game {
             } else {
                 this._walls[camAtX][camAtZ][0].isVisible = true;
             }
+        }
+    }
+
+    _isAnyBlockAt(x, z) {
+        x = Math.round(x);
+        z = Math.round(z);
+
+        if (x >= 0 && x < 32 && z >= 0 && z < 32) {
+            return this._walls[x][z][0].isVisible;
+        } else {
+            return false;
         }
     }
 }

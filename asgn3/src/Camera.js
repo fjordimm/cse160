@@ -85,7 +85,7 @@ export default class Camera {
     }
 
     moveForwards(movementVec, useVertRotation) {
-        if (movementVec[0] === 0 && movementVec[1] === 0 && movementVec[2] === 0) {
+        if (movementVec.elements[0] === 0 && movementVec.elements[1] === 0 && movementVec.elements[2] === 0) {
             return;
         } else {
             _reusableRotationMatrix.setIdentity();
