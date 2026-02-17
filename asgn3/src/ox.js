@@ -284,7 +284,7 @@ export function makeOx() {
                 oxHead.addShape(s);
             }
             {
-                const s = new Cube(COLOR_NOSE);
+                const s = new Cube(COLOR_NOSE, "./res/images/nose.png", 0.5);
                 s.matrix.translate(0, -0.06, -0.21);
                 s.matrix.scale(0.08, 0.08, 0.04);
                 oxHead.addShape(s);
