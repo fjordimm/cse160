@@ -62,6 +62,9 @@ export class Game {
         this._skyComp = null;
         this._terrainComp = null;
         this._walls = null;
+        this._ox = null;
+        this._oxX = 0;
+        this._oxZ = 0;
     }
 
     start() {
@@ -115,10 +118,11 @@ export class Game {
         this._gm.camera.setX(16);
         this._gm.camera.setZ(16);
 
-        const ox = makeOx();
-        this._gm.listOfComponents.push(ox);
-        ox.matrix.scale(2, 2, 2);
-        ox.animationMatrix.setTranslate(16, 7, 16);
+        this._ox = makeOx();
+        this._gm.listOfComponents.push(this._ox);
+        this._ox.matrix.scale(2, 2, 2);
+        this._oxX = 16;
+        this._oxZ = 32;
     }
 
     _tick(deltaTime, totalTimeElapsed) {
@@ -131,6 +135,13 @@ export class Game {
 
         // Move camera to be along the terrain
         this._gm.camera.setY(2 + this._elevationGenerator.at(camPos[0], camPos[2]));
+
+        // Move the ox to be along the terrain
+        const xDiff = (camPos[0] - this._oxX);
+        const zDiff = (camPos[2] - this._oxZ);
+        const angleToLookAtPlayer = Math.atan(xDiff / zDiff) + (zDiff > 0 ? Math.PI : 0);
+        this._ox.animationMatrix.setTranslate(this._oxX, 1 + this._elevationGenerator.at(this._oxX, this._oxZ), this._oxZ);
+        this._ox.animationMatrix.rotate(angleToLookAtPlayer * 180 / Math.PI, 0, 1, 0);
     }
 
     _updateTerrainChunks(camX, camZ) {
