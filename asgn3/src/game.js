@@ -4,6 +4,7 @@ import Cube from "./shapes/Cube.js";
 import TerrainChunk from "./shapes/TerrainChunk.js";
 import ElevationGenerator from "./ElevationGenerator.js";
 import { PermLambdaDefaultDict, DefaultDict } from "./util.js";
+import CylinderVert from "./shapes/CylinderVert.js";
 
 const TERRAIN_SIZE = 8;
 const TERRAIN_SCALE = 5.0;
@@ -73,6 +74,14 @@ export class Game {
     _init() {
         this._gm.cursorManager.setOnLeftClick(this._gm.grm.canvas, () => { this._deleteBlock(); });
         this._gm.cursorManager.setOnRightClick(this._gm.grm.canvas, () => { this._addBlock(); });
+
+        const test = new Component();
+        {
+            const s = new CylinderVert([1, 0, 0, 1], 8);
+            test.addShape(s);
+        }
+        test.matrix.translate(16, 10, 16);
+        this._gm.listOfComponents.push(test);
 
         this._skyComp = new Component();
         {
