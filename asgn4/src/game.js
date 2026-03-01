@@ -23,11 +23,13 @@ export class Game {
     }
 
     _init() {
+        this._gm.grm.gl.uniform1i(this._gm.grm.u_DebugColoring, 1);
+
         this._skyComp = new Component();
         {
-            const s = new Cube([0, 0, 1, 1], "./res/images/sky.png", 1.0);
-            s.matrix.scale(999, 999, 999);
-            this._skyComp.addShape(s);
+            // const s = new Cube([0, 0, 1, 1], "./res/images/sky.png", 1.0);
+            // s.matrix.scale(999, 999, 999);
+            // this._skyComp.addShape(s);
         }
         this._gm.listOfComponents.push(this._skyComp);
 
@@ -36,7 +38,7 @@ export class Game {
 
         const origin = new Component();
         {
-            const s = new Sphere([1, 0, 0, 1], 10);
+            const s = new Sphere([0.7, 0.2, 0.1, 1], 10);
             origin.addShape(s);
         }
         this._gm.listOfComponents.push(origin);

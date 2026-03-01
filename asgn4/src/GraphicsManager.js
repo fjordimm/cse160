@@ -10,15 +10,18 @@ export default class GraphicsManager {
         this.gl = null;
         this.vertexBuffer = null;
         this.uvBuffer = null;
+        this.normalBuffer = null;
         this.u_FragColor = null;
         this.u_Texture = null;
         this.u_TextureWeight = null;
+        this.u_DebugColoring = null;
         this.u_ModelMatrix = null;
         this.u_TransformMatrix = null;
         this.u_ViewMatrix = null;
         this.u_ProjectionMatrix = null;
         this.a_Position = null;
         this.a_UV = null;
+        this.a_Normal = null;
     }
 
     async setup() {
@@ -40,6 +43,12 @@ export default class GraphicsManager {
 
         this.uvBuffer = this.gl.createBuffer();
         if (!this.uvBuffer) {
+            console.log('Failed to create buffer object');
+            return;
+        }
+
+        this.normalBuffer = this.gl.createBuffer();
+        if (!this.normalBuffer) {
             console.log('Failed to create buffer object');
             return;
         }
@@ -69,6 +78,12 @@ export default class GraphicsManager {
         this.u_TextureWeight = this.gl.getUniformLocation(this.gl.program, 'u_TextureWeight');
         if (!this.u_TextureWeight) {
             console.log('Failed to get the storage location of u_TextureWeight');
+            return;
+        }
+
+        this.u_DebugColoring = this.gl.getUniformLocation(this.gl.program, 'u_DebugColoring');
+        if (!this.u_DebugColoring) {
+            console.log('Failed to get the storage location of u_DebugColoring');
             return;
         }
 
@@ -108,6 +123,12 @@ export default class GraphicsManager {
             return;
         }
 
+        this.a_Normal = this.gl.getAttribLocation(this.gl.program, 'a_Normal');
+        if (this.a_Normal < 0) {
+            console.log('Failed to get the storage location of a_Normal');
+            return;
+        }
+
         // GL Settings
 
         this.gl.enable(this.gl.DEPTH_TEST);
@@ -119,5 +140,9 @@ export default class GraphicsManager {
 
         this.gl.clearColor(0.0, 0.0, 0.0, 1.0);
         this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+
+        // Initializing GLSL Variables
+
+        this.gl.uniform1i(this.u_DebugColoring, 0);
     }
 }
