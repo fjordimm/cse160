@@ -41,6 +41,11 @@ export class Game {
             const s = new Sphere([0.7, 0.2, 0.1, 1], 10);
             origin.addShape(s);
         }
+        {
+            const s = new Cube([0.7, 0.2, 0.1, 1], null, 0.0);
+            s.matrix.translate(5, 0, 0);
+            origin.addShape(s);
+        }
         this._gm.listOfComponents.push(origin);
     }
 
