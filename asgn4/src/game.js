@@ -1,10 +1,7 @@
 import GameManager from "./GameManager.js";
 import Component from "./Component.js";
 import Cube from "./shapes/Cube.js";
-import TerrainChunk from "./shapes/TerrainChunk.js";
-import ElevationGenerator from "./ElevationGenerator.js";
-import { PermLambdaDefaultDict, DefaultDict } from "./util.js";
-import { makeOx } from "./ox.js";
+import Sphere from "./shapes/Sphere.js";
 
 export function startGame() {
     const game = new Game();
@@ -39,7 +36,7 @@ export class Game {
 
         const origin = new Component();
         {
-            const s = new Cube([1, 0, 0, 1], null, 0);
+            const s = new Sphere([1, 0, 0, 1], 10);
             origin.addShape(s);
         }
         this._gm.listOfComponents.push(origin);
