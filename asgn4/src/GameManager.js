@@ -1,9 +1,8 @@
 import GraphicsManager from "./GraphicsManager.js";
 import Camera from "./Camera.js";
-import Component from "./Component.js";
-import Cube from "./shapes/Cube.js";
 import { DefaultDict } from "./util.js";
 import CursorManager from "./CursorManager.js";
+import PointLight from "./PointLight.js";
 
 const MIN_FRAME_LENGTH = 16; // 16 for 60fps.
 const CAM_MOVEMENT_SPEED = 0.004;
@@ -17,6 +16,7 @@ export default class GameManager {
     constructor() {
         this.grm = null; // GraphicsManager
         this.camera = null;
+        this.pointLight = null;
         this.pressedKeys = null;
         this.cursorManager = null;
         this.listOfComponents = null;
@@ -37,6 +37,7 @@ export default class GameManager {
         await this.grm.setup();
 
         this.camera = new Camera(60, this.grm.canvas.width, this.grm.canvas.height, 0.1, 1000);
+        this.pointLight = new PointLight();
         this.pressedKeys = new DefaultDict(false);
         this.cursorManager = new CursorManager();
         this.listOfComponents = [];
@@ -136,6 +137,8 @@ export default class GameManager {
 
         this.grm.gl.uniformMatrix4fv(this.grm.u_ViewMatrix, false, this.camera.getViewMatrix().elements);
         this.grm.gl.uniformMatrix4fv(this.grm.u_ProjectionMatrix, false, this.camera.getProjectionMatrix().elements);
+
+        this.pointLight.render(this.grm);
 
         for (let component of this.listOfComponents) {
             component.render(this.grm, IDENTITY_MATRIX);

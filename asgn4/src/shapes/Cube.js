@@ -70,6 +70,8 @@ export default class Cube {
                 grm.gl.uniform1f(grm.u_TextureWeight, 0.0);
             }
 
+            grm.gl.uniform4f(grm.u_FragColor, ...this._color);
+
             // Top
             drawTriangle(grm, TRI_ARRAY_01, UV_BL, NORMAL_ARRAY_TOP);
             drawTriangle(grm, TRI_ARRAY_02, UV_TR, NORMAL_ARRAY_TOP);

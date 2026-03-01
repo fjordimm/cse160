@@ -19,6 +19,7 @@ export default class GraphicsManager {
         this.u_TransformMatrix = null;
         this.u_ViewMatrix = null;
         this.u_ProjectionMatrix = null;
+        this.u_PointLightPos = null;
         this.a_Position = null;
         this.a_UV = null;
         this.a_Normal = null;
@@ -108,6 +109,12 @@ export default class GraphicsManager {
         this.u_ProjectionMatrix = this.gl.getUniformLocation(this.gl.program, 'u_ProjectionMatrix');
         if (!this.u_ProjectionMatrix) {
             console.log('Failed to get the storage location of u_ProjectionMatrix');
+            return;
+        }
+
+        this.u_PointLightPos = this.gl.getUniformLocation(this.gl.program, 'u_PointLightPos');
+        if (!this.u_PointLightPos) {
+            console.log('Failed to get the storage location of u_PointLightPos');
             return;
         }
 
