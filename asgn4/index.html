@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <title>asgn3</title>
+</head>
+
+<body onload="main()">
+    <div style="display: flex; flex-direction: row; gap: 10px;">
+        <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 10px;">
+            <div style="display: flex; flex-direction: row; gap: 10px;">
+                <span>FPS:</span>
+                <textarea id="fpsdisplay" readOnly style="resize: none; width: 5em; height: 3ex;">---</textarea>
+            </div>
+            
+            <canvas id="webgl" width="600" height="600">
+                Please use a browser that supports "canvas"
+            </canvas>
+
+            <span>Use WASD, Space, and Shift to move around.</span>
+        </div>
+    </div>
+
+    <script src="./lib/webgl-utils.js"></script>
+    <script src="./lib/webgl-debug.js"></script>
+    <script src="./lib/cuon-utils.js"></script>
+    <script src="./lib/cuon-matrix.js"></script>
+    <script type="module" src="./src/util.js"></script>
+    <script type="module" src="./src/main.js"></script>
+    <script type="module" src="./src/GameManager.js"></script>
+    <script type="module" src="./src/GraphicsManager.js"></script>
+    <script type="module" src="./src/CursorManager.js"></script>
+    <script type="module" src="./src/drawTriangle.js"></script>
+    <script type="module" src="./src/Camera.js"></script>
+    <script type="module" src="./src/Component.js"></script>
+    <script type="module" src="./src/shapes/Cube.js"></script>
+    <script type="module" src="./src/shapes/CylinderVert.js"></script>
+    <script type="module" src="./src/shapes/CylinderHoriz.js"></script>
+    <script type="module" src="./src/shapes/TerrainChunk.js"></script>
+    <script type="module" src="./src/game.js"></script>
+    <script type="module" src="./src/ElevationGenerator.js"></script>
+    <script type="module" src="./src/ox.js"></script>
+</body>
+
+</html>
