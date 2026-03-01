@@ -2,7 +2,6 @@ import drawTriangle from "../drawTriangle.js";
 
 const TRASH_UV_COORDS = new Float32Array([0, 0, 0, 0, 0, 0]);
 const _reusableTriArray = new Float32Array([0, 0, 0, 0, 0, 0, 0, 0, 0]);
-const _reusableNormalArray = new Float32Array([0, 0, 0, 0, 0, 0, 0, 0, 0]);
 
 export default class Sphere {
     constructor(color, segments) {
@@ -11,7 +10,6 @@ export default class Sphere {
         this.matrix = new Matrix4();
 
         this._triangles = [];
-        this._normals = [];
         const halfCircle = Math.PI / this._segments;
         for (let segH = 0; segH < this._segments * 2; segH++) {
             const angleH1 = segH * halfCircle;
@@ -46,20 +44,6 @@ export default class Sphere {
                     xTL, yTL, zTL,
                     xBR, yBR, zBR
                 ]);
-
-                const v1 = [xBR - xBL, yBR - yBL, zBR - zBL];
-                const v2 = [xTL - xBL, yTL - yBL, zTL - zBL];
-                const normal = [
-                    v1[1] * v2[2] - v1[2] * v2[1],
-                    v1[2] * v2[0] - v1[0] * v2[2],
-                    v1[0] * v2[1] - v1[1] * v2[0]
-                ];
-                const length = Math.sqrt(normal[0] * normal[0] + normal[1] * normal[1] + normal[2] * normal[2]);
-                normal[0] /= length;
-                normal[1] /= length;
-                normal[2] /= length;
-                this._normals.push([...normal, ...normal, ...normal]);
-                this._normals.push([...normal, ...normal, ...normal]);
             }
         }
     }
@@ -81,26 +65,7 @@ export default class Sphere {
             _reusableTriArray[7] = this._triangles[i][7];
             _reusableTriArray[8] = this._triangles[i][8];
 
-            // _reusableNormalArray[0] = this._normals[i][0];
-            // _reusableNormalArray[1] = this._normals[i][1];
-            // _reusableNormalArray[2] = this._normals[i][2];
-            // _reusableNormalArray[3] = this._normals[i][3];
-            // _reusableNormalArray[4] = this._normals[i][4];
-            // _reusableNormalArray[5] = this._normals[i][5];
-            // _reusableNormalArray[6] = this._normals[i][6];
-            // _reusableNormalArray[7] = this._normals[i][7];
-            // _reusableNormalArray[8] = this._normals[i][8];
-            // _reusableNormalArray[0] = this._normals[i][0];
-            _reusableNormalArray[1] = this._triangles[i][1];
-            _reusableNormalArray[2] = this._triangles[i][2];
-            _reusableNormalArray[3] = this._triangles[i][3];
-            _reusableNormalArray[4] = this._triangles[i][4];
-            _reusableNormalArray[5] = this._triangles[i][5];
-            _reusableNormalArray[6] = this._triangles[i][6];
-            _reusableNormalArray[7] = this._triangles[i][7];
-            _reusableNormalArray[8] = this._triangles[i][8];
-
-            drawTriangle(grm, _reusableTriArray, TRASH_UV_COORDS, _reusableNormalArray);
+            drawTriangle(grm, _reusableTriArray, TRASH_UV_COORDS, _reusableTriArray);
         }
     }
 }
