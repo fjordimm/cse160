@@ -11,8 +11,6 @@ export function startGame() {
 export class Game {
     constructor() {
         this._gm = null;
-
-        this._skyComp = null;
     }
 
     start() {
@@ -29,14 +27,6 @@ export class Game {
 
         this._gm.pointLight.setPosition([3, 6, 5]);
 
-        this._skyComp = new Component();
-        {
-            const s = new Cube([0, 0, 1, 1], "./res/images/sky.png", 1.0);
-            s.matrix.scale(999, 999, 999);
-            this._skyComp.addShape(s);
-        }
-        this._gm.listOfComponents.push(this._skyComp);
-
         const thingy = new Component();
         {
             const s = new Sphere([0.7, 0.2, 0.1, 1], 10);
@@ -52,8 +42,5 @@ export class Game {
 
     _tick(deltaTime, totalTimeElapsed) {
         const camPos = this._gm.camera.getPosition();
-
-        // Move sky so it's always centered at the camera so it looks like it doesn't move
-        this._skyComp.matrix.setTranslate(...camPos);
     }
 }

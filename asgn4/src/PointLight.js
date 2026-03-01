@@ -18,7 +18,9 @@ export default class PointLight {
     render(grm) {
         grm.gl.uniform3f(grm.u_PointLightPos, ...this._pos);
 
+        grm.gl.uniform1i(grm.u_IsLightSource, 1);
         this._comp.render(grm, IDENTITY_MATRIX);
+        grm.gl.uniform1i(grm.u_IsLightSource, 0);
     }
 
     getPosition() {

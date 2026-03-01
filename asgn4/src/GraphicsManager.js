@@ -16,9 +16,11 @@ export default class GraphicsManager {
         this.u_TextureWeight = null;
         this.u_DebugColoring = null;
         this.u_ModelMatrix = null;
+        this.u_NormalMatrix = null;
         this.u_TransformMatrix = null;
         this.u_ViewMatrix = null;
         this.u_ProjectionMatrix = null;
+        this.u_CameraPos = null;
         this.u_PointLightPos = null;
         this.a_Position = null;
         this.a_UV = null;
@@ -88,9 +90,21 @@ export default class GraphicsManager {
             return;
         }
 
+        this.u_IsLightSource = this.gl.getUniformLocation(this.gl.program, 'u_IsLightSource');
+        if (!this.u_IsLightSource) {
+            console.log('Failed to get the storage location of u_IsLightSource');
+            return;
+        }
+
         this.u_ModelMatrix = this.gl.getUniformLocation(this.gl.program, 'u_ModelMatrix');
         if (!this.u_ModelMatrix) {
             console.log('Failed to get the storage location of u_ModelMatrix');
+            return;
+        }
+
+        this.u_NormalMatrix = this.gl.getUniformLocation(this.gl.program, 'u_NormalMatrix');
+        if (!this.u_NormalMatrix) {
+            console.log('Failed to get the storage location of u_NormalMatrix');
             return;
         }
 
@@ -109,6 +123,12 @@ export default class GraphicsManager {
         this.u_ProjectionMatrix = this.gl.getUniformLocation(this.gl.program, 'u_ProjectionMatrix');
         if (!this.u_ProjectionMatrix) {
             console.log('Failed to get the storage location of u_ProjectionMatrix');
+            return;
+        }
+
+        this.u_CameraPos = this.gl.getUniformLocation(this.gl.program, 'u_CameraPos');
+        if (!this.u_CameraPos) {
+            console.log('Failed to get the storage location of u_CameraPos');
             return;
         }
 
@@ -151,5 +171,6 @@ export default class GraphicsManager {
         // Initializing GLSL Variables
 
         this.gl.uniform1i(this.u_DebugColoring, 0);
+        this.gl.uniform1i(this.u_IsLightSource, 0);
     }
 }

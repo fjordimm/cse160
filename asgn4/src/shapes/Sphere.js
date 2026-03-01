@@ -50,6 +50,8 @@ export default class Sphere {
 
     render(grm) {
         grm.gl.uniformMatrix4fv(grm.u_ModelMatrix, false, this.matrix.elements);
+        const normalMatrix = (new Matrix4()).setInverseOf(this.matrix).transpose();
+        grm.gl.uniformMatrix4fv(grm.u_NormalMatrix, false, normalMatrix.elements);
 
         grm.gl.uniform1f(grm.u_TextureWeight, 0.0);
         grm.gl.uniform4f(grm.u_FragColor, ...this._color);

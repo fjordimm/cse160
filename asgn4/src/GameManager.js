@@ -137,6 +137,7 @@ export default class GameManager {
 
         this.grm.gl.uniformMatrix4fv(this.grm.u_ViewMatrix, false, this.camera.getViewMatrix().elements);
         this.grm.gl.uniformMatrix4fv(this.grm.u_ProjectionMatrix, false, this.camera.getProjectionMatrix().elements);
+        this.grm.gl.uniform3f(this.grm.u_CameraPos, ...this.camera.getPosition());
 
         this.pointLight.render(this.grm);
 
