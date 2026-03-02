@@ -32,6 +32,15 @@ export class Game {
         makeCube(1, -1, -3, COLOR_RED, this._gm.listOfComponents);
         makeSphere(-1, 2, 4, COLOR_RED, this._gm.listOfComponents);
         makeSphere(4, -3, -1, COLOR_GREEN, this._gm.listOfComponents);
+
+        const plane = new Component();
+        {
+            const s = new Cube(COLOR_BLUE, null, 0);
+            s.matrix.scale(10, 1, 10);
+            plane.addShape(s);
+        }
+        plane.animationMatrix.translate(0, -5, 0);
+        this._gm.listOfComponents.push(plane);
     }
 
     _tick(deltaTime, totalTimeElapsed) {
@@ -45,8 +54,6 @@ export class Game {
 
             this._gm.pointLight.setPosition([-x, y, z]);
         }
-
-        // console.log(document.getElementById("toggle-light").checked);
     }
 }
 

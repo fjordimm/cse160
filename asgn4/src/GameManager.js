@@ -147,6 +147,12 @@ export default class GameManager {
             this.grm.gl.uniform1i(this.grm.u_SkipLighting, 1);
         }
 
+        if (document.getElementById("toggle-normal-visualization").checked) {
+            this.grm.gl.uniform1i(this.grm.u_DebugColoring, 1);
+        } else {
+            this.grm.gl.uniform1i(this.grm.u_DebugColoring, 0);
+        }
+
         for (let component of this.listOfComponents) {
             component.render(this.grm, IDENTITY_MATRIX);
         }
