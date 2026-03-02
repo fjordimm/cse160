@@ -4,7 +4,7 @@ uniform vec4 u_FragColor;
 uniform sampler2D u_Texture;
 uniform float u_TextureWeight;
 uniform int u_DebugColoring;
-uniform int u_IsLightSource;
+uniform int u_SkipLighting;
 uniform vec3 u_CameraPos;
 uniform vec3 u_PointLightPos;
 
@@ -13,8 +13,9 @@ varying vec3 v_Normal;
 varying vec3 v_WorldPos;
 
 void main() {
-    if (u_IsLightSource == 1) {
-        gl_FragColor = u_FragColor;
+    if (u_SkipLighting == 1) {
+        vec4 textureColor = texture2D(u_Texture, v_UV);
+        gl_FragColor = (1.0 - u_TextureWeight) * u_FragColor + u_TextureWeight * textureColor;
     } else {
         if (u_DebugColoring == 0) { // Regular
             vec4 textureColor = texture2D(u_Texture, v_UV);

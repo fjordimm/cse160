@@ -15,9 +15,9 @@ varying vec3 v_Normal;
 varying vec3 v_WorldPos;
 
 void main() {
-    vec4 worldPosition = u_ModelMatrix * a_Position;
+    vec4 worldPosition = u_TransformMatrix * u_ModelMatrix * a_Position;
 
-    gl_Position = u_ProjectionMatrix * u_ViewMatrix * u_TransformMatrix * worldPosition;
+    gl_Position = u_ProjectionMatrix * u_ViewMatrix * worldPosition;
     v_UV = a_UV;
     v_Normal = normalize(vec3(u_NormalMatrix * vec4(a_Normal, 1)));
     v_WorldPos = vec3(worldPosition);

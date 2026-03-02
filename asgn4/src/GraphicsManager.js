@@ -90,9 +90,9 @@ export default class GraphicsManager {
             return;
         }
 
-        this.u_IsLightSource = this.gl.getUniformLocation(this.gl.program, 'u_IsLightSource');
-        if (!this.u_IsLightSource) {
-            console.log('Failed to get the storage location of u_IsLightSource');
+        this.u_SkipLighting = this.gl.getUniformLocation(this.gl.program, 'u_SkipLighting');
+        if (!this.u_SkipLighting) {
+            console.log('Failed to get the storage location of u_SkipLighting');
             return;
         }
 
@@ -171,6 +171,6 @@ export default class GraphicsManager {
         // Initializing GLSL Variables
 
         this.gl.uniform1i(this.u_DebugColoring, 0);
-        this.gl.uniform1i(this.u_IsLightSource, 0);
+        this.gl.uniform1i(this.u_SkipLighting, 0);
     }
 }

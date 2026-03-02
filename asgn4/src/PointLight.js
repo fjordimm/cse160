@@ -1,5 +1,5 @@
 import Component from "./Component.js";
-import Cube from "./shapes/Cube.js";
+import Sphere from "./shapes/Sphere.js";
 
 const IDENTITY_MATRIX = new Matrix4();
 
@@ -7,8 +7,8 @@ export default class PointLight {
     constructor() {
         this._comp = new Component();
         {
-            const s = new Cube([1, 1, 1, 1], null, 0);
-            s.matrix.scale(0.25, 0.25, 0.25);
+            const s = new Sphere([1, 1, 1, 1], 6);
+            s.matrix.scale(0.1, 0.1, 0.1);
             this._comp.addShape(s);
         }
 
@@ -18,9 +18,9 @@ export default class PointLight {
     render(grm) {
         grm.gl.uniform3f(grm.u_PointLightPos, ...this._pos);
 
-        grm.gl.uniform1i(grm.u_IsLightSource, 1);
+        grm.gl.uniform1i(grm.u_SkipLighting, 1);
         this._comp.render(grm, IDENTITY_MATRIX);
-        grm.gl.uniform1i(grm.u_IsLightSource, 0);
+        grm.gl.uniform1i(grm.u_SkipLighting, 0);
     }
 
     getPosition() {

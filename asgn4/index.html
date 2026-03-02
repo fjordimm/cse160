@@ -18,7 +18,24 @@
                 Please use a browser that supports "canvas"
             </canvas>
 
+            <span>Click anywhere on the canvas to use mouse control. Then hit escape to get your mouse back.</span>
+
             <span>Use WASD, Space, and Shift to move around.</span>
+
+            <div>
+                <input type="checkbox" id="toggle-light" name="toggle-light" checked>
+                <label for="toggle-light">Toggle Light</label>
+            </div>
+
+            <div style="display: flex; flex-direction: row; gap: 10px;">
+                <span>Point Light:</span>
+                <span>X</span>
+                <input id="slider-point-light-x" type="range" min="-10" max="10" step="0.1" value="0">
+                <span>Y</span>
+                <input id="slider-point-light-y" type="range" min="-10" max="10" step="0.1" value="0">
+                <span>Z</span>
+                <input id="slider-point-light-z" type="range" min="-10" max="10" step="0.1" value="0">
+            </div>
         </div>
     </div>
 

@@ -5,7 +5,7 @@ import CursorManager from "./CursorManager.js";
 import PointLight from "./PointLight.js";
 
 const MIN_FRAME_LENGTH = 16; // 16 for 60fps.
-const CAM_MOVEMENT_SPEED = 0.004;
+const CAM_MOVEMENT_SPEED = 0.009;
 const CAM_ROTATION_SPEED = 0.1;
 const CAM_CURSOR_SENSITIVITY = 0.5;
 const ALLOW_VERTICAL_MOVEMENT = true;
@@ -140,6 +140,12 @@ export default class GameManager {
         this.grm.gl.uniform3f(this.grm.u_CameraPos, ...this.camera.getPosition());
 
         this.pointLight.render(this.grm);
+
+        if (document.getElementById("toggle-light").checked) {
+            this.grm.gl.uniform1i(this.grm.u_SkipLighting, 0);
+        } else {
+            this.grm.gl.uniform1i(this.grm.u_SkipLighting, 1);
+        }
 
         for (let component of this.listOfComponents) {
             component.render(this.grm, IDENTITY_MATRIX);

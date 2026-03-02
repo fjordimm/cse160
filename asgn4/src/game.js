@@ -21,26 +21,55 @@ export class Game {
     }
 
     _init() {
-        this._gm.camera.setY(2);
-        this._gm.camera.setZ(-5);
+        this._gm.camera.setY(1);
+        this._gm.camera.setZ(-9);
         this._gm.camera.rotateHoriz(180);
 
-        this._gm.pointLight.setPosition([3, 6, 5]);
+        this._gm.pointLight.setPosition([0, 0, 0]);
 
-        const thingy = new Component();
-        {
-            const s = new Sphere([0.7, 0.2, 0.1, 1], 10);
-            thingy.addShape(s);
-        }
-        {
-            const s = new Cube([0.7, 0.2, 0.1, 1], null, 0.0);
-            s.matrix.translate(5, 0, 0);
-            thingy.addShape(s);
-        }
-        this._gm.listOfComponents.push(thingy);
+        makeCube(5, 1, 3, COLOR_BLUE, this._gm.listOfComponents);
+        makeCube(-4, 0, -1, COLOR_GREEN, this._gm.listOfComponents);
+        makeCube(1, -1, -3, COLOR_RED, this._gm.listOfComponents);
+        makeSphere(-1, 2, 4, COLOR_RED, this._gm.listOfComponents);
+        makeSphere(4, -3, -1, COLOR_GREEN, this._gm.listOfComponents);
     }
 
     _tick(deltaTime, totalTimeElapsed) {
         const camPos = this._gm.camera.getPosition();
+
+        // Move the point light based on the sliders
+        {
+            const x = document.getElementById("slider-point-light-x").value;
+            const y = document.getElementById("slider-point-light-y").value;
+            const z = document.getElementById("slider-point-light-z").value;
+
+            this._gm.pointLight.setPosition([-x, y, z]);
+        }
+
+        // console.log(document.getElementById("toggle-light").checked);
     }
+}
+
+const COLOR_RED = [1, 0, 0, 1];
+const COLOR_GREEN = [0, 0.6, 0, 1];
+const COLOR_BLUE = [0.2, 0.3, 1, 1];
+
+function makeCube(x, y, z, color, listOfComponents) {
+    const cube = new Component();
+    {
+        const s = new Cube(color, null, 0);
+        cube.addShape(s);
+    }
+    cube.animationMatrix.translate(x, y, z);
+    listOfComponents.push(cube);
+}
+
+function makeSphere(x, y, z, color, listOfComponents) {
+    const sphere = new Component();
+    {
+        const s = new Sphere(color, 8);
+        sphere.addShape(s);
+    }
+    sphere.animationMatrix.translate(x, y, z);
+    listOfComponents.push(sphere);
 }
