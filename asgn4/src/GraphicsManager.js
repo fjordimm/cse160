@@ -22,6 +22,7 @@ export default class GraphicsManager {
         this.u_ProjectionMatrix = null;
         this.u_CameraPos = null;
         this.u_PointLightPos = null;
+        this.u_PointLightPos = null;
         this.a_Position = null;
         this.a_UV = null;
         this.a_Normal = null;
@@ -135,6 +136,18 @@ export default class GraphicsManager {
         this.u_PointLightPos = this.gl.getUniformLocation(this.gl.program, 'u_PointLightPos');
         if (!this.u_PointLightPos) {
             console.log('Failed to get the storage location of u_PointLightPos');
+            return;
+        }
+
+        this.u_SpotLightPos = this.gl.getUniformLocation(this.gl.program, 'u_SpotLightPos');
+        if (!this.u_SpotLightPos) {
+            console.log('Failed to get the storage location of u_SpotLightPos');
+            return;
+        }
+
+        this.u_SpotLightDir = this.gl.getUniformLocation(this.gl.program, 'u_SpotLightDir');
+        if (!this.u_SpotLightDir) {
+            console.log('Failed to get the storage location of u_SpotLightDir');
             return;
         }
 

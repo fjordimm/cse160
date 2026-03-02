@@ -3,6 +3,7 @@ import Camera from "./Camera.js";
 import { DefaultDict } from "./util.js";
 import CursorManager from "./CursorManager.js";
 import PointLight from "./PointLight.js";
+import SpotLight from "./SpotLight.js";
 
 const MIN_FRAME_LENGTH = 16; // 16 for 60fps.
 const CAM_MOVEMENT_SPEED = 0.009;
@@ -17,6 +18,7 @@ export default class GameManager {
         this.grm = null; // GraphicsManager
         this.camera = null;
         this.pointLight = null;
+        this.spotLight = null;
         this.pressedKeys = null;
         this.cursorManager = null;
         this.listOfComponents = null;
@@ -38,6 +40,7 @@ export default class GameManager {
 
         this.camera = new Camera(60, this.grm.canvas.width, this.grm.canvas.height, 0.1, 1000);
         this.pointLight = new PointLight();
+        this.spotLight = new SpotLight();
         this.pressedKeys = new DefaultDict(false);
         this.cursorManager = new CursorManager();
         this.listOfComponents = [];
@@ -140,6 +143,7 @@ export default class GameManager {
         this.grm.gl.uniform3f(this.grm.u_CameraPos, ...this.camera.getPosition());
 
         this.pointLight.render(this.grm);
+        this.spotLight.render(this.grm);
 
         if (document.getElementById("toggle-light").checked) {
             this.grm.gl.uniform1i(this.grm.u_SkipLighting, 0);

@@ -25,7 +25,8 @@ export class Game {
         this._gm.camera.setZ(-9);
         this._gm.camera.rotateHoriz(180);
 
-        this._gm.pointLight.setPosition([0, 0, 0]);
+        // this._gm.spotLight.setPosition([3, 0, 2]);
+        // this._gm.spotLight.setRotation(-60, 45);
 
         makeCube(5, 1, 3, COLOR_BLUE, this._gm.listOfComponents);
         makeCube(-4, 0, -1, COLOR_GREEN, this._gm.listOfComponents);
@@ -53,6 +54,18 @@ export class Game {
             const z = document.getElementById("slider-point-light-z").value;
 
             this._gm.pointLight.setPosition([-x, y, z]);
+        }
+
+        // Move the spot light based on the sliders
+        {
+            const x = document.getElementById("slider-spot-light-x").value;
+            const y = document.getElementById("slider-spot-light-y").value;
+            const z = document.getElementById("slider-spot-light-z").value;
+            const horiz = document.getElementById("slider-spot-light-horiz").value;
+            const vert = document.getElementById("slider-spot-light-vert").value;
+
+            this._gm.spotLight.setPosition([-x, y, z]);
+            this._gm.spotLight.setRotation(vert, horiz);
         }
     }
 }

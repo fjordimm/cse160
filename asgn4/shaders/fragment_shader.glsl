@@ -7,6 +7,8 @@ uniform int u_DebugColoring;
 uniform int u_SkipLighting;
 uniform vec3 u_CameraPos;
 uniform vec3 u_PointLightPos;
+uniform vec3 u_SpotLightPos;
+uniform vec3 u_SpotLightDir;
 
 varying vec2 v_UV;
 varying vec3 v_Normal;
@@ -21,18 +23,42 @@ void main() {
                 vec4 textureColor = texture2D(u_Texture, v_UV);
                 vec3 prelitColor = vec3((1.0 - u_TextureWeight) * u_FragColor + u_TextureWeight * textureColor);
 
-                // Phong stuff
-                vec3 L = normalize(u_PointLightPos - v_WorldPos);
-                vec3 N = normalize(v_Normal);
-                float LdotN = max(0.0, dot(L, N));
-                vec3 R = reflect(-L, N);
-                vec3 V = normalize(u_CameraPos - v_WorldPos);
-                float RdotV = max(0.0, dot(R, V));
-                vec3 ambient = 0.3 * prelitColor;
-                vec3 diffuse = 0.8 * LdotN * prelitColor;
-                vec3 specular = 0.3 * pow(RdotV, 15.0) * vec3(1.0);
+                vec3 litColor = vec3(0.0);
 
-                gl_FragColor = vec4(ambient + diffuse + specular, 1.0);
+                // point light
+                {
+                    vec3 L = normalize(u_PointLightPos - v_WorldPos);
+                    vec3 N = normalize(v_Normal);
+                    float LdotN = max(0.0, dot(L, N));
+                    vec3 R = reflect(-L, N);
+                    vec3 V = normalize(u_CameraPos - v_WorldPos);
+                    float RdotV = max(0.0, dot(R, V));
+                    vec3 ambient = 0.3 * prelitColor;
+                    vec3 diffuse = 0.8 * LdotN * prelitColor;
+                    vec3 specular = 0.3 * pow(RdotV, 15.0) * vec3(1.0);
+
+                    litColor += ambient + diffuse + specular;
+                }
+
+                // spotlight
+                {
+                    vec3 L = normalize(u_SpotLightPos - v_WorldPos);
+                    vec3 N = normalize(v_Normal);
+                    float LdotN = max(0.0, dot(L, N));
+                    vec3 R = reflect(-L, N);
+                    vec3 V = normalize(u_CameraPos - v_WorldPos);
+                    float RdotV = max(0.0, dot(R, V));
+                    vec3 diffuse = 0.5 * LdotN * vec3(1.0);
+                    vec3 specular = 0.2 * pow(RdotV, 10.0) * vec3(1.0);
+
+                    vec3 D = -normalize(u_SpotLightDir);
+                    float LdotD = max(0.0, dot(L, D));
+                    float spotlightFactor = pow(LdotD, 20.0);
+
+                    litColor += spotlightFactor * (diffuse + specular);
+                }
+
+                gl_FragColor = vec4(litColor, 1.0);
             }
         } else if (u_DebugColoring == 1) { // Normal Visualization
             gl_FragColor = vec4((v_Normal + 1.0) / 2.0, 1.0);
