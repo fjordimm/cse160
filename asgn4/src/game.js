@@ -26,6 +26,7 @@ export class Game {
         this._gm.camera.setY(1);
         this._gm.camera.setZ(-9);
         this._gm.camera.rotateHoriz(180);
+        this._gm.camera.rotateVert(-20);
 
         makeCube(5, 1, 3, COLOR_BLUE, this._gm.listOfComponents);
         makeCube(-4, 0, -1, COLOR_GREEN, this._gm.listOfComponents);
@@ -62,9 +63,12 @@ export class Game {
 
         // Move the point light based on the sliders
         {
-            const x = document.getElementById("slider-point-light-x").value;
-            const y = document.getElementById("slider-point-light-y").value;
-            const z = document.getElementById("slider-point-light-z").value;
+            let x = parseFloat(document.getElementById("slider-point-light-x").value);
+            let y = parseFloat(document.getElementById("slider-point-light-y").value);
+            let z = parseFloat(document.getElementById("slider-point-light-z").value);
+
+            x += 0.3 * Math.sin(0.005 * totalTimeElapsed);
+            z += 0.3 * Math.cos(0.005 * totalTimeElapsed);
 
             this._gm.pointLight.setPosition([-x, y, z]);
         }

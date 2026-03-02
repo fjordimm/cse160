@@ -163,6 +163,14 @@ export default class GameManager {
             this.grm.gl.uniform1i(this.grm.u_DoSpotLight, 0);
         }
 
+        {
+            const r = parseFloat(document.getElementById("slider-point-light-r").value);
+            const g = parseFloat(document.getElementById("slider-point-light-g").value);
+            const b = parseFloat(document.getElementById("slider-point-light-b").value);
+
+            this.grm.gl.uniform3f(this.grm.u_PointLightColor, r, g, b);
+        }
+
         for (let component of this.listOfComponents) {
             component.render(this.grm, IDENTITY_MATRIX);
         }

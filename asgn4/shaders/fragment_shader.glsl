@@ -9,6 +9,7 @@ uniform int u_DoPointLight;
 uniform int u_DoSpotLight;
 uniform vec3 u_CameraPos;
 uniform vec3 u_PointLightPos;
+uniform vec3 u_PointLightColor;
 uniform vec3 u_SpotLightPos;
 uniform vec3 u_SpotLightDir;
 
@@ -25,7 +26,7 @@ void main() {
                 vec4 textureColor = texture2D(u_Texture, v_UV);
                 vec3 prelitColor = vec3((1.0 - u_TextureWeight) * u_FragColor + u_TextureWeight * textureColor);
 
-                vec3 litColor = 0.3 * prelitColor;
+                vec3 litColor = vec3(0.0);
 
                 if (u_DoPointLight == 1) {
                     vec3 L = normalize(u_PointLightPos - v_WorldPos);
@@ -34,10 +35,11 @@ void main() {
                     vec3 R = reflect(-L, N);
                     vec3 V = normalize(u_CameraPos - v_WorldPos);
                     float RdotV = max(0.0, dot(R, V));
-                    vec3 diffuse = 0.8 * LdotN * prelitColor;
-                    vec3 specular = 0.3 * pow(RdotV, 15.0) * vec3(1.0);
+                    vec3 ambient = 0.3 * prelitColor * u_PointLightColor;
+                    vec3 diffuse = 0.8 * LdotN * prelitColor * u_PointLightColor;
+                    vec3 specular = 0.3 * pow(RdotV, 15.0) * u_PointLightColor;
 
-                    litColor += diffuse + specular;
+                    litColor += ambient + diffuse + specular;
                 }
 
                 if (u_DoSpotLight == 1) {

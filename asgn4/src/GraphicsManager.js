@@ -19,13 +19,14 @@ export default class GraphicsManager {
         this.u_DoPointLight = null;
         this.u_DoSpotLight = null;
         this.u_ModelMatrix = null;
-        // this.u_NormalMatrix = null;
         this.u_TransformMatrix = null;
         this.u_ViewMatrix = null;
         this.u_ProjectionMatrix = null;
         this.u_CameraPos = null;
         this.u_PointLightPos = null;
-        this.u_PointLightPos = null;
+        this.u_PointLightColor = null;
+        this.u_SpotLightPos = null;
+        this.u_SpotLightDir = null;
         this.a_Position = null;
         this.a_UV = null;
         this.a_Normal = null;
@@ -118,12 +119,6 @@ export default class GraphicsManager {
             return;
         }
 
-        // this.u_NormalMatrix = this.gl.getUniformLocation(this.gl.program, 'u_NormalMatrix');
-        // if (!this.u_NormalMatrix) {
-        //     console.log('Failed to get the storage location of u_NormalMatrix');
-        //     return;
-        // }
-
         this.u_TransformMatrix = this.gl.getUniformLocation(this.gl.program, 'u_TransformMatrix');
         if (!this.u_TransformMatrix) {
             console.log('Failed to get the storage location of u_TransformMatrix');
@@ -151,6 +146,12 @@ export default class GraphicsManager {
         this.u_PointLightPos = this.gl.getUniformLocation(this.gl.program, 'u_PointLightPos');
         if (!this.u_PointLightPos) {
             console.log('Failed to get the storage location of u_PointLightPos');
+            return;
+        }
+
+        this.u_PointLightColor = this.gl.getUniformLocation(this.gl.program, 'u_PointLightColor');
+        if (!this.u_PointLightColor) {
+            console.log('Failed to get the storage location of u_PointLightColor');
             return;
         }
 
