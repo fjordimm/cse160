@@ -5,7 +5,7 @@ import CursorManager from "./CursorManager.js";
 import PointLight from "./PointLight.js";
 import SpotLight from "./SpotLight.js";
 
-const MIN_FRAME_LENGTH = 16; // 16 for 60fps.
+const MIN_FRAME_LENGTH = 32; // 16 for 60fps.
 const CAM_MOVEMENT_SPEED = 0.009;
 const CAM_ROTATION_SPEED = 0.1;
 const CAM_CURSOR_SENSITIVITY = 0.5;

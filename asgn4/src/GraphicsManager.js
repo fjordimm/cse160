@@ -19,7 +19,7 @@ export default class GraphicsManager {
         this.u_DoPointLight = null;
         this.u_DoSpotLight = null;
         this.u_ModelMatrix = null;
-        this.u_NormalMatrix = null;
+        // this.u_NormalMatrix = null;
         this.u_TransformMatrix = null;
         this.u_ViewMatrix = null;
         this.u_ProjectionMatrix = null;
@@ -118,11 +118,11 @@ export default class GraphicsManager {
             return;
         }
 
-        this.u_NormalMatrix = this.gl.getUniformLocation(this.gl.program, 'u_NormalMatrix');
-        if (!this.u_NormalMatrix) {
-            console.log('Failed to get the storage location of u_NormalMatrix');
-            return;
-        }
+        // this.u_NormalMatrix = this.gl.getUniformLocation(this.gl.program, 'u_NormalMatrix');
+        // if (!this.u_NormalMatrix) {
+        //     console.log('Failed to get the storage location of u_NormalMatrix');
+        //     return;
+        // }
 
         this.u_TransformMatrix = this.gl.getUniformLocation(this.gl.program, 'u_TransformMatrix');
         if (!this.u_TransformMatrix) {

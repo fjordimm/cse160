@@ -45,8 +45,6 @@ export default class Cube {
     render(grm) {
         if (this.isVisible) {
             grm.gl.uniformMatrix4fv(grm.u_ModelMatrix, false, this.matrix.elements);
-            const normalMatrix = (new Matrix4()).setInverseOf(this.matrix).transpose();
-            grm.gl.uniformMatrix4fv(grm.u_NormalMatrix, false, normalMatrix.elements);
 
             if (this._textureImgReady) {
                 if (this._gltexture === null) {

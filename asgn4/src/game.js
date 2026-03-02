@@ -2,6 +2,7 @@ import GameManager from "./GameManager.js";
 import Component from "./Component.js";
 import Cube from "./shapes/Cube.js";
 import Sphere from "./shapes/Sphere.js";
+import Model from "./shapes/Model.js";
 
 export function startGame() {
     const game = new Game();
@@ -39,6 +40,17 @@ export class Game {
         }
         plane.animationMatrix.translate(0, -5, 0);
         this._gm.listOfComponents.push(plane);
+
+        const bunny = new Component();
+        {
+            const s = new Model(COLOR_GREEN, "./res/objs/bunny.obj");
+            s.matrix.translate(3, 0, 0);
+            bunny.addShape(s);
+        }
+        bunny.animationMatrix.translate(-3, -4.5, 3);
+        bunny.animationMatrix.rotate(180, 0, 1, 0);
+        bunny.animationMatrix.scale(0.3, 0.3, 0.3);
+        this._gm.listOfComponents.push(bunny);
     }
 
     _tick(deltaTime, totalTimeElapsed) {
