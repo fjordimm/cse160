@@ -82,7 +82,7 @@ mat4 removeTranslation(mat4 mat) {
 
 void main() {
     vec4 worldPosition = u_TransformMatrix * u_ModelMatrix * a_Position;
-    mat4 normalMatrix = transpose(inverse(removeTranslation(u_TransformMatrix) * removeTranslation(u_ModelMatrix)));
+    mat4 normalMatrix = transpose(inverse(removeTranslation(u_TransformMatrix * u_ModelMatrix)));
 
     gl_Position = u_ProjectionMatrix * u_ViewMatrix * worldPosition;
     v_UV = a_UV;

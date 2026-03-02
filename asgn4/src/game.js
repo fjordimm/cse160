@@ -45,17 +45,15 @@ export class Game {
         const bunny = new Component();
         {
             const s = new Model(COLOR_GREEN, "./res/objs/bunny.obj");
-            s.matrix.translate(3, 0, 0);
             bunny.addShape(s);
         }
-        bunny.animationMatrix.translate(-3, -4.5, 3);
+        bunny.animationMatrix.translate(0, -4.5, 3);
         bunny.animationMatrix.rotate(180, 0, 1, 0);
         bunny.animationMatrix.scale(0.3, 0.3, 0.3);
         this._gm.listOfComponents.push(bunny);
 
         const ox = makeOx();
-        ox.animationMatrix.rotate(-45, 0, 1, 0);
-        ox.animationMatrix.scale(3, 3, 3);
+        ox.animationMatrix.translate(-3, -4, 3);
         this._gm.listOfComponents.push(ox);
     }
 
