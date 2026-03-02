@@ -24,8 +24,12 @@
 
             <div style="display: flex; flex-direction: row; gap: 10px;">
                 <div>
-                    <input type="checkbox" id="toggle-light" name="toggle-light" checked>
-                    <label for="toggle-light">Toggle Light</label>
+                    <input type="checkbox" id="point-light" name="point-light" checked>
+                    <label for="point-light">Point Light</label>
+                </div>
+                <div>
+                    <input type="checkbox" id="spot-light" name="spot-light" checked>
+                    <label for="spot-light">Spotlight</label>
                 </div>
                 <div>
                     <input type="checkbox" id="toggle-normal-visualization" name="toggle-normal-visualization">
@@ -38,7 +42,7 @@
                 <span>X</span>
                 <input id="slider-point-light-x" type="range" min="-10" max="10" step="0.1" value="0">
                 <span>Y</span>
-                <input id="slider-point-light-y" type="range" min="-10" max="10" step="0.1" value="-10">
+                <input id="slider-point-light-y" type="range" min="-10" max="10" step="0.1" value="0">
                 <span>Z</span>
                 <input id="slider-point-light-z" type="range" min="-10" max="10" step="0.1" value="0">
             </div>
@@ -48,17 +52,17 @@
                 <span>X</span>
                 <input id="slider-spot-light-x" type="range" min="-10" max="10" step="0.1" value="-3">
                 <span>Y</span>
-                <input id="slider-spot-light-y" type="range" min="-10" max="10" step="0.1" value="0">
+                <input id="slider-spot-light-y" type="range" min="-10" max="10" step="0.1" value="-3">
                 <span>Z</span>
-                <input id="slider-spot-light-z" type="range" min="-10" max="10" step="0.1" value="2">
+                <input id="slider-spot-light-z" type="range" min="-10" max="10" step="0.1" value="3">
             </div>
 
             <div style="display: flex; flex-direction: row; gap: 10px;">
                 <span>Spotlight Rotation:</span>
                 <span>Horizontal</span>
-                <input id="slider-spot-light-horiz" type="range" min="-180" max="180" step="0.1" value="45">
+                <input id="slider-spot-light-horiz" type="range" min="-180" max="180" step="0.1" value="0">
                 <span>Vertical</span>
-                <input id="slider-spot-light-vert" type="range" min="-90" max="90" step="0.1" value="-60">
+                <input id="slider-spot-light-vert" type="range" min="-90" max="90" step="0.1" value="-80">
             </div>
         </div>
     </div>

@@ -15,6 +15,9 @@ export default class GraphicsManager {
         this.u_Texture = null;
         this.u_TextureWeight = null;
         this.u_DebugColoring = null;
+        this.u_SkipLighting = null;
+        this.u_DoPointLight = null;
+        this.u_DoSpotLight = null;
         this.u_ModelMatrix = null;
         this.u_NormalMatrix = null;
         this.u_TransformMatrix = null;
@@ -94,6 +97,18 @@ export default class GraphicsManager {
         this.u_SkipLighting = this.gl.getUniformLocation(this.gl.program, 'u_SkipLighting');
         if (!this.u_SkipLighting) {
             console.log('Failed to get the storage location of u_SkipLighting');
+            return;
+        }
+
+        this.u_DoPointLight = this.gl.getUniformLocation(this.gl.program, 'u_DoPointLight');
+        if (!this.u_DoPointLight) {
+            console.log('Failed to get the storage location of u_DoPointLight');
+            return;
+        }
+
+        this.u_DoSpotLight = this.gl.getUniformLocation(this.gl.program, 'u_DoSpotLight');
+        if (!this.u_DoSpotLight) {
+            console.log('Failed to get the storage location of u_DoSpotLight');
             return;
         }
 
@@ -185,5 +200,7 @@ export default class GraphicsManager {
 
         this.gl.uniform1i(this.u_DebugColoring, 0);
         this.gl.uniform1i(this.u_SkipLighting, 0);
+        this.gl.uniform1i(this.u_DoPointLight, 1);
+        this.gl.uniform1i(this.u_DoSpotLight, 1);
     }
 }
