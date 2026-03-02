@@ -3,6 +3,7 @@ import Component from "./Component.js";
 import Cube from "./shapes/Cube.js";
 import Sphere from "./shapes/Sphere.js";
 import Model from "./shapes/Model.js";
+import { makeOx } from "./ox.js";
 
 export function startGame() {
     const game = new Game();
@@ -51,6 +52,11 @@ export class Game {
         bunny.animationMatrix.rotate(180, 0, 1, 0);
         bunny.animationMatrix.scale(0.3, 0.3, 0.3);
         this._gm.listOfComponents.push(bunny);
+
+        const ox = makeOx();
+        ox.animationMatrix.rotate(-45, 0, 1, 0);
+        ox.animationMatrix.scale(3, 3, 3);
+        this._gm.listOfComponents.push(ox);
     }
 
     _tick(deltaTime, totalTimeElapsed) {
