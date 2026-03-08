@@ -6,6 +6,8 @@ export default class Game {
         this.renderer = new THREE.WebGLRenderer({ antialias: true, canvas });
         this.camera = new THREE.PerspectiveCamera(60, 2, 0.1, 5);
         this.scene = new THREE.Scene();
+
+        this.objects = {};
     }
 
     start() {
@@ -18,6 +20,7 @@ export default class Game {
             elapsedTime *= 0.001;
 
             if (didFirstFrame) {
+                this.updateCanvasSizeIfNecessary();
                 this.onTick(elapsedTime - prevElapsedTime, elapsedTime);
                 this.renderer.render(this.scene, this.camera);
             } else {
@@ -35,15 +38,31 @@ export default class Game {
     onInit() {
         this.camera.position.z = 2;
 
-        const geometry = new THREE.BoxGeometry(1, 1, 1);
-        const material = new THREE.MeshBasicMaterial({ color: 0x44aa88 });
-        this.cube = new THREE.Mesh(geometry, material);
-        this.scene.add(this.cube);
+        this.objects.cube = new THREE.Mesh(
+            new THREE.BoxGeometry(1, 1, 1),
+            new THREE.MeshPhongMaterial({ color: 0x44aa88 })
+        );
+        this.scene.add(this.objects.cube);
+
+        this.objects.mainLight = new THREE.DirectionalLight(0xFFFFFF, 3);
+        this.objects.mainLight.position.set(-1, 2, 4);
+        this.scene.add(this.objects.mainLight);
     }
 
     onTick(deltaTime, elapsedTime) {
         // console.log(deltaTime, elapsedTime);
-        this.cube.rotation.x = elapsedTime;
-        this.cube.rotation.y = elapsedTime;
+        this.objects.cube.rotation.x = elapsedTime;
+        this.objects.cube.rotation.y = elapsedTime;
+    }
+
+    updateCanvasSizeIfNecessary() {
+        const width = this.canvas.clientWidth;
+        const height = this.canvas.clientHeight;
+        const needResize = this.canvas.width !== width || this.canvas.height !== height;
+        if (needResize) {
+            this.renderer.setSize(width, height, false);
+            this.camera.aspect = this.canvas.clientWidth / this.canvas.clientHeight;
+            this.camera.updateProjectionMatrix();
+        }
     }
 }
