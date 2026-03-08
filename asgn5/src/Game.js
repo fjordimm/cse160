@@ -1,17 +1,35 @@
 import * as THREE from "three";
+import { PointerLockControls } from "three/addons/controls/PointerLockControls.js";
+
+const CAMERA_LOOK_SPEED = 2.1;
+const CAMERA_MOVE_SPEED = 3;
+
+const VEC_UP = new THREE.Vector3(0, 1, 0);
+
+const _rvForwards = new THREE.Vector3();
+const _rvRight = new THREE.Vector3();
+const _rvMovement = new THREE.Vector3();
 
 export default class Game {
     constructor(canvas) {
         this.canvas = canvas;
         this.renderer = new THREE.WebGLRenderer({ antialias: true, canvas });
-        this.camera = new THREE.PerspectiveCamera(60, 2, 0.1, 5);
+        this.camera = new THREE.PerspectiveCamera(60, 1, 0.1, 100);
         this.scene = new THREE.Scene();
-
         this.objects = {};
+        this.controls = null;
+        this.keysDown = {};
     }
 
     start() {
         this.onInit();
+
+        document.addEventListener("keydown", (e) => {
+            this.keysDown[e.code] = true;
+        });
+        document.addEventListener("keyup", (e) => {
+            this.keysDown[e.code] = false;
+        });
 
         let didFirstFrame = false;
         let prevElapsedTime = undefined;
@@ -47,12 +65,20 @@ export default class Game {
         this.objects.mainLight = new THREE.DirectionalLight(0xFFFFFF, 3);
         this.objects.mainLight.position.set(-1, 2, 4);
         this.scene.add(this.objects.mainLight);
+
+        this.objects.ambientLight = new THREE.AmbientLight(0xFFFFFF, 0.1);
+        this.scene.add(this.objects.ambientLight);
+
+        this.controls = new PointerLockControls(this.camera, document.body);
+        this.controls.pointerSpeed = CAMERA_LOOK_SPEED;
+        document.addEventListener("click", () => {
+            this.controls.lock();
+        });
     }
 
     onTick(deltaTime, elapsedTime) {
-        // console.log(deltaTime, elapsedTime);
-        this.objects.cube.rotation.x = elapsedTime;
-        this.objects.cube.rotation.y = elapsedTime;
+        this.controls.update(deltaTime);
+        this.doCameraMovement(deltaTime, elapsedTime);
     }
 
     updateCanvasSizeIfNecessary() {
@@ -65,4 +91,41 @@ export default class Game {
             this.camera.updateProjectionMatrix();
         }
     }
+
+    doCameraMovement(deltaTime, elapsedTime) {
+        this.controls.getDirection(_rvForwards);
+        _rvForwards.setY(0);
+        _rvForwards.normalize();
+
+        _rvRight.crossVectors(_rvForwards, VEC_UP);
+
+        _rvMovement.set(0, 0, 0);
+        if (this.keysDown.KeyW) {
+            _rvMovement.addScaledVector(_rvForwards, 1);
+        }
+        if (this.keysDown.KeyS) {
+            _rvMovement.addScaledVector(_rvForwards, -1);
+        }
+        if (this.keysDown.KeyD) {
+            _rvMovement.addScaledVector(_rvRight, 1);
+        }
+        if (this.keysDown.KeyA) {
+            _rvMovement.addScaledVector(_rvRight, -1);
+        }
+
+        _rvMovement.normalize();
+        
+        if (this.keysDown.Space) {
+            _rvMovement.addScaledVector(VEC_UP, 1);
+        }
+        if (this.keysDown.ShiftLeft) {
+            _rvMovement.addScaledVector(VEC_UP, -1);
+        }
+
+        _rvMovement.multiplyScalar(deltaTime * CAMERA_MOVE_SPEED);
+
+        this.camera.position.add(_rvMovement);
+    }
 }
+
+// TODO: gui thing for controls
