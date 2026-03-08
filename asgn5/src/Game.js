@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { PointerLockControls } from "three/addons/controls/PointerLockControls.js";
+import GUI from "lil-gui";
 
 const CAMERA_LOOK_SPEED = 2.1;
 const CAMERA_MOVE_SPEED = 3;
@@ -16,6 +17,7 @@ export default class Game {
         this.renderer = new THREE.WebGLRenderer({ antialias: true, canvas });
         this.camera = new THREE.PerspectiveCamera(60, 1, 0.1, 100);
         this.scene = new THREE.Scene();
+        this.gui = new GUI();
         this.objects = {};
         this.controls = null;
         this.keysDown = {};
@@ -74,6 +76,10 @@ export default class Game {
         document.addEventListener("click", () => {
             this.controls.lock();
         });
+
+        const guiInstructions = this.gui.addFolder("Instructions");
+        guiInstructions.add({ "Movement": "WASD/Space/Shift" }, "Movement");
+        guiInstructions.add({ "Camera Control": "Click anywhere" }, "Camera Control");
     }
 
     onTick(deltaTime, elapsedTime) {
@@ -114,7 +120,7 @@ export default class Game {
         }
 
         _rvMovement.normalize();
-        
+
         if (this.keysDown.Space) {
             _rvMovement.addScaledVector(VEC_UP, 1);
         }
@@ -127,5 +133,3 @@ export default class Game {
         this.camera.position.add(_rvMovement);
     }
 }
-
-// TODO: gui thing for controls
