@@ -93,6 +93,17 @@ export default class Game {
         this.scene.add(this.objects.ambientLight);
 
         this.setupTerrain();
+
+        const loader = new THREE.CubeTextureLoader();
+        const texture = loader.load([
+            "../res/images/sky.jpg",
+            "../res/images/sky.jpg",
+            "../res/images/sky.jpg",
+            "../res/images/sky.jpg",
+            "../res/images/sky.jpg",
+            "../res/images/sky.jpg"
+        ]);
+        this.scene.background = texture;
     }
 
     onTick(deltaTime, elapsedTime) {
@@ -147,19 +158,21 @@ export default class Game {
     }
 
     setupTerrain() {
-        // const geometry = new THREE.BufferGeometry();
-        // const vertices = new Float32Array([
-        //     0, 0, 0,
-        //     1, 0, 0,
-        //     0, 0, -1
-        // ]);
-        // geometry.setAttribute("position", new THREE.BufferAttribute(vertices, 3));
-
-        const chunk = new THREE.Mesh(
-            makeTerrainGeometry(8, 1, 0, 0, this.elevationGenerator),
-            new THREE.MeshPhongMaterial({ color: 0xFF0000, side: THREE.DoubleSide })
-        );
-        chunk.position.set(0, -5, 0);
-        this.scene.add(chunk);
+        {
+            const chunk = new THREE.Mesh(
+                makeTerrainGeometry(8, 1, 0, 0, this.elevationGenerator),
+                new THREE.MeshPhongMaterial({ color: 0xFF0000, side: THREE.DoubleSide })
+            );
+            chunk.position.set(0, -5, 0);
+            this.scene.add(chunk);
+        }
+        {
+            const chunk = new THREE.Mesh(
+                makeTerrainGeometry(8, 1, 8, 0, this.elevationGenerator),
+                new THREE.MeshPhongMaterial({ color: 0xFF0000, side: THREE.DoubleSide })
+            );
+            chunk.position.set(8, -5, 0);
+            this.scene.add(chunk);
+        }
     }
 }

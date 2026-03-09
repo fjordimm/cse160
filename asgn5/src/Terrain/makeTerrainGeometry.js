@@ -26,7 +26,7 @@ export default function makeTerrainGeometry(size, scale, offX, offZ, elevationGe
                 const yR = elevations[x + 1][z];
                 const yL = elevations[x - 1][z];
 
-                let vec = [-(yL - yR) / scale, -2, -(yD - yU) / scale];
+                let vec = [(yL - yR) / scale, 2, (yD - yU) / scale];
                 vec = vec.map(v => v / Math.sqrt(vec[0] ** 2 + vec[1] ** 2 + vec[2] ** 2)); // Normalize
                 normalsPre[x].push(vec);
             }
@@ -47,20 +47,20 @@ export default function makeTerrainGeometry(size, scale, offX, offZ, elevationGe
 
             vertices.push(...[
                 (x_) * scale, yBL, (z_) * scale,
+                (x_) * scale, yTL, (z_ + 1) * scale,
                 (x_ + 1) * scale, yBR, (z_) * scale,
-                (x_) * scale, yTL, (z_ + 1) * scale,
                 (x_ + 1) * scale, yTR, (z_ + 1) * scale,
-                (x_) * scale, yTL, (z_ + 1) * scale,
-                (x_ + 1) * scale, yBR, (z_) * scale
+                (x_ + 1) * scale, yBR, (z_) * scale,
+                (x_) * scale, yTL, (z_ + 1) * scale
             ]);
 
             normals.push(...[
                 ...normalsPre[x][z],
+                ...normalsPre[x][z + 1],
                 ...normalsPre[x + 1][z],
-                ...normalsPre[x][z + 1],
                 ...normalsPre[x + 1][z + 1],
-                ...normalsPre[x][z + 1],
-                ...normalsPre[x + 1][z]
+                ...normalsPre[x + 1][z],
+                ...normalsPre[x][z + 1]
             ]);
         }
     }

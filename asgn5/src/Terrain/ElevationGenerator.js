@@ -10,6 +10,9 @@ export default class ElevationGenerator {
     constructor() {}
 
     at(x, z) {
+        x *= 0.9;
+        z *= 0.9;
+
         let y = 0;
 
         y += Math.sin(x) + Math.sin(z);
