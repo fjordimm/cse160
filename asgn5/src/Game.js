@@ -3,9 +3,10 @@ import { PointerLockControls } from "three/addons/controls/PointerLockControls.j
 import GUI from "lil-gui";
 import makeTerrainGeometry from "./Terrain/makeTerrainGeometry.js";
 import ElevationGenerator from "./Terrain/ElevationGenerator.js";
+import TreeManager from "./Trees/TreeManager.js";
 
 const CAMERA_LOOK_SPEED = 2.1;
-const CAMERA_MOVE_SPEED = 3;
+const CAMERA_MOVE_SPEED = 10;
 
 const VEC_UP = new THREE.Vector3(0, 1, 0);
 
@@ -19,6 +20,7 @@ export default class Game {
         this.renderer = new THREE.WebGLRenderer({ antialias: true, canvas });
         this.loader = new THREE.TextureLoader();
         this.camera = new THREE.PerspectiveCamera(60, 1, 0.1, 100);
+        this.cameraMovementSpeed = CAMERA_MOVE_SPEED;
         this.scene = new THREE.Scene();
         this.gui = new GUI();
         this.objects = {};
@@ -62,8 +64,9 @@ export default class Game {
 
     onInit() {
         const guiInstructions = this.gui.addFolder("Instructions");
-        guiInstructions.add({ "Movement": "WASD/Space/Shift" }, "Movement");
         guiInstructions.add({ "Camera Control": "Click anywhere" }, "Camera Control");
+        guiInstructions.add({ "Movement": "WASD/Space/Shift" }, "Movement");
+        guiInstructions.add({ "Change Speed": "Scroll" }, "Change Speed");
 
         this.controls = new PointerLockControls(this.camera, document.body);
         this.controls.pointerSpeed = CAMERA_LOOK_SPEED;
@@ -71,7 +74,24 @@ export default class Game {
             this.controls.lock();
         });
 
+        document.addEventListener("wheel", (e) => {
+            this.cameraMovementSpeed += -e.deltaY * 0.025;
+
+            if (this.cameraMovementSpeed <= 0) {
+                this.cameraMovementSpeed = 0;
+            }
+        });
+
+        this.objects.mainLight = new THREE.DirectionalLight(0xFFFFFF, 3);
+        this.objects.mainLight.position.set(0.9, 1, -1.6);
+        this.scene.add(this.objects.mainLight);
+
+        this.objects.ambientLight = new THREE.AmbientLight(0xFFFFFF, 0.1);
+        this.scene.add(this.objects.ambientLight);
+
         this.camera.position.z = 5;
+
+        this.setupTerrain();
 
         this.objects.cube = new THREE.Mesh(
             new THREE.BoxGeometry(1, 1, 1),
@@ -86,17 +106,7 @@ export default class Game {
         this.objects.ball.position.set(4, 0, 0);
         this.scene.add(this.objects.ball);
 
-        this.objects.mainLight = new THREE.DirectionalLight(0xFFFFFF, 3);
-        this.objects.mainLight.position.set(0.9, 1, -1.6);
-        this.scene.add(this.objects.mainLight);
-
-        this.objects.ambientLight = new THREE.AmbientLight(0xFFFFFF, 0.1);
-        this.scene.add(this.objects.ambientLight);
-
-        this.setupTerrain();
-
-        const loader = new THREE.CubeTextureLoader();
-        const texture = loader.load([
+        const texture = new THREE.CubeTextureLoader().load([
             "../res/images/sky.jpg",
             "../res/images/sky.jpg",
             "../res/images/sky.jpg",
@@ -105,6 +115,8 @@ export default class Game {
             "../res/images/sky.jpg"
         ]);
         this.scene.background = texture;
+
+        const um = new TreeManager(this.scene, this.loader);
     }
 
     onTick(deltaTime, elapsedTime) {
@@ -153,7 +165,7 @@ export default class Game {
             _rvMovement.addScaledVector(VEC_UP, -1);
         }
 
-        _rvMovement.multiplyScalar(deltaTime * CAMERA_MOVE_SPEED);
+        _rvMovement.multiplyScalar(deltaTime * this.cameraMovementSpeed);
 
         this.camera.position.add(_rvMovement);
     }
@@ -167,7 +179,7 @@ export default class Game {
 
         {
             const chunk = new THREE.Mesh(
-                makeTerrainGeometry(8, 3, 0, 0, 0.05, this.elevationGenerator),
+                makeTerrainGeometry(8, 1, 0, 0, 0.05, this.elevationGenerator),
                 new THREE.MeshPhongMaterial({ color: 0xFFFFFF, side: THREE.DoubleSide, map: grassTex })
             );
             chunk.position.set(0, -5, 0);
