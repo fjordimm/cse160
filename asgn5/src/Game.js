@@ -4,6 +4,7 @@ import GUI from "lil-gui";
 import makeTerrainGeometry from "./Terrain/makeTerrainGeometry.js";
 import ElevationGenerator from "./Terrain/ElevationGenerator.js";
 import TreeManager from "./Trees/TreeManager.js";
+import Stats from "stats";
 
 const CAMERA_LOOK_SPEED = 2.1;
 const CAMERA_MOVE_SPEED = 10;
@@ -16,6 +17,7 @@ const _rvMovement = new THREE.Vector3();
 
 export default class Game {
     constructor(canvas) {
+        this.stats = null;
         this.canvas = canvas;
         this.renderer = new THREE.WebGLRenderer({ antialias: true, canvas });
         this.loader = new THREE.TextureLoader();
@@ -31,7 +33,8 @@ export default class Game {
     }
 
     start() {
-        this.onInit();
+        this.stats = new Stats();
+        document.body.appendChild(this.stats.dom);
 
         document.addEventListener("keydown", (e) => {
             this.keysDown[e.code] = true;
@@ -40,10 +43,14 @@ export default class Game {
             this.keysDown[e.code] = false;
         });
 
+        this.onInit();
+
         let didFirstFrame = false;
         let prevElapsedTime = undefined;
 
         const render = (elapsedTime) => {
+            this.stats.begin();
+
             elapsedTime *= 0.001;
 
             if (didFirstFrame) {
@@ -55,6 +62,8 @@ export default class Game {
             }
 
             prevElapsedTime = elapsedTime;
+
+            this.stats.end();
 
             requestAnimationFrame(render);
         }
@@ -95,7 +104,7 @@ export default class Game {
 
         this.objects.cube = new THREE.Mesh(
             new THREE.BoxGeometry(1, 1, 1),
-            new THREE.MeshPhongMaterial({ color: 0x00FF00 })
+            new THREE.MeshPhongMaterial({ color: 0x0000FF })
         );
         this.scene.add(this.objects.cube);
 
@@ -116,7 +125,52 @@ export default class Game {
         ]);
         this.scene.background = texture;
 
-        const um = new TreeManager(this.scene, this.loader);
+        const um = new TreeManager(this.loader);
+        um.addTree(new THREE.Vector3(Math.random() * 10 - 5, 0, Math.random() * 10 - 5), this.scene);
+        um.addTree(new THREE.Vector3(Math.random() * 10 - 5, 0, Math.random() * 10 - 5), this.scene);
+        um.addTree(new THREE.Vector3(Math.random() * 10 - 5, 0, Math.random() * 10 - 5), this.scene);
+        um.addTree(new THREE.Vector3(Math.random() * 10 - 5, 0, Math.random() * 10 - 5), this.scene);
+        um.addTree(new THREE.Vector3(Math.random() * 10 - 5, 0, Math.random() * 10 - 5), this.scene);
+        um.addTree(new THREE.Vector3(Math.random() * 10 - 5, 0, Math.random() * 10 - 5), this.scene);
+        um.addTree(new THREE.Vector3(Math.random() * 10 - 5, 0, Math.random() * 10 - 5), this.scene);
+        um.addTree(new THREE.Vector3(Math.random() * 10 - 5, 0, Math.random() * 10 - 5), this.scene);
+        um.addTree(new THREE.Vector3(Math.random() * 10 - 5, 0, Math.random() * 10 - 5), this.scene);
+        um.addTree(new THREE.Vector3(Math.random() * 10 - 5, 0, Math.random() * 10 - 5), this.scene);
+        um.addTree(new THREE.Vector3(Math.random() * 10 - 5, 0, Math.random() * 10 - 5), this.scene);
+        um.addTree(new THREE.Vector3(Math.random() * 10 - 5, 0, Math.random() * 10 - 5), this.scene);
+        um.addTree(new THREE.Vector3(Math.random() * 10 - 5, 0, Math.random() * 10 - 5), this.scene);
+        um.addTree(new THREE.Vector3(Math.random() * 10 - 5, 0, Math.random() * 10 - 5), this.scene);
+        um.addTree(new THREE.Vector3(Math.random() * 10 - 5, 0, Math.random() * 10 - 5), this.scene);
+        um.addTree(new THREE.Vector3(Math.random() * 10 - 5, 0, Math.random() * 10 - 5), this.scene);
+        um.addTree(new THREE.Vector3(Math.random() * 10 - 5, 0, Math.random() * 10 - 5), this.scene);
+        um.addTree(new THREE.Vector3(Math.random() * 10 - 5, 0, Math.random() * 10 - 5), this.scene);
+        um.addTree(new THREE.Vector3(Math.random() * 10 - 5, 0, Math.random() * 10 - 5), this.scene);
+        um.addTree(new THREE.Vector3(Math.random() * 10 - 5, 0, Math.random() * 10 - 5), this.scene);
+        um.addTree(new THREE.Vector3(Math.random() * 10 - 5, 0, Math.random() * 10 - 5), this.scene);
+        um.addTree(new THREE.Vector3(Math.random() * 10 - 5, 0, Math.random() * 10 - 5), this.scene);
+        um.addTree(new THREE.Vector3(Math.random() * 10 - 5, 0, Math.random() * 10 - 5), this.scene);
+        um.addTree(new THREE.Vector3(Math.random() * 10 - 5, 0, Math.random() * 10 - 5), this.scene);
+        um.addTree(new THREE.Vector3(Math.random() * 10 - 5, 0, Math.random() * 10 - 5), this.scene);
+        um.addTree(new THREE.Vector3(Math.random() * 10 - 5, 0, Math.random() * 10 - 5), this.scene);
+        um.addTree(new THREE.Vector3(Math.random() * 10 - 5, 0, Math.random() * 10 - 5), this.scene);
+        um.addTree(new THREE.Vector3(Math.random() * 10 - 5, 0, Math.random() * 10 - 5), this.scene);
+        um.addTree(new THREE.Vector3(Math.random() * 10 - 5, 0, Math.random() * 10 - 5), this.scene);
+        um.addTree(new THREE.Vector3(Math.random() * 10 - 5, 0, Math.random() * 10 - 5), this.scene);
+        um.addTree(new THREE.Vector3(Math.random() * 10 - 5, 0, Math.random() * 10 - 5), this.scene);
+        um.addTree(new THREE.Vector3(Math.random() * 10 - 5, 0, Math.random() * 10 - 5), this.scene);
+        um.addTree(new THREE.Vector3(Math.random() * 10 - 5, 0, Math.random() * 10 - 5), this.scene);
+        um.addTree(new THREE.Vector3(Math.random() * 10 - 5, 0, Math.random() * 10 - 5), this.scene);
+        um.addTree(new THREE.Vector3(Math.random() * 10 - 5, 0, Math.random() * 10 - 5), this.scene);
+        um.addTree(new THREE.Vector3(Math.random() * 10 - 5, 0, Math.random() * 10 - 5), this.scene);
+        um.addTree(new THREE.Vector3(Math.random() * 10 - 5, 0, Math.random() * 10 - 5), this.scene);
+        um.addTree(new THREE.Vector3(Math.random() * 10 - 5, 0, Math.random() * 10 - 5), this.scene);
+        um.addTree(new THREE.Vector3(Math.random() * 10 - 5, 0, Math.random() * 10 - 5), this.scene);
+        um.addTree(new THREE.Vector3(Math.random() * 10 - 5, 0, Math.random() * 10 - 5), this.scene);
+        um.addTree(new THREE.Vector3(Math.random() * 10 - 5, 0, Math.random() * 10 - 5), this.scene);
+        um.addTree(new THREE.Vector3(Math.random() * 10 - 5, 0, Math.random() * 10 - 5), this.scene);
+        um.addTree(new THREE.Vector3(Math.random() * 10 - 5, 0, Math.random() * 10 - 5), this.scene);
+        um.addTree(new THREE.Vector3(Math.random() * 10 - 5, 0, Math.random() * 10 - 5), this.scene);
+        um.addTree(new THREE.Vector3(Math.random() * 10 - 5, 0, Math.random() * 10 - 5), this.scene);
     }
 
     onTick(deltaTime, elapsedTime) {
