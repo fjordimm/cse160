@@ -1,6 +1,6 @@
 import * as THREE from "three";
 
-export default function makeTerrainGeometry(size, scale, offX, offZ, elevationGenerator) {
+export default function makeTerrainGeometry(size, scale, offX, offZ, uvScale, elevationGenerator) {
     // Note: it finds the elevations outside of the actual region so it can calculate the normals
 
     const elevations = [];
@@ -34,6 +34,7 @@ export default function makeTerrainGeometry(size, scale, offX, offZ, elevationGe
     }
 
     const vertices = [];
+    const uv = [];
     const normals = [];
     for (let x = 1; x < elevations.length - 2; x++) {
         for (let z = 1; z < elevations[0].length - 2; z++) {
@@ -54,6 +55,15 @@ export default function makeTerrainGeometry(size, scale, offX, offZ, elevationGe
                 (x_) * scale, yTL, (z_ + 1) * scale
             ]);
 
+            uv.push(...[
+                uvScale * (offX + (x_) * scale), uvScale * (offZ + (z_) * scale),
+                uvScale * (offX + (x_) * scale), uvScale * (offZ + (z_ + 1) * scale),
+                uvScale * (offX + (x_ + 1) * scale), uvScale * (offZ + (z_) * scale),
+                uvScale * (offX + (x_ + 1) * scale), uvScale * (offZ + (z_ + 1) * scale),
+                uvScale * (offX + (x_ + 1) * scale), uvScale * (offZ + (z_) * scale),
+                uvScale * (offX + (x_) * scale), uvScale * (offZ + (z_ + 1) * scale),
+            ]);
+
             normals.push(...[
                 ...normalsPre[x][z],
                 ...normalsPre[x][z + 1],
@@ -68,6 +78,7 @@ export default function makeTerrainGeometry(size, scale, offX, offZ, elevationGe
     const geometry = new THREE.BufferGeometry();
     geometry.setAttribute("position", new THREE.BufferAttribute(new Float32Array(vertices), 3));
     geometry.setAttribute("normal", new THREE.BufferAttribute(new Float32Array(normals), 3));
+    geometry.setAttribute("uv", new THREE.BufferAttribute(new Float32Array(uv), 2));
 
     return geometry;
 }

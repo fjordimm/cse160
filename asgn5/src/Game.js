@@ -17,6 +17,7 @@ export default class Game {
     constructor(canvas) {
         this.canvas = canvas;
         this.renderer = new THREE.WebGLRenderer({ antialias: true, canvas });
+        this.loader = new THREE.TextureLoader();
         this.camera = new THREE.PerspectiveCamera(60, 1, 0.1, 100);
         this.scene = new THREE.Scene();
         this.gui = new GUI();
@@ -74,7 +75,7 @@ export default class Game {
 
         this.objects.cube = new THREE.Mesh(
             new THREE.BoxGeometry(1, 1, 1),
-            new THREE.MeshPhongMaterial({ color: 0x44aa88 })
+            new THREE.MeshPhongMaterial({ color: 0x00FF00 })
         );
         this.scene.add(this.objects.cube);
 
@@ -158,17 +159,23 @@ export default class Game {
     }
 
     setupTerrain() {
+        const grassTex = this.loader.load("res/images/grass.png");
+        grassTex.colorSpace = THREE.SRGBColorSpace;
+        grassTex.magFilter = THREE.LinearFilter;
+        grassTex.wrapS = THREE.RepeatWrapping;
+        grassTex.wrapT = THREE.RepeatWrapping;
+
         {
             const chunk = new THREE.Mesh(
-                makeTerrainGeometry(8, 1, 0, 0, this.elevationGenerator),
-                new THREE.MeshPhongMaterial({ color: 0xFF0000, side: THREE.DoubleSide })
+                makeTerrainGeometry(8, 3, 0, 0, 0.05, this.elevationGenerator),
+                new THREE.MeshPhongMaterial({ color: 0xFFFFFF, side: THREE.DoubleSide, map: grassTex })
             );
             chunk.position.set(0, -5, 0);
             this.scene.add(chunk);
         }
         {
             const chunk = new THREE.Mesh(
-                makeTerrainGeometry(8, 1, 8, 0, this.elevationGenerator),
+                makeTerrainGeometry(8, 1, 8, 0, 0.05, this.elevationGenerator),
                 new THREE.MeshPhongMaterial({ color: 0xFF0000, side: THREE.DoubleSide })
             );
             chunk.position.set(8, -5, 0);
