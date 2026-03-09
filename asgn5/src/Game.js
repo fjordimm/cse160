@@ -1,6 +1,8 @@
 import * as THREE from "three";
 import { PointerLockControls } from "three/addons/controls/PointerLockControls.js";
 import GUI from "lil-gui";
+import makeTerrainGeometry from "./Terrain/makeTerrainGeometry.js";
+import ElevationGenerator from "./Terrain/ElevationGenerator.js";
 
 const CAMERA_LOOK_SPEED = 2.1;
 const CAMERA_MOVE_SPEED = 3;
@@ -21,6 +23,8 @@ export default class Game {
         this.objects = {};
         this.controls = null;
         this.keysDown = {};
+
+        this.elevationGenerator = new ElevationGenerator();
     }
 
     start() {
@@ -56,20 +60,9 @@ export default class Game {
     }
 
     onInit() {
-        this.camera.position.z = 2;
-
-        this.objects.cube = new THREE.Mesh(
-            new THREE.BoxGeometry(1, 1, 1),
-            new THREE.MeshPhongMaterial({ color: 0x44aa88 })
-        );
-        this.scene.add(this.objects.cube);
-
-        this.objects.mainLight = new THREE.DirectionalLight(0xFFFFFF, 3);
-        this.objects.mainLight.position.set(-1, 2, 4);
-        this.scene.add(this.objects.mainLight);
-
-        this.objects.ambientLight = new THREE.AmbientLight(0xFFFFFF, 0.1);
-        this.scene.add(this.objects.ambientLight);
+        const guiInstructions = this.gui.addFolder("Instructions");
+        guiInstructions.add({ "Movement": "WASD/Space/Shift" }, "Movement");
+        guiInstructions.add({ "Camera Control": "Click anywhere" }, "Camera Control");
 
         this.controls = new PointerLockControls(this.camera, document.body);
         this.controls.pointerSpeed = CAMERA_LOOK_SPEED;
@@ -77,9 +70,29 @@ export default class Game {
             this.controls.lock();
         });
 
-        const guiInstructions = this.gui.addFolder("Instructions");
-        guiInstructions.add({ "Movement": "WASD/Space/Shift" }, "Movement");
-        guiInstructions.add({ "Camera Control": "Click anywhere" }, "Camera Control");
+        this.camera.position.z = 5;
+
+        this.objects.cube = new THREE.Mesh(
+            new THREE.BoxGeometry(1, 1, 1),
+            new THREE.MeshPhongMaterial({ color: 0x44aa88 })
+        );
+        this.scene.add(this.objects.cube);
+
+        this.objects.ball = new THREE.Mesh(
+            new THREE.SphereGeometry(0.5),
+            new THREE.MeshPhongMaterial({ color: 0xFF0000 })
+        );
+        this.objects.ball.position.set(4, 0, 0);
+        this.scene.add(this.objects.ball);
+
+        this.objects.mainLight = new THREE.DirectionalLight(0xFFFFFF, 3);
+        this.objects.mainLight.position.set(0.9, 1, -1.6);
+        this.scene.add(this.objects.mainLight);
+
+        this.objects.ambientLight = new THREE.AmbientLight(0xFFFFFF, 0.1);
+        this.scene.add(this.objects.ambientLight);
+
+        this.setupTerrain();
     }
 
     onTick(deltaTime, elapsedTime) {
@@ -131,5 +144,22 @@ export default class Game {
         _rvMovement.multiplyScalar(deltaTime * CAMERA_MOVE_SPEED);
 
         this.camera.position.add(_rvMovement);
+    }
+
+    setupTerrain() {
+        // const geometry = new THREE.BufferGeometry();
+        // const vertices = new Float32Array([
+        //     0, 0, 0,
+        //     1, 0, 0,
+        //     0, 0, -1
+        // ]);
+        // geometry.setAttribute("position", new THREE.BufferAttribute(vertices, 3));
+
+        const chunk = new THREE.Mesh(
+            makeTerrainGeometry(8, 1, 0, 0, this.elevationGenerator),
+            new THREE.MeshPhongMaterial({ color: 0xFF0000, side: THREE.DoubleSide })
+        );
+        chunk.position.set(0, -5, 0);
+        this.scene.add(chunk);
     }
 }

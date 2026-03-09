@@ -1,0 +1,47 @@
+export async function loadFileText(path) {
+    try {
+        const response = await fetch(path);
+
+        if (!response.ok) {
+            throw new Error(`Couldn't load file. Response status: ${response.status}`);
+        }
+
+        return await response.text();
+    } catch (err) {
+        console.log(`Couldn't load file: Error: ${err}`);
+    }
+}
+
+export class DefaultDict {
+    constructor(defaultVal) {
+        return new Proxy({}, {
+            get: (target, name) => name in target ? target[name] : defaultVal
+        });
+    }
+}
+
+export class LambdaDefaultDict {
+    constructor(defaultFunc) {
+        return new Proxy({}, {
+            get: (target, name) => name in target ? target[name] : defaultFunc()
+        });
+    }
+}
+
+export class PermLambdaDefaultDict {
+    constructor(defaultFunc) {
+        return new Proxy({}, {
+            get: (target, name) => {
+                if (!(name in target)) {
+                    target[name] = defaultFunc();
+                }
+
+                return target[name];
+            }
+        });
+    }
+}
+
+export function sigmoid(x) {
+    return 1 / (1 + Math.exp(-x));
+}
