@@ -5,6 +5,7 @@ import makeTerrainGeometry from "./Terrain/makeTerrainGeometry.js";
 import ElevationGenerator from "./Terrain/ElevationGenerator.js";
 import TreeManager from "./Trees/TreeManager.js";
 import Stats from "stats";
+import TerrainManager from "./Terrain/TerrainManager.js";
 
 const CAMERA_LOOK_SPEED = 2.1;
 const CAMERA_MOVE_SPEED = 10;
@@ -21,7 +22,7 @@ export default class Game {
         this.canvas = canvas;
         this.renderer = new THREE.WebGLRenderer({ antialias: true, canvas });
         this.loader = new THREE.TextureLoader();
-        this.camera = new THREE.PerspectiveCamera(60, 1, 0.1, 100);
+        this.camera = new THREE.PerspectiveCamera(60, 1, 0.5, 5000);
         this.cameraMovementSpeed = CAMERA_MOVE_SPEED;
         this.scene = new THREE.Scene();
         this.gui = new GUI();
@@ -29,7 +30,8 @@ export default class Game {
         this.controls = null;
         this.keysDown = {};
 
-        this.elevationGenerator = new ElevationGenerator();
+        this.elevationGenerator = null;
+        this.terrainManager = null;
     }
 
     start() {
@@ -100,8 +102,6 @@ export default class Game {
 
         this.camera.position.z = 5;
 
-        this.setupTerrain();
-
         this.objects.cube = new THREE.Mesh(
             new THREE.BoxGeometry(1, 1, 1),
             new THREE.MeshPhongMaterial({ color: 0x0000FF })
@@ -125,18 +125,21 @@ export default class Game {
         ]);
         this.scene.background = texture;
 
-        const um = new TreeManager(this.loader);
-        um.addTree(new THREE.Vector3(Math.random() * 40 - 20, 0, Math.random() * 40 - 20), this.scene);
-        um.addTree(new THREE.Vector3(Math.random() * 40 - 20, 0, Math.random() * 40 - 20), this.scene);
-        um.addTree(new THREE.Vector3(Math.random() * 40 - 20, 0, Math.random() * 40 - 20), this.scene);
-        um.addTree(new THREE.Vector3(Math.random() * 40 - 20, 0, Math.random() * 40 - 20), this.scene);
-        um.addTree(new THREE.Vector3(Math.random() * 40 - 20, 0, Math.random() * 40 - 20), this.scene);
-        um.addTree(new THREE.Vector3(Math.random() * 40 - 20, 0, Math.random() * 40 - 20), this.scene);
+        // const um = new TreeManager(this.loader);
+        // const range = 100;
+        // const halfRange = range * 0.5;
+        // for (let i = 0; i < 50; i++) {
+        //     um.addTree(new THREE.Vector3(Math.random() * range - halfRange, 0, Math.random() * range - halfRange), this.scene);
+        // }
+
+        this.elevationGenerator = new ElevationGenerator();
+        this.terrainManager = new TerrainManager(this.elevationGenerator, this.loader);
     }
 
     onTick(deltaTime, elapsedTime) {
         this.controls.update(deltaTime);
         this.doCameraMovement(deltaTime, elapsedTime);
+        this.terrainManager.update(this.camera.position.x, this.camera.position.z, this.scene);
     }
 
     updateCanvasSizeIfNecessary() {
@@ -147,6 +150,8 @@ export default class Game {
             this.renderer.setSize(width, height, false);
             this.camera.aspect = this.canvas.clientWidth / this.canvas.clientHeight;
             this.camera.updateProjectionMatrix();
+
+            this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 0.25));
         }
     }
 
@@ -183,30 +188,5 @@ export default class Game {
         _rvMovement.multiplyScalar(deltaTime * this.cameraMovementSpeed);
 
         this.camera.position.add(_rvMovement);
-    }
-
-    setupTerrain() {
-        const grassTex = this.loader.load("res/images/grass.png");
-        grassTex.colorSpace = THREE.SRGBColorSpace;
-        grassTex.magFilter = THREE.LinearFilter;
-        grassTex.wrapS = THREE.RepeatWrapping;
-        grassTex.wrapT = THREE.RepeatWrapping;
-
-        {
-            const chunk = new THREE.Mesh(
-                makeTerrainGeometry(8, 1, 0, 0, 0.05, this.elevationGenerator),
-                new THREE.MeshPhongMaterial({ color: 0xFFFFFF, side: THREE.DoubleSide, map: grassTex })
-            );
-            chunk.position.set(0, -5, 0);
-            this.scene.add(chunk);
-        }
-        {
-            const chunk = new THREE.Mesh(
-                makeTerrainGeometry(8, 1, 8, 0, 0.05, this.elevationGenerator),
-                new THREE.MeshPhongMaterial({ color: 0xFF0000, side: THREE.DoubleSide })
-            );
-            chunk.position.set(8, -5, 0);
-            this.scene.add(chunk);
-        }
     }
 }
