@@ -86,8 +86,8 @@ export default class Game {
         document.addEventListener("wheel", (e) => {
             this.cameraMovementSpeed += -e.deltaY * 0.025;
 
-            if (this.cameraMovementSpeed <= 0) {
-                this.cameraMovementSpeed = 0;
+            if (this.cameraMovementSpeed <= 2.5) {
+                this.cameraMovementSpeed = 2.5;
             }
         });
 
