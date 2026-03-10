@@ -49,6 +49,7 @@ export default class Game {
 
         let didFirstFrame = false;
         let prevElapsedTime = undefined;
+        let frameCount = 0;
 
         const render = (elapsedTime) => {
             this.stats.begin();
@@ -57,12 +58,13 @@ export default class Game {
 
             if (didFirstFrame) {
                 this.updateCanvasSizeIfNecessary();
-                this.onTick(elapsedTime - prevElapsedTime, elapsedTime);
+                this.onTick(elapsedTime - prevElapsedTime, elapsedTime, frameCount);
                 this.renderer.render(this.scene, this.camera);
             } else {
                 didFirstFrame = true;
             }
 
+            frameCount++;
             prevElapsedTime = elapsedTime;
 
             this.stats.end();
@@ -136,10 +138,13 @@ export default class Game {
         this.terrainManager = new TerrainManager(this.elevationGenerator, this.loader);
     }
 
-    onTick(deltaTime, elapsedTime) {
+    onTick(deltaTime, elapsedTime, frameCount) {
         this.controls.update(deltaTime);
         this.doCameraMovement(deltaTime, elapsedTime);
-        this.terrainManager.update(this.camera.position.x, this.camera.position.z, this.scene);
+
+        if (frameCount % 15 === 0) {
+            this.terrainManager.update(this.camera.position.x, this.camera.position.z, this.scene);
+        }
     }
 
     updateCanvasSizeIfNecessary() {

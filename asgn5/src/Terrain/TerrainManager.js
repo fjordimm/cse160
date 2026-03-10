@@ -5,13 +5,14 @@ import makeTerrainGeometry from "./makeTerrainGeometry.js";
 
 export default class TerrainManager {
     constructor(elevationGenerator, loader) {
-        this.chunkSize = 8;
-        this.chunkScale = 5;
+        this.chunkSize = 16;
+        this.chunkScale = 10;
         this.chunkScaleSize = this.chunkSize * this.chunkScale;
         this.uvScale = 0.025;
-        this.renderDist = 0;
+        this.renderDist = 20;
 
         this.chunkLookup = new PermLambdaDefaultDict(() => new PermLambdaDefaultDict(() => undefined));
+        this.chunkList = [];
         this.elevationGenerator = elevationGenerator;
 
         this.grassTex = loader.load("../res/images/grass.png");
@@ -27,9 +28,26 @@ export default class TerrainManager {
 
         for (let c = xi - this.renderDist; c <= xi + this.renderDist; c++) {
             for (let r = zi - this.renderDist; r <= zi + this.renderDist; r++) {
+                const cR = c * this.chunkScaleSize - 0.5 * this.chunkScaleSize;
+                const rR = r * this.chunkScaleSize - 0.5 * this.chunkScaleSize;
+
                 if (this.chunkLookup[c][r] === undefined) {
-                    this.chunkLookup[c][r] = this.makeChunk(c * this.chunkScaleSize, r * this.chunkScaleSize, scene);
+                    const chunk = this.makeChunk(cR, rR, scene);
+                    this.chunkLookup[c][r] = chunk;
+                    this.chunkList.push(chunk);
                 }
+            }
+        }
+
+        for (const chunk of this.chunkList) {
+            const xA = chunk.position.x + 0.5 * this.chunkScaleSize;
+            const zA = chunk.position.z + 0.5 * this.chunkScaleSize;
+            const distToCam = Math.sqrt((x - xA) ** 2 + (z - zA) ** 2);
+
+            if (distToCam <= (1 + this.renderDist) * this.chunkScaleSize) {
+                chunk.visible = true;
+            } else {
+                chunk.visible = false;
             }
         }
     }
@@ -40,6 +58,10 @@ export default class TerrainManager {
             new THREE.MeshLambertMaterial({ color: 0xFFFFFF, map: this.grassTex })
         );
         chunk.position.set(x, 0, z);
+        chunk.static = true;
+
         scene.add(chunk);
+
+        return chunk;
     }
 }
