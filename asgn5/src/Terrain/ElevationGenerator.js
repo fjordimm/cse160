@@ -2,10 +2,13 @@ import { sigmoid } from "../util.js";
 import alea from "alea";
 import { createNoise2D } from "simplex-noise";
 
-const SEED = "yep";
+const SEED = "nvmcdjabjksksjdk";
 const LAYERS = 15;
-const FREQ_FACTOR = 1.5;
-const AMP_FACTOR = 0.5;
+const FREQ_FACTOR = 1.8;
+const AMP_FACTOR = 0.4;
+const HORIZ_SCALE = 0.0005;
+const EXP_FACTOR = 1.9;
+const VERT_SCALE = 30.0;
 
 const GRASS_COLOR = [0, 0.5, 0, 1];
 const SNOW_COLOR = [0.91, 0.92, 0.93, 1];
@@ -21,8 +24,8 @@ export default class ElevationGenerator {
     }
 
     at(x, z) {
-        x *= 0.0005;
-        z *= 0.0005;
+        x *= HORIZ_SCALE;
+        z *= HORIZ_SCALE;
 
         let y = 0;
 
@@ -35,9 +38,9 @@ export default class ElevationGenerator {
             amp *= AMP_FACTOR;
         }
 
-        y = Math.exp(1.5 * y);
+        y = Math.exp(EXP_FACTOR * y);
 
-        return 50.0 * y;
+        return VERT_SCALE * y;
     }
 
     colorAt(y) {

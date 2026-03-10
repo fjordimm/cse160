@@ -1,14 +1,17 @@
 import * as THREE from "three";
 import { PointerLockControls } from "three/addons/controls/PointerLockControls.js";
 import GUI from "lil-gui";
-import makeTerrainGeometry from "./Terrain/makeTerrainGeometry.js";
 import ElevationGenerator from "./Terrain/ElevationGenerator.js";
 import TreeManager from "./Trees/TreeManager.js";
 import Stats from "stats";
 import TerrainManager from "./Terrain/TerrainManager.js";
 
 const CAMERA_LOOK_SPEED = 2.1;
-const CAMERA_MOVE_SPEED = 10;
+const CAMERA_MOVE_SPEED = 500;
+const CAMERA_MOVE_SPEED_DELTA = 100;
+
+const RESOLUTION = 0.5;
+const FOG_DISTANCE_FACTOR = 75;
 
 const VEC_UP = new THREE.Vector3(0, 1, 0);
 
@@ -76,11 +79,6 @@ export default class Game {
     }
 
     onInit() {
-        const guiInstructions = this.gui.addFolder("Instructions");
-        guiInstructions.add({ "Camera Control": "Click anywhere" }, "Camera Control");
-        guiInstructions.add({ "Movement": "WASD/Space/Shift" }, "Movement");
-        guiInstructions.add({ "Change Speed": "Scroll" }, "Change Speed");
-
         this.controls = new PointerLockControls(this.camera, document.body);
         this.controls.pointerSpeed = CAMERA_LOOK_SPEED;
         document.addEventListener("click", () => {
@@ -88,10 +86,10 @@ export default class Game {
         });
 
         document.addEventListener("wheel", (e) => {
-            this.cameraMovementSpeed += -e.deltaY * 0.025;
+            this.cameraMovementSpeed += -e.deltaY * 0.01 * CAMERA_MOVE_SPEED_DELTA;
 
-            if (this.cameraMovementSpeed <= 2.5) {
-                this.cameraMovementSpeed = 2.5;
+            if (this.cameraMovementSpeed <= CAMERA_MOVE_SPEED_DELTA) {
+                this.cameraMovementSpeed = CAMERA_MOVE_SPEED_DELTA;
             }
         });
 
@@ -102,7 +100,7 @@ export default class Game {
         this.objects.ambientLight = new THREE.AmbientLight(0xFFFFFF, 0.2);
         this.scene.add(this.objects.ambientLight);
 
-        this.camera.position.z = 5;
+        this.camera.position.y = 50;
 
         this.objects.cube = new THREE.Mesh(
             new THREE.BoxGeometry(1, 1, 1),
@@ -118,12 +116,12 @@ export default class Game {
         this.scene.add(this.objects.ball);
 
         const texture = new THREE.CubeTextureLoader().load([
-            "../res/images/sky.jpg",
-            "../res/images/sky.jpg",
-            "../res/images/sky.jpg",
-            "../res/images/sky.jpg",
-            "../res/images/sky.jpg",
-            "../res/images/sky.jpg"
+            "./res/images/px.png",
+            "./res/images/nx.png",
+            "./res/images/py.png",
+            "./res/images/ny.png",
+            "./res/images/pz.png",
+            "./res/images/nz.png"
         ]);
         this.scene.background = texture;
 
@@ -136,6 +134,34 @@ export default class Game {
 
         this.elevationGenerator = new ElevationGenerator();
         this.terrainManager = new TerrainManager(this.elevationGenerator, this.loader);
+
+        this.scene.fog = new THREE.FogExp2(0x70D8FF, 0);
+        this.scene.fog.density = 1 / (1 + FOG_DISTANCE_FACTOR * this.terrainManager.renderDist);
+
+        const _this_ = this;
+        const guiInstructions = this.gui.addFolder("Instructions");
+        guiInstructions.add({ "Camera Control": "Click anywhere" }, "Camera Control");
+        guiInstructions.add({ "Movement": "WASD/Space/Shift" }, "Movement");
+        guiInstructions.add({ "Change Speed": "Scroll" }, "Change Speed");
+        const guiPerformance = this.gui.addFolder("Performance");
+        this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, RESOLUTION));
+        guiPerformance.add({
+            set Resolution(val) {
+                _this_.renderer.setPixelRatio(Math.min(window.devicePixelRatio, val));
+            },
+            get Resolution() {
+                return _this_.renderer.getPixelRatio();
+            }
+        }, "Resolution", 0.1, 1, 0.05);
+        guiPerformance.add({
+            set RenderDist(val) {
+                _this_.terrainManager.renderDist = val;
+                _this_.scene.fog.density = 1 / (1 + FOG_DISTANCE_FACTOR * val);
+            },
+            get RenderDist() {
+                return _this_.terrainManager.renderDist;
+            }
+        }, "RenderDist", 0, 25, 1);
     }
 
     onTick(deltaTime, elapsedTime, frameCount) {
@@ -155,8 +181,6 @@ export default class Game {
             this.renderer.setSize(width, height, false);
             this.camera.aspect = this.canvas.clientWidth / this.canvas.clientHeight;
             this.camera.updateProjectionMatrix();
-
-            this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 0.25));
         }
     }
 

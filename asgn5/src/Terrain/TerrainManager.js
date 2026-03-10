@@ -15,7 +15,7 @@ export default class TerrainManager {
         this.chunkList = [];
         this.elevationGenerator = elevationGenerator;
 
-        this.grassTex = loader.load("../res/images/grass.png");
+        this.grassTex = loader.load("./res/images/grass.png");
         this.grassTex.colorSpace = THREE.SRGBColorSpace;
         this.grassTex.magFilter = THREE.LinearFilter;
         this.grassTex.wrapS = THREE.RepeatWrapping;
