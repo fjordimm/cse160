@@ -7,11 +7,11 @@ import Stats from "stats";
 import TerrainManager from "./Terrain/TerrainManager.js";
 
 const CAMERA_LOOK_SPEED = 2.1;
-const CAMERA_MOVE_SPEED = 500;
-const CAMERA_MOVE_SPEED_DELTA = 100;
+const CAMERA_MOVE_SPEED = 300;
+const CAMERA_MOVE_SPEED_DELTA = 50;
 
 const RESOLUTION = 0.5;
-const FOG_DISTANCE_FACTOR = 75;
+const FOG_DISTANCE_FACTOR = 80;
 
 const VEC_UP = new THREE.Vector3(0, 1, 0);
 
@@ -35,6 +35,8 @@ export default class Game {
 
         this.elevationGenerator = null;
         this.terrainManager = null;
+
+        this.fogFactor = FOG_DISTANCE_FACTOR;
     }
 
     start() {
@@ -125,18 +127,18 @@ export default class Game {
         ]);
         this.scene.background = texture;
 
-        // const um = new TreeManager(this.loader);
-        // const range = 100;
-        // const halfRange = range * 0.5;
-        // for (let i = 0; i < 50; i++) {
-        //     um.addTree(new THREE.Vector3(Math.random() * range - halfRange, 0, Math.random() * range - halfRange), this.scene);
-        // }
+        const um = new TreeManager(this.loader);
+        const range = 100;
+        const halfRange = range * 0.5;
+        for (let i = 0; i < 50; i++) {
+            um.addTree(new THREE.Vector3(Math.random() * range - halfRange, 0, Math.random() * range - halfRange), this.scene);
+        }
 
         this.elevationGenerator = new ElevationGenerator();
         this.terrainManager = new TerrainManager(this.elevationGenerator, this.loader);
 
         this.scene.fog = new THREE.FogExp2(0x70D8FF, 0);
-        this.scene.fog.density = 1 / (1 + FOG_DISTANCE_FACTOR * this.terrainManager.renderDist);
+        this.updateFogDensity();
 
         const _this_ = this;
         const guiInstructions = this.gui.addFolder("Instructions");
@@ -146,22 +148,32 @@ export default class Game {
         const guiPerformance = this.gui.addFolder("Performance");
         this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, RESOLUTION));
         guiPerformance.add({
-            set Resolution(val) {
+            set resolution(val) {
                 _this_.renderer.setPixelRatio(Math.min(window.devicePixelRatio, val));
             },
-            get Resolution() {
+            get resolution() {
                 return _this_.renderer.getPixelRatio();
             }
-        }, "Resolution", 0.1, 1, 0.05);
+        }, "resolution", 0.1, 1, 0.05).name("Resolution");
         guiPerformance.add({
-            set RenderDist(val) {
+            set renderDist(val) {
                 _this_.terrainManager.renderDist = val;
-                _this_.scene.fog.density = 1 / (1 + FOG_DISTANCE_FACTOR * val);
+                _this_.scene.fog.density = 1 / (this.fogFactor + this.fogFactor * val);
             },
-            get RenderDist() {
+            get renderDist() {
                 return _this_.terrainManager.renderDist;
             }
-        }, "RenderDist", 0, 25, 1);
+        }, "renderDist", 0, 25, 1).name("Render Distance");
+        const guiOther = this.gui.addFolder("Other");
+        guiOther.add({
+            set fogFactor(val) {
+                _this_.fogFactor = val;
+                _this_.updateFogDensity();
+            },
+            get fogFactor() {
+                return _this_.fogFactor;
+            }
+        }, "fogFactor", 1, 300, 1).name("Fog Factor");
     }
 
     onTick(deltaTime, elapsedTime, frameCount) {
@@ -217,5 +229,9 @@ export default class Game {
         _rvMovement.multiplyScalar(deltaTime * this.cameraMovementSpeed);
 
         this.camera.position.add(_rvMovement);
+    }
+
+    updateFogDensity() {
+        this.scene.fog.density = 1 / (this.fogFactor + this.fogFactor * this.terrainManager.renderDist);
     }
 }
