@@ -1,51 +1,44 @@
 import { sigmoid } from "../util.js";
+import alea from "alea";
+import { createNoise2D } from "simplex-noise";
 
-const FREQ_FACTOR = 2;
+const SEED = "yep";
+const LAYERS = 15;
+const FREQ_FACTOR = 1.5;
 const AMP_FACTOR = 0.5;
 
 const GRASS_COLOR = [0, 0.5, 0, 1];
 const SNOW_COLOR = [0.91, 0.92, 0.93, 1];
 
 export default class ElevationGenerator {
-    constructor() {}
+    constructor() {
+        const al = alea(SEED);
+
+        this.layers = [];
+        for (let i = 0; i < LAYERS; i++) {
+            this.layers.push(createNoise2D(alea(al())));
+        }
+    }
 
     at(x, z) {
-        x *= 0.1;
-        z *= 0.1;
+        x *= 0.0005;
+        z *= 0.0005;
 
         let y = 0;
 
-        y += Math.sin(x) + Math.sin(z);
+        let freq = 1;
+        let amp = 1;
+        for (let i = 0; i < LAYERS; i++) {
+            y += amp * this.layers[i](freq * x, freq * z);
 
-        return 3.5 * y;
+            freq *= FREQ_FACTOR;
+            amp *= AMP_FACTOR;
+        }
+
+        y = Math.exp(1.5 * y);
+
+        return 50.0 * y;
     }
-
-    // at(x, z) {
-    //     x -= 98549;
-    //     z -= 232983;
-
-    //     x /= 30;
-    //     z /= 30;
-
-    //     let y = 0;
-
-    //     let freqFactor = 1;
-    //     let ampFactor = 1;
-    //     let randXOffset = 0.7;
-    //     let randZOffset = 1.3;
-    //     for (let i = 0; i < 5; i++) {
-    //         y += ampFactor * (Math.sin(x * freqFactor + randXOffset) + Math.cos(z * freqFactor + randZOffset));
-
-    //         freqFactor *= FREQ_FACTOR;
-    //         ampFactor *= AMP_FACTOR;
-    //         randXOffset *= 1.5;
-    //         randZOffset *= 1.5;
-    //     }
-
-    //     y = Math.exp(0.6 * y);
-
-    //     return 7.0 * y;
-    // }
 
     colorAt(y) {
         const snowWeight = sigmoid(y - 25);

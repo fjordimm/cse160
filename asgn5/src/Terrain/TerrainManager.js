@@ -9,7 +9,7 @@ export default class TerrainManager {
         this.chunkScale = 10;
         this.chunkScaleSize = this.chunkSize * this.chunkScale;
         this.uvScale = 0.025;
-        this.renderDist = 20;
+        this.renderDist = 15;
 
         this.chunkLookup = new PermLambdaDefaultDict(() => new PermLambdaDefaultDict(() => undefined));
         this.chunkList = [];
