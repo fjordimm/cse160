@@ -12,6 +12,7 @@ const CAMERA_MOVE_SPEED_DELTA = 50;
 
 const RESOLUTION = 0.5;
 const FOG_DISTANCE_FACTOR = 80;
+const RENDER_DIST = 10;
 
 const VEC_UP = new THREE.Vector3(0, 1, 0);
 
@@ -135,7 +136,7 @@ export default class Game {
         }
 
         this.elevationGenerator = new ElevationGenerator();
-        this.terrainManager = new TerrainManager(this.elevationGenerator, this.loader);
+        this.terrainManager = new TerrainManager(this.elevationGenerator, this.loader, RENDER_DIST);
 
         this.scene.fog = new THREE.FogExp2(0x70D8FF, 0);
         this.updateFogDensity();
@@ -158,7 +159,7 @@ export default class Game {
         guiPerformance.add({
             set renderDist(val) {
                 _this_.terrainManager.renderDist = val;
-                _this_.scene.fog.density = 1 / (this.fogFactor + this.fogFactor * val);
+                _this_.updateFogDensity();
             },
             get renderDist() {
                 return _this_.terrainManager.renderDist;

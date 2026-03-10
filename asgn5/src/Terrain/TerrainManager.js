@@ -4,12 +4,12 @@ import ElevationGenerator from "./ElevationGenerator.js";
 import makeTerrainGeometry from "./makeTerrainGeometry.js";
 
 export default class TerrainManager {
-    constructor(elevationGenerator, loader) {
+    constructor(elevationGenerator, loader, renderDist) {
         this.chunkSize = 16;
         this.chunkScale = 10;
         this.chunkScaleSize = this.chunkSize * this.chunkScale;
         this.uvScale = 0.025;
-        this.renderDist = 15;
+        this.renderDist = renderDist;
 
         this.chunkLookup = new PermLambdaDefaultDict(() => new PermLambdaDefaultDict(() => undefined));
         this.chunkList = [];
