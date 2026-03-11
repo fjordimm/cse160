@@ -187,24 +187,23 @@ export default class Game {
             }
         }
 
-        // iPhone
+        // Skull
         {
             const objLoader = new OBJLoader();
             const mtlLoader = new MTLLoader();
-            mtlLoader.load("./res/iphone/iphone.mtl", (mtl) => {
+            mtlLoader.load("./res/skull/12140_Skull_v3_L2.mtl", (mtl) => {
                 mtl.preload();
                 objLoader.setMaterials(mtl);
-                objLoader.load("./res/iphone/iphone.obj", (obj) => {
+                objLoader.load("./res/skull/12140_Skull_v3_L2.obj", (obj) => {
                     this.scene.add(obj);
 
-                    obj.scale.setScalar(0.01);
-                    obj.position.x = 18;
-                    obj.position.z = -40;
-                    obj.position.y = 2.1 + this.elevationGenerator.at(obj.position.x, obj.position.z);
+                    obj.rotateX(-0.5 * Math.PI);
+                    obj.scale.setScalar(0.2);
+                    obj.position.x = 24;
+                    obj.position.z = -70;
+                    obj.position.y = 0.1 + this.elevationGenerator.at(obj.position.x, obj.position.z);
                 });
             });
-
-            // this.objects.iphone = 
         }
 
         const _this_ = this;
