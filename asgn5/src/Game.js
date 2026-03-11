@@ -5,6 +5,8 @@ import ElevationGenerator from "./Terrain/ElevationGenerator.js";
 import TreeManager from "./Trees/TreeManager.js";
 import Stats from "stats";
 import TerrainManager from "./Terrain/TerrainManager.js";
+import { OBJLoader } from "three/addons/loaders/OBJLoader.js";
+import { MTLLoader } from "three/addons/loaders/MTLLoader.js";
 
 const CAMERA_LOOK_SPEED = 2.1;
 const CAMERA_MOVE_SPEED = 100;
@@ -99,26 +101,11 @@ export default class Game {
         });
 
         this.objects.mainLight = new THREE.DirectionalLight(0xFFFFFF, 3);
-        this.objects.mainLight.position.set(0.9, 1, -1.6);
+        this.objects.mainLight.position.set(0.9, 1, 1.6);
         this.scene.add(this.objects.mainLight);
 
         this.objects.ambientLight = new THREE.AmbientLight(0xFFFFFF, 0.2);
         this.scene.add(this.objects.ambientLight);
-
-        this.camera.position.y = 65;
-
-        this.objects.cube = new THREE.Mesh(
-            new THREE.BoxGeometry(1, 1, 1),
-            new THREE.MeshPhongMaterial({ color: 0x0000FF })
-        );
-        this.scene.add(this.objects.cube);
-
-        this.objects.ball = new THREE.Mesh(
-            new THREE.SphereGeometry(0.5),
-            new THREE.MeshPhongMaterial({ color: 0xFF0000 })
-        );
-        this.objects.ball.position.set(4, 0, 0);
-        this.scene.add(this.objects.ball);
 
         const texture = new THREE.CubeTextureLoader().load([
             "./res/images/px.png",
@@ -136,6 +123,90 @@ export default class Game {
         this.scene.fog = new THREE.FogExp2(0x70D8FF, 0);
         this.updateFogDensity();
 
+        this.camera.position.y = this.elevationGenerator.at(0, 0) + 1.5;
+
+        // Streetlamp
+        {
+            this.objects.streetlamp = new THREE.Object3D();
+            this.scene.add(this.objects.streetlamp);
+
+            this.objects.streetlamp.position.x = 15;
+            this.objects.streetlamp.position.z = -80;
+            this.objects.streetlamp.position.y = -0.9 + this.elevationGenerator.at(this.objects.streetlamp.position.x, this.objects.streetlamp.position.z);
+
+            // Pole
+            {
+                const s = new THREE.Mesh(
+                    new THREE.CylinderGeometry(0.5, 0.5, 20, 12),
+                    new THREE.MeshPhongMaterial({ color: 0x707070, specular: 0x909090, shininess: 45.0 })
+                );
+                s.position.y = 10;
+                this.objects.streetlamp.add(s);
+            }
+            // Curved top part
+            {
+                const s = new THREE.Mesh(
+                    new THREE.TorusGeometry(2, 0.5, 12, 12, Math.PI),
+                    new THREE.MeshPhongMaterial({ color: 0x707070, specular: 0x909090, shininess: 45.0 })
+                );
+                s.position.y = 20;
+                s.position.x = 2;
+                this.objects.streetlamp.add(s);
+            }
+            // Lamp part
+            {
+                const s = new THREE.Mesh(
+                    new THREE.CylinderGeometry(0.5, 1.5, 1, 12),
+                    new THREE.MeshPhongMaterial({ color: 0x707070, specular: 0x909090, shininess: 45.0 })
+                );
+                s.position.y = 19.5;
+                s.position.x = 4;
+                this.objects.streetlamp.add(s);
+            }
+            // Lit up part
+            {
+                const s = new THREE.Mesh(
+                    new THREE.CylinderGeometry(1.3, 1.3, 0.2, 12),
+                    new THREE.MeshBasicMaterial({ color: 0xFF2020 })
+                );
+                s.position.y = 18.9;
+                s.position.x = 4;
+                this.objects.streetlamp.add(s);
+            }
+            // Actual light
+            {
+                const s = new THREE.SpotLight(0xFF0000, 15, 30, 1.3, 0.5, 0);
+                s.position.y = 18.9;
+                s.position.x = 4;
+                const target = new THREE.Object3D();
+                target.position.y = 17.9;
+                target.position.x = 4;
+                this.objects.streetlamp.add(target);
+                s.target = target;
+                this.objects.streetlamp.add(s);
+            }
+        }
+
+        // iPhone
+        {
+            const objLoader = new OBJLoader();
+            const mtlLoader = new MTLLoader();
+            mtlLoader.load("./res/iphone/iphone.mtl", (mtl) => {
+                mtl.preload();
+                objLoader.setMaterials(mtl);
+                objLoader.load("./res/iphone/iphone.obj", (obj) => {
+                    this.scene.add(obj);
+
+                    obj.scale.setScalar(0.01);
+                    obj.position.x = 18;
+                    obj.position.z = -40;
+                    obj.position.y = 2.1 + this.elevationGenerator.at(obj.position.x, obj.position.z);
+                });
+            });
+
+            // this.objects.iphone = 
+        }
+
         const _this_ = this;
         const guiInstructions = this.gui.addFolder("Instructions");
         guiInstructions.add({ "Camera Control": "Click anywhere" }, "Camera Control");
@@ -143,7 +214,7 @@ export default class Game {
         guiInstructions.add({ "Change Speed": "Scroll" }, "Change Speed");
         const guiInfo = this.gui.addFolder("Info");
         guiInfo.add({
-            set pos(val) {},
+            set pos(val) { },
             get pos() {
                 const p = _this_.camera.position;
                 return `${p.x.toFixed(1)}, ${p.y.toFixed(1)}, ${p.z.toFixed(1)}`;
