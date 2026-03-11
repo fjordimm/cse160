@@ -11,16 +11,32 @@ const HORIZ_SCALE = 0.0005;
 const EXP_FACTOR = 1.9;
 const VERT_SCALE = 30.0;
 
+const TREE_SEED = "fbnasidf";
+const TREE_LAYERS = 5;
+const TREE_FREQ_FACTOR = 2;
+const TREE_AMP_FACTOR = 0.5;
+const TREE_HORIZ_SCALE = 0.0007;
+const TREE_VERT_SCALE = 1.0;
+
 const GRASS_COLOR = [0, 0.5, 0, 1];
 const SNOW_COLOR = [0.91, 0.92, 0.93, 1];
 
 export default class ElevationGenerator {
     constructor() {
-        const al = alea(SEED);
+        {
+            const al = alea(SEED);
+            this.layers = [];
+            for (let i = 0; i < LAYERS; i++) {
+                this.layers.push(createNoise2D(alea(al())));
+            }
+        }
 
-        this.layers = [];
-        for (let i = 0; i < LAYERS; i++) {
-            this.layers.push(createNoise2D(alea(al())));
+        {
+            const al = alea(TREE_SEED);
+            this.treeLayers = [];
+            for (let i = 0; i < TREE_LAYERS; i++) {
+                this.treeLayers.push(createNoise2D(alea(al())));
+            }
         }
     }
 
@@ -45,11 +61,25 @@ export default class ElevationGenerator {
     }
 
     treeDensityAt(x, z, elevation) {
+        x *= TREE_HORIZ_SCALE;
+        z *= TREE_HORIZ_SCALE;
+
         let density = 0;
 
-        density += 0.001 * elevation;
+        let freq = 1;
+        let amp = 1;
+        for (let i = 0; i < TREE_LAYERS; i++) {
+            density += amp * this.layers[i](freq * x, freq * z);
 
-        return Math.min(1, Math.max(0, density));
+            freq *= TREE_FREQ_FACTOR;
+            amp *= TREE_AMP_FACTOR;
+        }
+
+        // Get rid of trees on hills/mountains
+        density -= 0.015 * elevation;
+        density += 0.3;
+
+        return Math.min(1, Math.max(0, TREE_VERT_SCALE * density));
     }
 
     colorAt(y) {
