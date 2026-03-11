@@ -148,7 +148,7 @@ export default class Game {
                 const p = _this_.camera.position;
                 return `${p.x.toFixed(1)}, ${p.y.toFixed(1)}, ${p.z.toFixed(1)}`;
             }
-        }, "pos");
+        }, "pos").name("Camera Position");
         this.guiInfo = guiInfo;
         const guiPerformance = this.gui.addFolder("Performance");
         this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, RESOLUTION));
@@ -185,9 +185,10 @@ export default class Game {
         this.controls.update(deltaTime);
         this.doCameraMovement(deltaTime, elapsedTime);
 
+        this.guiInfo.controllers[0].setValue(null);
+
         if (frameCount % 15 === 0) {
             this.terrainManager.update(this.camera.position.x, this.camera.position.z);
-            this.guiInfo.controllers[0].setValue(null);
         }
     }
 
