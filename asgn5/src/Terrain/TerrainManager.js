@@ -4,6 +4,9 @@ import ElevationGenerator from "./ElevationGenerator.js";
 import makeTerrainGeometry from "./makeTerrainGeometry.js";
 import TreeManager from "../Trees/TreeManager.js";
 
+const TREE_SINK_LEVEL = -0.9;
+const TREE_RANDOM_SHIFT = 0.75;
+
 export default class TerrainManager {
     constructor(elevationGenerator, loader, scene, renderDist, treeSpacing) {
         this.chunkSize = 16;
@@ -72,22 +75,16 @@ export default class TerrainManager {
         const treeSpace = this.chunkScaleSize / this.treeSpacing;
         for (let c = 0; c < this.treeSpacing; c++) {
             for (let r = 0; r < this.treeSpacing; r++) {
-                const treeX = x + c * treeSpace;
-                const treeZ = z + r * treeSpace;
+                const treeX = x + (c + Math.random() * TREE_RANDOM_SHIFT - 0.5 * TREE_RANDOM_SHIFT) * treeSpace;
+                const treeZ = z + (r + Math.random() * TREE_RANDOM_SHIFT - 0.5 * TREE_RANDOM_SHIFT) * treeSpace;
                 const elev = this.elevationGenerator.at(treeX, treeZ);
 
                 if (randBernoulli(this.elevationGenerator.treeDensityAt(treeX, treeZ, elev))) {
-                    const treeY = -0.9 + elev;
+                    const treeY = TREE_SINK_LEVEL + elev;
                     chunk.userData.treeManager.addTree(new THREE.Vector3(treeX, treeY, treeZ), this.scene);
                 }
             }
         }
-        // for (let i = 0; i < 30; i++) {
-        //     const treeX = x + Math.random() * range;
-        //     const treeZ = z + Math.random() * range;
-        //     const treeY = -0.9 + this.elevationGenerator.at(treeX, treeZ);
-        //     chunk.userData.treeManager.addTree(new THREE.Vector3(treeX, treeY, treeZ), this.scene);
-        // }
 
         return chunk;
     }

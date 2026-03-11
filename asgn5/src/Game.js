@@ -11,8 +11,8 @@ const CAMERA_MOVE_SPEED = 100;
 const CAMERA_MOVE_SPEED_DELTA = 25;
 
 const RESOLUTION = 0.5;
-const FOG_DISTANCE_FACTOR = 300;
-const RENDER_DIST = 5;
+const FOG_DISTANCE_FACTOR = 80;
+const RENDER_DIST = 15;
 const TREE_SPACING = 10;
 
 const VEC_UP = new THREE.Vector3(0, 1, 0);
