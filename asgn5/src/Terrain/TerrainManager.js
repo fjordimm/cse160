@@ -5,7 +5,7 @@ import makeTerrainGeometry from "./makeTerrainGeometry.js";
 import TreeManager from "../Trees/TreeManager.js";
 
 const TREE_SINK_LEVEL = -0.9;
-const TREE_RANDOM_SHIFT = 0.5;
+const TREE_RANDOM_SHIFT = 0.75;
 
 export default class TerrainManager {
     constructor(elevationGenerator, loader, scene, renderDist, treeSpacing) {
@@ -21,11 +21,13 @@ export default class TerrainManager {
         this.loader = loader;
         this.scene = scene;
 
-        this.grassTex = this.loader.load("./res/images/grass.png");
-        this.grassTex.colorSpace = THREE.SRGBColorSpace;
-        this.grassTex.magFilter = THREE.LinearFilter;
-        this.grassTex.wrapS = THREE.RepeatWrapping;
-        this.grassTex.wrapT = THREE.RepeatWrapping;
+        // this.grassTex = this.loader.load("./res/images/grass.png");
+        // this.grassTex.colorSpace = THREE.SRGBColorSpace;
+        // this.grassTex.magFilter = THREE.LinearFilter;
+        // this.grassTex.wrapS = THREE.RepeatWrapping;
+        // this.grassTex.wrapT = THREE.RepeatWrapping;
+
+        this.material = new THREE.MeshLambertMaterial({ vertexColors: true });
 
         this.treeSpacing = treeSpacing;
     }
@@ -65,7 +67,7 @@ export default class TerrainManager {
     makeChunk(x, z) {
         const chunk = new THREE.Mesh(
             makeTerrainGeometry(this.chunkSize, this.chunkScale, x, z, this.uvScale, this.elevationGenerator),
-            new THREE.MeshLambertMaterial({ color: 0xFFFFFF, map: this.grassTex })
+            this.material
         );
         chunk.position.set(x, 0, z);
         chunk.static = true;

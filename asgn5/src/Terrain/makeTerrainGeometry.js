@@ -4,13 +4,16 @@ export default function makeTerrainGeometry(size, scale, offX, offZ, uvScale, el
     // Note: it finds the elevations outside of the actual region so it can calculate the normals
 
     const elevations = [];
-    const colors = [];
+    const colorsPre = [];
     for (let x = 0; x < size + 3; x++) {
         elevations.push([]);
-        colors.push([]);
+        colorsPre.push([]);
         for (let z = 0; z < size + 3; z++) {
-            elevations[x].push(elevationGenerator.at((x - 1) * scale + offX, (z - 1) * scale + offZ));
-            colors[x].push(elevationGenerator.colorAt(elevationGenerator.at((x - 0.5) * scale + offX, (z - 0.5) * scale + offZ)));
+            const xR = (x - 1) * scale + offX;
+            const zR = (z - 1) * scale + offZ;
+            const elev = elevationGenerator.at(xR, zR);
+            elevations[x].push(elev);
+            colorsPre[x].push(elevationGenerator.colorAt(xR, zR, elev));
         }
     }
 
@@ -36,6 +39,7 @@ export default function makeTerrainGeometry(size, scale, offX, offZ, uvScale, el
     const vertices = [];
     const uv = [];
     const normals = [];
+    const colors = [];
     for (let x = 1; x < elevations.length - 2; x++) {
         for (let z = 1; z < elevations[0].length - 2; z++) {
             const yBL = elevations[x][z];
@@ -72,6 +76,20 @@ export default function makeTerrainGeometry(size, scale, offX, offZ, uvScale, el
                 ...normalsPre[x + 1][z],
                 ...normalsPre[x][z + 1]
             ]);
+
+            const colBL = colorsPre[x][z];
+            const colBR = colorsPre[x + 1][z];
+            const colTL = colorsPre[x][z + 1];
+            const colTR = colorsPre[x + 1][z + 1];
+
+            colors.push(...[
+                ...colBL,
+                ...colTL,
+                ...colBR,
+                ...colTR,
+                ...colBR,
+                ...colTL
+            ]);
         }
     }
 
@@ -79,6 +97,7 @@ export default function makeTerrainGeometry(size, scale, offX, offZ, uvScale, el
     geometry.setAttribute("position", new THREE.BufferAttribute(new Float32Array(vertices), 3));
     geometry.setAttribute("normal", new THREE.BufferAttribute(new Float32Array(normals), 3));
     geometry.setAttribute("uv", new THREE.BufferAttribute(new Float32Array(uv), 2));
+    geometry.setAttribute("color", new THREE.BufferAttribute(new Float32Array(colors), 3));
 
     return geometry;
 }

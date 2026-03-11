@@ -46,6 +46,10 @@ export function sigmoid(x) {
     return 1 / (1 + Math.exp(-x));
 }
 
+export function bellCurve(x) {
+    return Math.exp(-(x ** 2));
+}
+
 export function randBernoulli(prob) {
     prob = Math.min(1, Math.max(0, prob));
 
@@ -53,4 +57,8 @@ export function randBernoulli(prob) {
     const p1 = Math.random() * (1 - prob);
 
     return p0 > p1;
+}
+
+export function clamp(min, max, val) {
+    return Math.min(max, Math.max(min, val));
 }
