@@ -206,6 +206,32 @@ export default class Game {
             });
         }
 
+        // Coin
+        {
+            this.objects.coin = new THREE.Object3D();
+            this.scene.add(this.objects.coin);
+
+            {
+                const s = new THREE.Mesh(
+                    new THREE.CylinderGeometry(0.75, 0.75, 0.1, 12),
+                    new THREE.MeshPhongMaterial({ color: 0xFF8000, specular: 0xB0B0B0, shininess: 45.0 })
+                );
+                this.objects.coin.add(s);
+            }
+            {
+                const s = new THREE.Mesh(
+                    new THREE.CylinderGeometry(0.6, 0.6, 0.3, 12),
+                    new THREE.MeshPhongMaterial({ color: 0xFF8000, specular: 0xB0B0B0, shininess: 45.0 })
+                );
+                this.objects.coin.add(s);
+            }
+
+            this.objects.coin.rotateX(0.5 * Math.PI);
+            this.objects.coin.position.x = 11;
+            this.objects.coin.position.z = -60;
+            this.objects.coin.position.y = 1.5 + this.elevationGenerator.at(this.objects.coin.position.x, this.objects.coin.position.z);
+        }
+
         const _this_ = this;
         const guiInstructions = this.gui.addFolder("Instructions");
         guiInstructions.add({ "Camera Control": "Click anywhere" }, "Camera Control");
@@ -259,6 +285,12 @@ export default class Game {
 
         if (frameCount % 15 === 0) {
             this.terrainManager.update(this.camera.position.x, this.camera.position.z);
+        }
+
+        // Coin
+        {
+            this.objects.coin.rotateOnWorldAxis(VEC_UP, 0.8 * deltaTime);
+            this.objects.coin.position.y += 0.01 * Math.cos(2.5 * elapsedTime);
         }
     }
 
