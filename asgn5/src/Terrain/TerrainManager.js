@@ -1,11 +1,11 @@
 import * as THREE from "three";
-import { PermLambdaDefaultDict } from "../util.js";
+import { PermLambdaDefaultDict, randBernoulli } from "../util.js";
 import ElevationGenerator from "./ElevationGenerator.js";
 import makeTerrainGeometry from "./makeTerrainGeometry.js";
 import TreeManager from "../Trees/TreeManager.js";
 
 export default class TerrainManager {
-    constructor(elevationGenerator, loader, scene, renderDist) {
+    constructor(elevationGenerator, loader, scene, renderDist, treeSpacing) {
         this.chunkSize = 16;
         this.chunkScale = 10;
         this.chunkScaleSize = this.chunkSize * this.chunkScale;
@@ -22,6 +22,8 @@ export default class TerrainManager {
         this.grassTex.magFilter = THREE.LinearFilter;
         this.grassTex.wrapS = THREE.RepeatWrapping;
         this.grassTex.wrapT = THREE.RepeatWrapping;
+
+        this.treeSpacing = treeSpacing;
     }
 
     update(x, z) {
@@ -48,10 +50,10 @@ export default class TerrainManager {
 
             if (distToCam <= (1 + this.renderDist) * this.chunkScaleSize) {
                 chunk.visible = true;
-                chunk.userData.treeManager.unhide();
+                chunk.userData.treeManager.parent.visible = true;
             } else {
                 chunk.visible = false;
-                chunk.userData.treeManager.hide();
+                chunk.userData.treeManager.parent.visible = false;
             }
         }
     }
@@ -66,14 +68,26 @@ export default class TerrainManager {
 
         this.scene.add(chunk);
 
-        chunk.userData.treeManager = new TreeManager();
-        const range = this.chunkScaleSize;
-        for (let i = 0; i < 30; i++) {
-            const treeX = x + Math.random() * range;
-            const treeZ = z + Math.random() * range;
-            const treeY = this.elevationGenerator.at(treeX, treeZ);
-            chunk.userData.treeManager.addTree(new THREE.Vector3(treeX, treeY, treeZ), this.scene);
+        chunk.userData.treeManager = new TreeManager(this.scene);
+        const treeSpace = this.chunkScaleSize / this.treeSpacing;
+        for (let c = 0; c < this.treeSpacing; c++) {
+            for (let r = 0; r < this.treeSpacing; r++) {
+                const treeX = x + c * treeSpace;
+                const treeZ = z + r * treeSpace;
+                const elev = this.elevationGenerator.at(treeX, treeZ);
+
+                if (randBernoulli(this.elevationGenerator.treeDensityAt(treeX, treeZ, elev))) {
+                    const treeY = -0.9 + elev;
+                    chunk.userData.treeManager.addTree(new THREE.Vector3(treeX, treeY, treeZ), this.scene);
+                }
+            }
         }
+        // for (let i = 0; i < 30; i++) {
+        //     const treeX = x + Math.random() * range;
+        //     const treeZ = z + Math.random() * range;
+        //     const treeY = -0.9 + this.elevationGenerator.at(treeX, treeZ);
+        //     chunk.userData.treeManager.addTree(new THREE.Vector3(treeX, treeY, treeZ), this.scene);
+        // }
 
         return chunk;
     }

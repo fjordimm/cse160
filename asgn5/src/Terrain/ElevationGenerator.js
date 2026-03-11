@@ -1,6 +1,7 @@
 import { sigmoid } from "../util.js";
 import alea from "alea";
 import { createNoise2D } from "simplex-noise";
+import * as THREE from "three";
 
 const SEED = "nvmcdjabjksksjdk";
 const LAYERS = 15;
@@ -43,17 +44,15 @@ export default class ElevationGenerator {
         return VERT_SCALE * y;
     }
 
+    treeDensityAt(x, z, elevation) {
+        let density = 0;
+
+        density += 0.001 * elevation;
+
+        return Math.min(1, Math.max(0, density));
+    }
+
     colorAt(y) {
-        const snowWeight = sigmoid(y - 25);
-        const grassWeight = 1 - snowWeight;
-
-        const shadingWeight = (y + 30) / 75;
-
-        return [
-            shadingWeight * (GRASS_COLOR[0] * grassWeight + SNOW_COLOR[0] * snowWeight),
-            shadingWeight * (GRASS_COLOR[1] * grassWeight + SNOW_COLOR[1] * snowWeight),
-            shadingWeight * (GRASS_COLOR[2] * grassWeight + SNOW_COLOR[2] * snowWeight),
-            1
-        ];
+        return new THREE.Color(0, 0, 0);
     }
 }

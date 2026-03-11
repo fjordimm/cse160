@@ -1,13 +1,15 @@
 import * as THREE from "three";
 import * as BufferGeometryUtils from "three/addons/utils/BufferGeometryUtils.js";
 
-const STARTING_LENGTH = 2;
+const STARTING_LENGTH = 10;
 // TODO: optimize by adding this as a constructor argument
 
 const _dummy = new THREE.Object3D();
 
 export default class TreeManager {
-    constructor() {
+    constructor(scene) {
+        this.scene = scene;
+
         this.currentLength = 0;
         this.positions = [];
 
@@ -16,6 +18,8 @@ export default class TreeManager {
         this.geometryTrunk = new THREE.CylinderGeometry(0.9, 0.9, 15.0, 12);
         this.materialTrunk = new THREE.MeshPhongMaterial({ color: 0x604030 });
 
+        this.parent = new THREE.Object3D();
+        this.scene.add(this.parent);
         this.instancedMeshLeaf1 = null;
         this.instancedMeshLeaf2 = null;
         this.instancedMeshTrunk = null;
@@ -26,7 +30,7 @@ export default class TreeManager {
         this.updateStuff(scene);
     }
 
-    updateStuff(scene) {
+    updateStuff() {
         if (this.positions.length > this.currentLength) {
             if (this.currentLength <= 0) {
                 this.currentLength = Math.max(STARTING_LENGTH, this.positions.length);
@@ -34,16 +38,16 @@ export default class TreeManager {
                 this.currentLength *= 2;
             }
 
-            if (this.instancedMeshLeaf1) { scene.remove(this.instancedMeshLeaf1); }
-            if (this.instancedMeshLeaf2) { scene.remove(this.instancedMeshLeaf2); }
-            if (this.instancedMeshTrunk) { scene.remove(this.instancedMeshTrunk); }
+            if (this.instancedMeshLeaf1) { this.parent.remove(this.instancedMeshLeaf1); }
+            if (this.instancedMeshLeaf2) { this.parent.remove(this.instancedMeshLeaf2); }
+            if (this.instancedMeshTrunk) { this.parent.remove(this.instancedMeshTrunk); }
 
             this.instancedMeshLeaf1 = new THREE.InstancedMesh(this.geometryLeaf, this.materialLeaf, this.currentLength);
-            scene.add(this.instancedMeshLeaf1);
+            this.parent.add(this.instancedMeshLeaf1);
             this.instancedMeshLeaf2 = new THREE.InstancedMesh(this.geometryLeaf, this.materialLeaf, this.currentLength);
-            scene.add(this.instancedMeshLeaf2);
+            this.parent.add(this.instancedMeshLeaf2);
             this.instancedMeshTrunk = new THREE.InstancedMesh(this.geometryTrunk, this.materialTrunk, this.currentLength);
-            scene.add(this.instancedMeshTrunk);
+            this.parent.add(this.instancedMeshTrunk);
         }
 
         for (let i = 0; i < this.currentLength; i++) {
@@ -78,17 +82,5 @@ export default class TreeManager {
                 this.instancedMeshTrunk.instanceMatrix.needsUpdate = true;
             }
         }
-    }
-
-    hide() {
-        this.instancedMeshLeaf1.visible = false;
-        this.instancedMeshLeaf2.visible = false;
-        this.instancedMeshTrunk.visible = false;
-    }
-
-    unhide() {
-        this.instancedMeshLeaf1.visible = true;
-        this.instancedMeshLeaf2.visible = true;
-        this.instancedMeshTrunk.visible = true;
     }
 }
