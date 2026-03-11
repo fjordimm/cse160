@@ -13,7 +13,7 @@ const CAMERA_MOVE_SPEED_DELTA = 25;
 const RESOLUTION = 0.5;
 const FOG_DISTANCE_FACTOR = 80;
 const RENDER_DIST = 15;
-const TREE_SPACING = 10;
+const TREES_PER_CHUNK = 10; // Or rather, the square root of trees per chunk
 
 const VEC_UP = new THREE.Vector3(0, 1, 0);
 
@@ -131,7 +131,7 @@ export default class Game {
         this.scene.background = texture;
 
         this.elevationGenerator = new ElevationGenerator();
-        this.terrainManager = new TerrainManager(this.elevationGenerator, this.loader, this.scene, RENDER_DIST, TREE_SPACING);
+        this.terrainManager = new TerrainManager(this.elevationGenerator, this.loader, this.scene, RENDER_DIST, TREES_PER_CHUNK);
 
         this.scene.fog = new THREE.FogExp2(0x70D8FF, 0);
         this.updateFogDensity();

@@ -5,7 +5,7 @@ import makeTerrainGeometry from "./makeTerrainGeometry.js";
 import TreeManager from "../Trees/TreeManager.js";
 
 const TREE_SINK_LEVEL = -0.9;
-const TREE_RANDOM_SHIFT = 0.75;
+const TREE_RANDOM_SHIFT = 0.5;
 
 export default class TerrainManager {
     constructor(elevationGenerator, loader, scene, renderDist, treeSpacing) {
@@ -18,9 +18,10 @@ export default class TerrainManager {
         this.chunkLookup = new PermLambdaDefaultDict(() => new PermLambdaDefaultDict(() => undefined));
         this.chunkList = [];
         this.elevationGenerator = elevationGenerator;
+        this.loader = loader;
         this.scene = scene;
 
-        this.grassTex = loader.load("./res/images/grass.png");
+        this.grassTex = this.loader.load("./res/images/grass.png");
         this.grassTex.colorSpace = THREE.SRGBColorSpace;
         this.grassTex.magFilter = THREE.LinearFilter;
         this.grassTex.wrapS = THREE.RepeatWrapping;
@@ -71,7 +72,7 @@ export default class TerrainManager {
 
         this.scene.add(chunk);
 
-        chunk.userData.treeManager = new TreeManager(this.scene);
+        chunk.userData.treeManager = new TreeManager(this.scene, this.loader);
         const treeSpace = this.chunkScaleSize / this.treeSpacing;
         for (let c = 0; c < this.treeSpacing; c++) {
             for (let r = 0; r < this.treeSpacing; r++) {

@@ -1,5 +1,4 @@
 import * as THREE from "three";
-import * as BufferGeometryUtils from "three/addons/utils/BufferGeometryUtils.js";
 
 const STARTING_LENGTH = 10;
 // TODO: optimize by adding this as a constructor argument
@@ -7,16 +6,28 @@ const STARTING_LENGTH = 10;
 const _dummy = new THREE.Object3D();
 
 export default class TreeManager {
-    constructor(scene) {
+    constructor(scene, loader) {
         this.scene = scene;
+        this.loader = loader;
+
+        this.woodTex = this.loader.load("./res/images/wood.png");
+        this.woodTex.colorSpace = THREE.SRGBColorSpace;
+        this.woodTex.magFilter = THREE.LinearFilter;
+        this.woodTex.wrapS = THREE.RepeatWrapping;
+        this.woodTex.wrapT = THREE.RepeatWrapping;
+        this.leavesTex = this.loader.load("./res/images/leaves.png");
+        this.leavesTex.colorSpace = THREE.SRGBColorSpace;
+        this.leavesTex.magFilter = THREE.LinearFilter;
+        this.leavesTex.wrapS = THREE.RepeatWrapping;
+        this.leavesTex.wrapT = THREE.RepeatWrapping;
+
+        this.geometryLeaf = new THREE.ConeGeometry(3.1, 8.5, 8);
+        this.materialLeaf = new THREE.MeshLambertMaterial({ color: 0xFFFFFF, map: this.leavesTex });
+        this.geometryTrunk = new THREE.CylinderGeometry(0.1, 1.3, 15.0, 8);
+        this.materialTrunk = new THREE.MeshPhongMaterial({ color: 0xFFFFFF, map: this.woodTex, specular: 0x303030, shininess: 25.0 });
 
         this.currentLength = 0;
         this.positions = [];
-
-        this.geometryLeaf = new THREE.ConeGeometry(3.1, 8.5, 12);
-        this.materialLeaf = new THREE.MeshPhongMaterial({ color: 0x107030 });
-        this.geometryTrunk = new THREE.CylinderGeometry(0.9, 0.9, 15.0, 12);
-        this.materialTrunk = new THREE.MeshPhongMaterial({ color: 0x604030 });
 
         this.parent = new THREE.Object3D();
         this.scene.add(this.parent);
