@@ -2,11 +2,12 @@ import * as THREE from "three";
 import * as BufferGeometryUtils from "three/addons/utils/BufferGeometryUtils.js";
 
 const STARTING_LENGTH = 2;
+// TODO: optimize by adding this as a constructor argument
 
 const _dummy = new THREE.Object3D();
 
 export default class TreeManager {
-    constructor(loader) {
+    constructor() {
         this.currentLength = 0;
         this.positions = [];
 
@@ -77,5 +78,17 @@ export default class TreeManager {
                 this.instancedMeshTrunk.instanceMatrix.needsUpdate = true;
             }
         }
+    }
+
+    hide() {
+        this.instancedMeshLeaf1.visible = false;
+        this.instancedMeshLeaf2.visible = false;
+        this.instancedMeshTrunk.visible = false;
+    }
+
+    unhide() {
+        this.instancedMeshLeaf1.visible = true;
+        this.instancedMeshLeaf2.visible = true;
+        this.instancedMeshTrunk.visible = true;
     }
 }

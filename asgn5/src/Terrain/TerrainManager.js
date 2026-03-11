@@ -2,9 +2,10 @@ import * as THREE from "three";
 import { PermLambdaDefaultDict } from "../util.js";
 import ElevationGenerator from "./ElevationGenerator.js";
 import makeTerrainGeometry from "./makeTerrainGeometry.js";
+import TreeManager from "../Trees/TreeManager.js";
 
 export default class TerrainManager {
-    constructor(elevationGenerator, loader, scene, treeManager, renderDist) {
+    constructor(elevationGenerator, loader, scene, renderDist) {
         this.chunkSize = 16;
         this.chunkScale = 10;
         this.chunkScaleSize = this.chunkSize * this.chunkScale;
@@ -15,7 +16,6 @@ export default class TerrainManager {
         this.chunkList = [];
         this.elevationGenerator = elevationGenerator;
         this.scene = scene;
-        this.treeManager = treeManager;
 
         this.grassTex = loader.load("./res/images/grass.png");
         this.grassTex.colorSpace = THREE.SRGBColorSpace;
@@ -48,8 +48,10 @@ export default class TerrainManager {
 
             if (distToCam <= (1 + this.renderDist) * this.chunkScaleSize) {
                 chunk.visible = true;
+                chunk.userData.treeManager.unhide();
             } else {
                 chunk.visible = false;
+                chunk.userData.treeManager.hide();
             }
         }
     }
@@ -64,12 +66,13 @@ export default class TerrainManager {
 
         this.scene.add(chunk);
 
+        chunk.userData.treeManager = new TreeManager();
         const range = this.chunkScaleSize;
         for (let i = 0; i < 30; i++) {
             const treeX = x + Math.random() * range;
             const treeZ = z + Math.random() * range;
             const treeY = this.elevationGenerator.at(treeX, treeZ);
-            this.treeManager.addTree(new THREE.Vector3(treeX, treeY, treeZ), this.scene);
+            chunk.userData.treeManager.addTree(new THREE.Vector3(treeX, treeY, treeZ), this.scene);
         }
 
         return chunk;
