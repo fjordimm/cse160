@@ -1,7 +1,9 @@
 import * as THREE from "three";
 import * as BufferGeometryUtils from "three/addons/utils/BufferGeometryUtils.js";
 
-const STARTING_LENGTH = 5;
+const STARTING_LENGTH = 2;
+
+const _dummy = new THREE.Object3D();
 
 export default class TreeManager {
     constructor(loader) {
@@ -16,33 +18,6 @@ export default class TreeManager {
         this.instancedMeshLeaf1 = null;
         this.instancedMeshLeaf2 = null;
         this.instancedMeshTrunk = null;
-
-        // this.instancedMesh = new THREE.InstancedMesh(
-        //     new THREE.ConeGeometry(),
-        //     new THREE.MeshPhongMaterial({ color: 0x0000FF }),
-        //     0
-        // );
-
-        // const dummy = new THREE.Object3D();
-        // for (let i = 0; i < this.instancedMesh.count; i++) {
-        //     dummy.position.set(Math.random() * 10 - 5, 0, Math.random() * 10 - 5);
-
-        //     if (i < 3) {
-        //         dummy.scale.setScalar(0.1);
-        //     } else {
-        //         dummy.scale.setScalar(1);
-        //     }
-
-        //     dummy.updateMatrix();
-        //     this.instancedMesh.setMatrixAt(i, dummy.matrix);
-        // }
-
-        // dummy.position.set(0, 15, 0);
-        // dummy.scale.setScalar(1);
-        // dummy.updateMatrix();
-        // this.instancedMesh.setMatrixAt(5, dummy.matrix);
-
-        // scene.add(this.instancedMesh);
     }
 
     addTree(position, scene) {
@@ -58,6 +33,10 @@ export default class TreeManager {
                 this.currentLength *= 2;
             }
 
+            if (this.instancedMeshLeaf1) { scene.remove(this.instancedMeshLeaf1); }
+            if (this.instancedMeshLeaf2) { scene.remove(this.instancedMeshLeaf2); }
+            if (this.instancedMeshTrunk) { scene.remove(this.instancedMeshTrunk); }
+
             this.instancedMeshLeaf1 = new THREE.InstancedMesh(this.geometryLeaf, this.materialLeaf, this.currentLength);
             scene.add(this.instancedMeshLeaf1);
             this.instancedMeshLeaf2 = new THREE.InstancedMesh(this.geometryLeaf, this.materialLeaf, this.currentLength);
@@ -66,34 +45,37 @@ export default class TreeManager {
             scene.add(this.instancedMeshTrunk);
         }
 
-        const dummy = new THREE.Object3D();
         for (let i = 0; i < this.currentLength; i++) {
             if (i >= this.positions.length) {
-                dummy.scale.setScalar(0);
-                dummy.updateMatrix();
-                this.instancedMeshLeaf1.setMatrixAt(i, dummy.matrix);
-                this.instancedMeshLeaf2.setMatrixAt(i, dummy.matrix);
-                this.instancedMeshTrunk.setMatrixAt(i, dummy.matrix);
+                _dummy.scale.setScalar(0);
+                _dummy.updateMatrix();
+                this.instancedMeshLeaf1.setMatrixAt(i, _dummy.matrix);
+                this.instancedMeshLeaf1.instanceMatrix.needsUpdate = true;
+                this.instancedMeshLeaf2.setMatrixAt(i, _dummy.matrix);
+                this.instancedMeshLeaf2.instanceMatrix.needsUpdate = true;
+                this.instancedMeshTrunk.setMatrixAt(i, _dummy.matrix);
+                this.instancedMeshTrunk.instanceMatrix.needsUpdate = true;
             } else {
                 const pos = this.positions[i];
 
-                dummy.position.set(pos.x, pos.y + 14.0, pos.z);
-                dummy.scale.setScalar(1);
-                dummy.updateMatrix();
-                this.instancedMeshLeaf1.setMatrixAt(i, dummy.matrix);
+                _dummy.position.set(pos.x, pos.y + 14.0, pos.z);
+                _dummy.scale.setScalar(1);
+                _dummy.updateMatrix();
+                this.instancedMeshLeaf1.setMatrixAt(i, _dummy.matrix);
+                this.instancedMeshLeaf1.instanceMatrix.needsUpdate = true;
 
-                dummy.position.set(pos.x, pos.y + 10.0, pos.z);
-                dummy.scale.setScalar(1);
-                dummy.updateMatrix();
-                this.instancedMeshLeaf2.setMatrixAt(i, dummy.matrix);
+                _dummy.position.set(pos.x, pos.y + 10.0, pos.z);
+                _dummy.scale.setScalar(1);
+                _dummy.updateMatrix();
+                this.instancedMeshLeaf2.setMatrixAt(i, _dummy.matrix);
+                this.instancedMeshLeaf2.instanceMatrix.needsUpdate = true;
 
-                dummy.position.set(pos.x, pos.y + 7.5, pos.z);
-                dummy.scale.setScalar(1);
-                dummy.updateMatrix();
-                this.instancedMeshTrunk.setMatrixAt(i, dummy.matrix);
+                _dummy.position.set(pos.x, pos.y + 7.5, pos.z);
+                _dummy.scale.setScalar(1);
+                _dummy.updateMatrix();
+                this.instancedMeshTrunk.setMatrixAt(i, _dummy.matrix);
+                this.instancedMeshTrunk.instanceMatrix.needsUpdate = true;
             }
         }
     }
 }
-
-// TODO: optimize updateStuff

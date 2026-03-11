@@ -7,12 +7,12 @@ import Stats from "stats";
 import TerrainManager from "./Terrain/TerrainManager.js";
 
 const CAMERA_LOOK_SPEED = 2.1;
-const CAMERA_MOVE_SPEED = 300;
+const CAMERA_MOVE_SPEED = 100;
 const CAMERA_MOVE_SPEED_DELTA = 50;
 
 const RESOLUTION = 0.5;
-const FOG_DISTANCE_FACTOR = 80;
-const RENDER_DIST = 10;
+const FOG_DISTANCE_FACTOR = 300;
+const RENDER_DIST = 2;
 
 const VEC_UP = new THREE.Vector3(0, 1, 0);
 
@@ -36,6 +36,7 @@ export default class Game {
 
         this.elevationGenerator = null;
         this.terrainManager = null;
+        this.treeManager = null;
 
         this.fogFactor = FOG_DISTANCE_FACTOR;
     }
@@ -103,7 +104,7 @@ export default class Game {
         this.objects.ambientLight = new THREE.AmbientLight(0xFFFFFF, 0.2);
         this.scene.add(this.objects.ambientLight);
 
-        this.camera.position.y = 50;
+        this.camera.position.y = 65;
 
         this.objects.cube = new THREE.Mesh(
             new THREE.BoxGeometry(1, 1, 1),
@@ -128,15 +129,9 @@ export default class Game {
         ]);
         this.scene.background = texture;
 
-        const um = new TreeManager(this.loader);
-        const range = 100;
-        const halfRange = range * 0.5;
-        for (let i = 0; i < 50; i++) {
-            um.addTree(new THREE.Vector3(Math.random() * range - halfRange, 0, Math.random() * range - halfRange), this.scene);
-        }
-
+        this.treeManager = new TreeManager(this.loader);
         this.elevationGenerator = new ElevationGenerator();
-        this.terrainManager = new TerrainManager(this.elevationGenerator, this.loader, RENDER_DIST);
+        this.terrainManager = new TerrainManager(this.elevationGenerator, this.loader, this.scene, this.treeManager, RENDER_DIST);
 
         this.scene.fog = new THREE.FogExp2(0x70D8FF, 0);
         this.updateFogDensity();
@@ -182,7 +177,7 @@ export default class Game {
         this.doCameraMovement(deltaTime, elapsedTime);
 
         if (frameCount % 15 === 0) {
-            this.terrainManager.update(this.camera.position.x, this.camera.position.z, this.scene);
+            this.terrainManager.update(this.camera.position.x, this.camera.position.z, this.scene, this.treeManager);
         }
     }
 

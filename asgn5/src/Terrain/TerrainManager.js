@@ -4,7 +4,7 @@ import ElevationGenerator from "./ElevationGenerator.js";
 import makeTerrainGeometry from "./makeTerrainGeometry.js";
 
 export default class TerrainManager {
-    constructor(elevationGenerator, loader, renderDist) {
+    constructor(elevationGenerator, loader, scene, treeManager, renderDist) {
         this.chunkSize = 16;
         this.chunkScale = 10;
         this.chunkScaleSize = this.chunkSize * this.chunkScale;
@@ -14,6 +14,8 @@ export default class TerrainManager {
         this.chunkLookup = new PermLambdaDefaultDict(() => new PermLambdaDefaultDict(() => undefined));
         this.chunkList = [];
         this.elevationGenerator = elevationGenerator;
+        this.scene = scene;
+        this.treeManager = treeManager;
 
         this.grassTex = loader.load("./res/images/grass.png");
         this.grassTex.colorSpace = THREE.SRGBColorSpace;
@@ -22,7 +24,7 @@ export default class TerrainManager {
         this.grassTex.wrapT = THREE.RepeatWrapping;
     }
 
-    update(x, z, scene) {
+    update(x, z) {
         const xi = Math.round(x / (this.chunkScaleSize));
         const zi = Math.round(z / (this.chunkScaleSize));
 
@@ -32,7 +34,7 @@ export default class TerrainManager {
                 const rR = r * this.chunkScaleSize - 0.5 * this.chunkScaleSize;
 
                 if (this.chunkLookup[c][r] === undefined) {
-                    const chunk = this.makeChunk(cR, rR, scene);
+                    const chunk = this.makeChunk(cR, rR);
                     this.chunkLookup[c][r] = chunk;
                     this.chunkList.push(chunk);
                 }
@@ -52,7 +54,7 @@ export default class TerrainManager {
         }
     }
 
-    makeChunk(x, z, scene) {
+    makeChunk(x, z) {
         const chunk = new THREE.Mesh(
             makeTerrainGeometry(this.chunkSize, this.chunkScale, x, z, this.uvScale, this.elevationGenerator),
             new THREE.MeshLambertMaterial({ color: 0xFFFFFF, map: this.grassTex })
@@ -60,7 +62,15 @@ export default class TerrainManager {
         chunk.position.set(x, 0, z);
         chunk.static = true;
 
-        scene.add(chunk);
+        this.scene.add(chunk);
+
+        const range = this.chunkScaleSize;
+        for (let i = 0; i < 30; i++) {
+            const treeX = x + Math.random() * range;
+            const treeZ = z + Math.random() * range;
+            const treeY = this.elevationGenerator.at(treeX, treeZ);
+            this.treeManager.addTree(new THREE.Vector3(treeX, treeY, treeZ), this.scene);
+        }
 
         return chunk;
     }
