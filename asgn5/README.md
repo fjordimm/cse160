@@ -1,2 +1,2 @@
 - Credits:
-    - https://free3d.com/3d-model/iphonex-113534.html
+    - https://free3d.com/3d-model/skull-v3--785914.html
