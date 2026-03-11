@@ -39,6 +39,7 @@ export default class Game {
         this.terrainManager = null;
 
         this.fogFactor = FOG_DISTANCE_FACTOR;
+        this.guiInfo = null;
     }
 
     start() {
@@ -140,6 +141,15 @@ export default class Game {
         guiInstructions.add({ "Camera Control": "Click anywhere" }, "Camera Control");
         guiInstructions.add({ "Movement": "WASD/Space/Shift" }, "Movement");
         guiInstructions.add({ "Change Speed": "Scroll" }, "Change Speed");
+        const guiInfo = this.gui.addFolder("Info");
+        guiInfo.add({
+            set pos(val) {},
+            get pos() {
+                const p = _this_.camera.position;
+                return `${p.x.toFixed(1)}, ${p.y.toFixed(1)}, ${p.z.toFixed(1)}`;
+            }
+        }, "pos");
+        this.guiInfo = guiInfo;
         const guiPerformance = this.gui.addFolder("Performance");
         this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, RESOLUTION));
         guiPerformance.add({
@@ -177,6 +187,7 @@ export default class Game {
 
         if (frameCount % 15 === 0) {
             this.terrainManager.update(this.camera.position.x, this.camera.position.z);
+            this.guiInfo.controllers[0].setValue(null);
         }
     }
 
